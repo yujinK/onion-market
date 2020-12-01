@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">OnionMarket</string>
+    <string name="app_name">양파마켓</string>
+
+    <!-- Main -->
+    <string name="home">홈</string>
+    <string name="city_life">동네생활</string>
+    <string name="near_me">내 근처</string>
+    <string name="chat">채팅</string>
+    <string name="account">나의 양파</string>
 </resources>
