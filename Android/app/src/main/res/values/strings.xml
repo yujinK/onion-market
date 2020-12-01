@@ -7,4 +7,12 @@
     <string name="near_me">내 근처</string>
     <string name="chat">채팅</string>
     <string name="account">나의 양파</string>
+    <string name="search">검색</string>
+    <string name="tune_category">관심 카테고리 설정</string>
+    <string name="notification">알림</string>
+    <string name="my_location">명동</string>
+    <string-array name="location_array">
+        <item>명동</item>
+        <item>내 동네 설정</item>
+    </string-array>
 </resources>
