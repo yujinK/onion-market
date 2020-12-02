@@ -11,15 +11,16 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
         android:elevation="1dp"
-        app:contentInsetStart="10dp"
+        app:contentInsetStart="0dp"
         app:menu="@menu/menu_main_toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <include
+        <com.yujin.onionmarket.LocationView
             android:id="@+id/location"
-            layout="@layout/location" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </androidx.appcompat.widget.Toolbar>
 
