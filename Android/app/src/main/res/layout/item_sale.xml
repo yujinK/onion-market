@@ -61,4 +61,19 @@
         app:layout_constraintLeft_toRightOf="@id/guideline"
         tools:text="1,000,000원"/>
 
+    <com.yujin.onionmarket.ReactionView
+        android:id="@+id/v_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/v_favorite"/>
+
+    <com.yujin.onionmarket.ReactionView
+        android:id="@+id/v_favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

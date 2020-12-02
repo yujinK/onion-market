@@ -11,4 +11,5 @@
     <color name="light_gray">#CCCCCC</color>
     <color name="gray">#868E96</color>
     <color name="divider_gray">#EDF0F3</color>
+    <color name="count_gray">#4B5158</color>
 </resources>

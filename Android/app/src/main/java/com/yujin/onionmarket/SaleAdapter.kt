@@ -14,15 +14,23 @@ class SaleAdapter(private val dataSet: Array<Sale>) : RecyclerView.Adapter<SaleA
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.title.text = dataSet[position].title
+        holder.chat.setIconSrc(ReactionView.TYPE_CHAT)
+        holder.chat.setCountNum(10)
+        holder.favorite.setIconSrc(ReactionView.TYPE_FAVORITE)
+        holder.favorite.setCountNum(20)
     }
 
     override fun getItemCount(): Int = dataSet.size
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView
+        val chat: ReactionView
+        val favorite: ReactionView
 
         init {
             title = view.findViewById(R.id.tv_title)
+            chat = view.findViewById(R.id.v_chat)
+            favorite = view.findViewById(R.id.v_favorite)
         }
     }
 }
