@@ -32,10 +32,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <TextView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_sale"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="홈"/>
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
