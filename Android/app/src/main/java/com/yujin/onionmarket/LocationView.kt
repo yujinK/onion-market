@@ -37,7 +37,6 @@ class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(con
     fun setOpen() {
         openAnimation()
         isOpen = true
-//        arrow.setImageDrawable(resources.getDrawable(R.drawable.ic_up, null))
         invalidate()
         requestLayout()
     }
@@ -45,7 +44,6 @@ class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(con
     fun setClose() {
         closeAnimation()
         isOpen = false
-//        arrow.setImageDrawable(resources.getDrawable(R.drawable.ic_down, null))
         invalidate()
         requestLayout()
     }

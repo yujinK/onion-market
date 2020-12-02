@@ -1,8 +1,11 @@
 package com.yujin.onionmarket
 
+import android.content.Context
 import android.os.Bundle
-import android.view.View
+import android.view.*
+import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var locationView: LocationView
+    private lateinit var popupWindow: PopupWindow
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -21,7 +25,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun init(view: View) {
         initSwipeRefreshLayout(view)
         initRecyclerView(view)
-//        initSpinner(view)
         initLocationView(view)
     }
 
@@ -44,18 +47,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         adapter.notifyDataSetChanged()
     }
 
-//    private fun initSpinner(view: View) {
-//        val spinner = view.findViewById<Spinner>(R.id.spin_location)
-//        ArrayAdapter.createFromResource(
-//                requireContext(),
-//                R.array.location_array,
-//                R.layout.view_spinner_location
-//        ).also { adapter ->
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//            spinner.adapter = adapter
-//        }
-//    }
-
     private fun initLocationView(view: View) {
         locationView = view.findViewById(R.id.location)
         locationView.setLocation("명동")
@@ -68,13 +59,47 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun setDropDown() {
         if (!locationView.isOpen) {
             // 메뉴 Open
-            locationView.setOpen()
+            open()
         } else {
             // 메뉴 Close
-            locationView.setClose()
+            close()
         }
     }
 
+    private fun open() {
+        locationView.setOpen()
+        setPopupWindow()
+    }
+
+    private fun close() {
+        locationView.setClose()
+        popupWindow.dismiss()
+    }
+
+    // PopupWindow 지역
+    private fun setPopupWindow() {
+        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val customView = inflater.inflate(R.layout.view_popup_location, null)
+        popupWindow  = PopupWindow(
+                customView,
+                600,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        popupWindow.elevation = 10.0f
+        popupWindow.showAsDropDown(locationView, 0, -30)
+        popupWindow.setTouchInterceptor { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_OUTSIDE -> {
+                    close()
+                    true
+                }
+                else -> false
+            }
+        }
+        popupWindow.isOutsideTouchable = true
+    }
+
+    // SwipeRefreshLayout
     private fun refresh() {
         Toast.makeText(requireContext(), "refresh!!!", Toast.LENGTH_SHORT).show()
         swipeRefreshLayout.isRefreshing = false
