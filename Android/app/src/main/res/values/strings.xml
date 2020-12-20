@@ -12,4 +12,9 @@
     <string name="notification">알림</string>
     <string name="my_location">명동</string>
     <string name="set_location">내 동네 설정</string>
+
+    <!-- account -->
+    <string name="settings">설정</string>
+    <string name="login">로그인하기</string>
+    <string name="view_profile">프로필 보기</string>
 </resources>

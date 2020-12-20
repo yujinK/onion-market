@@ -13,12 +13,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textSize="18dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            tools:text="명동"
+            style="@style/toolbarTextStyle"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            tools:text="명동"/>
 
         <ImageView
             android:id="@+id/iv_arrow"
