@@ -13,16 +13,19 @@
     <string name="my_location">명동</string>
     <string name="set_location">내 동네 설정</string>
 
-    <!-- account -->
+    <!-- Account -->
     <string name="settings">설정</string>
     <string name="login">로그인하기</string>
     <string name="view_profile">프로필 보기</string>
 
-    <!-- login -->
+    <!-- Login -->
     <string name="login_en">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="sign_up_en">Sign up</string>
     <string name="sign_up">계정이 없으신가요? <b><u>가입하기</u></b></string>
     <string name="nick">Nickname</string>
+
+    <!-- SignUp -->
+    <string name="signup_finish">회원가입 완료</string>
 </resources>

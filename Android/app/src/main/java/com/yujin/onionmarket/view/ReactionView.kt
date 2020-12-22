@@ -1,4 +1,4 @@
-package com.yujin.onionmarket
+package com.yujin.onionmarket.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.yujin.onionmarket.R
 
 class ReactionView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
     private var src: ImageView

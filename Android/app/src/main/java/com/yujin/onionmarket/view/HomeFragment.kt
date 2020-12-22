@@ -1,16 +1,18 @@
-package com.yujin.onionmarket
+package com.yujin.onionmarket.view
 
 import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.yujin.onionmarket.R
+import com.yujin.onionmarket.Sale
+import com.yujin.onionmarket.SaleAdapter
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout

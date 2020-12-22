@@ -1,12 +1,12 @@
-package com.yujin.onionmarket
+package com.yujin.onionmarket.view
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.yujin.onionmarket.R
 
 class AccountFragment : Fragment(R.layout.fragment_account) {
     private var isLoggedIn = false;

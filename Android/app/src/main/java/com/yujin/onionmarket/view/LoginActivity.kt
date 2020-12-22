@@ -1,9 +1,10 @@
-package com.yujin.onionmarket
+package com.yujin.onionmarket.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import com.yujin.onionmarket.R
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
