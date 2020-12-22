@@ -15,5 +15,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:listDivider">@color/divider_gray</item>
+        <!-- no animation -->
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 </resources>

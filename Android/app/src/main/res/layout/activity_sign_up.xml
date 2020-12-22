@@ -51,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:maxLength="40"/>
+            android:maxLength="40" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,7 +72,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:maxLength="100" />
+            android:maxLength="100"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_nick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/nick"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:startIconDrawable="@drawable/ic_nick"
+        app:layout_constraintTop_toBottomOf="@id/til_password"
+        app:layout_constraintBottom_toTopOf="@id/btn_sign_up"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="100"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,23 +101,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="@string/login_en"
+        android:text="@string/sign_up_en"
         android:textColor="@color/white"
         android:background="@drawable/bg_login"
-        app:layout_constraintTop_toBottomOf="@id/til_password"
+        app:layout_constraintTop_toBottomOf="@id/til_nick"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
-
-    <TextView
-        android:id="@+id/tv_sign_up"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/sign_up"
-        android:textSize="14dp"
-        android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/btn_sign_up"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
