@@ -1,4 +1,4 @@
-package com.yujin.onionmarket
+package com.yujin.onionmarket.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.yujin.onionmarket.R
 
 class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
     private var myLocation: TextView

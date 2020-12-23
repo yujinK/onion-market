@@ -1,4 +1,4 @@
-package com.yujin.onionmarket
+package com.yujin.onionmarket.view
 
 import android.graphics.drawable.AnimationDrawable
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.yujin.onionmarket.R
 
 class MainActivity : AppCompatActivity() {
     private var isLocationOpen = false

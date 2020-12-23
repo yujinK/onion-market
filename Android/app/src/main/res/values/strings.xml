@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">양파마켓</string>
+    <string name="preference_file_key">OnionMarket</string>
 
     <!-- Main -->
     <string name="home">홈</string>
@@ -12,4 +13,22 @@
     <string name="notification">알림</string>
     <string name="my_location">명동</string>
     <string name="set_location">내 동네 설정</string>
+
+    <!-- Account -->
+    <string name="settings">설정</string>
+    <string name="login">로그인하기</string>
+    <string name="view_profile">프로필 보기</string>
+
+    <!-- Login -->
+    <string name="login_en">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up_en">Sign up</string>
+    <string name="sign_up">계정이 없으신가요? <b><u>가입하기</u></b></string>
+    <string name="nick">Nickname</string>
+    <string name="fail_login_message">이메일이나 비밀번호를 확인하세요.</string>
+    <string name="ok">확인</string>
+
+    <!-- SignUp -->
+    <string name="signup_finish">회원가입 완료</string>
 </resources>
