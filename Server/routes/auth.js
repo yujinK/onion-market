@@ -11,7 +11,8 @@ router.post('/signup', isNotLoggedIn, async (req, res, next) => {
     try {
         const exUser = await User.findOne({ where: { email: email } });
         if (exUser) {
-            return res.json('{"code": -1, "message": "이미 존재하는 사용자입니다.", "data": null');
+            // 이미 존재하는 사용자
+            return res.status(409);
         }
         const hash = await bcrypt.hash(password, 12);
         await User.create({
@@ -19,7 +20,16 @@ router.post('/signup', isNotLoggedIn, async (req, res, next) => {
             nick,
             password: hash,
         });
-        return res.json(201, {"user": [{"id": null, "email": email, "nick": nick, "img": null}]});
+        return res.status(201).json({
+            user: [
+                {
+                    id: null, 
+                    email: email, 
+                    nick: nick, 
+                    img: null
+                }
+            ]
+        });
     } catch (error) {
         console.error(error);
         return next(error);
@@ -40,7 +50,16 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
                 console.error(loginError);
                 return next(loginError);
             }
-            return res.json('{"code": 1, "message": "로그인 완료"}');
+            return res.json(201, { 
+                user: [
+                    {
+                        id: user.id,
+                        email: user.email,
+                        nick: user.nick,
+                        img: user.img
+                    }
+                ]
+            });
         });
     })(req, res, next);
 });
