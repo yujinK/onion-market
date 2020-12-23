@@ -26,6 +26,8 @@
     <string name="sign_up_en">Sign up</string>
     <string name="sign_up">계정이 없으신가요? <b><u>가입하기</u></b></string>
     <string name="nick">Nickname</string>
+    <string name="fail_login_message">이메일이나 비밀번호를 확인하세요.</string>
+    <string name="ok">확인</string>
 
     <!-- SignUp -->
     <string name="signup_finish">회원가입 완료</string>

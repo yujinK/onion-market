@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
@@ -57,9 +59,9 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     val user: User = response.body()!!.user[0]
-                    saveUserData(user)
-                    setResult(RESULT_OK)
-                    finish()
+                    successLogin(user)
+                } else {
+                    failLogin()
                 }
             }
 
@@ -67,6 +69,23 @@ class LoginActivity : AppCompatActivity() {
                 Log.e("LoginActivity-login()", t.toString())
             }
         })
+    }
+
+    // 로그인 성공
+    private fun successLogin(user: User) {
+        saveUserData(user)
+        setResult(RESULT_OK)
+        finish()
+    }
+
+    // 로그인 실패
+    private fun failLogin() {
+        MaterialAlertDialogBuilder(this)
+                .setMessage(getString(R.string.fail_login_message))
+                .setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                    
+                }
+                .show()
     }
 
     // 사용자 데이터 저장
