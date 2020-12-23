@@ -1,5 +1,6 @@
 package com.yujin.onionmarket.data
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class UserResponse(
@@ -8,9 +9,19 @@ data class UserResponse(
 )
 
 data class User(
+    @SerializedName("id")
+    @Expose
+    var id: Int = 0,
+
     @SerializedName("email")
+    @Expose
     var email: String = "",
 
     @SerializedName("nick")
-    var nick: String = ""
+    @Expose
+    var nick: String = "",
+
+    @SerializedName("img")
+    @Expose
+    var img: String = ""
 )

@@ -8,6 +8,7 @@ import androidx.appcompat.widget.AppCompatButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.data.UserResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
@@ -53,7 +54,7 @@ class SignUpActivity : AppCompatActivity() {
         val callUser = signUpService.requestSignUp(email, nick, password)
         callUser.enqueue(object: Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                if (response.isSuccessful && response.code() == 201) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     finishSignUp()
                 } else {
                     Log.d("SignUp", "[onResponse] 실패 : ${response.raw()}")

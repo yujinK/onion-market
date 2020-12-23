@@ -19,7 +19,7 @@ router.post('/signup', isNotLoggedIn, async (req, res, next) => {
             nick,
             password: hash,
         });
-        return res.json(201, {"user": [{"email": email, "nick": nick}]});
+        return res.json(201, {"user": [{"id": null, "email": email, "nick": nick, "img": null}]});
     } catch (error) {
         console.error(error);
         return next(error);
@@ -33,7 +33,7 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
             return next(authError);
         }
         if (!user) {
-            return res.json('{"code": -1, "message": "가입되지 않은 사용자입니다."}');
+            return res.status(404);
         }
         return req.login(user, (loginError) => {
             if (loginError) {
