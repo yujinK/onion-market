@@ -12,7 +12,7 @@
         android:background="@color/white"
         android:elevation="1dp"
         app:title="@string/account"
-        app:titleTextAppearance="@style/toolbarTextStyle"
+        app:titleTextAppearance="@style/toolbarTitleStyle"
         app:menu="@menu/menu_account_toolbar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

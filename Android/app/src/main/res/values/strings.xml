@@ -31,4 +31,13 @@
 
     <!-- SignUp -->
     <string name="signup_finish">회원가입 완료</string>
+
+    <!-- Write -->
+    <string name="write_title">중고거래 글쓰기</string>
+    <string name="finish">완료</string>
+    <string name="title">제목</string>
+    <string name="won">₩</string>
+    <string name="price_hint">가격 (선택사항)</string>
+    <string name="content_hint">에 올린 게시글 내용을 작성해주세요. 가품 및 판매금지품목은 게시가 제한될 수 있어요.</string>
+    <string name="price_proposal">가격제안 받기</string>
 </resources>
