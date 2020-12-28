@@ -11,8 +11,7 @@
     <color name="greenery">#90B54C</color>
     <color name="light_gray">#CCCCCC</color>
     <color name="gray">#868E96</color>
-    <color name="hint_gray">#CFD5DB</color>
-    <color name="divider_gray">#EDF0F3</color>
+    <color name="divider_gray">#CFD5DB</color>
     <color name="count_gray">#4B5158</color>
     <color name="default_profile">#DDE1E6</color>
 </resources>

@@ -21,6 +21,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var locationView: LocationView
     private lateinit var popupWindow: PopupWindow
 
+    private var isOpen = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(view)
@@ -42,7 +44,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initRecyclerView(view: View) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_sale)
-        val array = arrayOf(Sale("aa"), Sale("bb"), Sale("cc"))
+        val array = arrayOf(Sale("aa"), Sale("bb"), Sale("cc"), Sale("dd"))
         val adapter = SaleAdapter(array)
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val dividerItemDecoration = DividerItemDecoration(recyclerView.context, layoutManager.orientation)
@@ -55,8 +57,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun initLocationView(view: View) {
         locationView = view.findViewById(R.id.location)
         locationView.setLocation("명동")
-        locationView.setOnClickListener { v ->
+        locationView.setOnClickListener {
             setDropDown()
+            isOpen = !isOpen
         }
     }
 
@@ -73,7 +76,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     // Toolbar 지역
     private fun setDropDown() {
-        if (!locationView.isOpen) {
+        if (!isOpen) {
             // 메뉴 Open
             open()
         } else {

@@ -14,7 +14,6 @@ import com.yujin.onionmarket.R
 class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
     private var myLocation: TextView
     private var arrow: ImageView
-    var isOpen = false
     private var openAnimation: Animation
     private var closeAnimation: Animation
 
@@ -37,14 +36,12 @@ class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(con
 
     fun setOpen() {
         openAnimation()
-        isOpen = true
         invalidate()
         requestLayout()
     }
 
     fun setClose() {
         closeAnimation()
-        isOpen = false
         invalidate()
         requestLayout()
     }

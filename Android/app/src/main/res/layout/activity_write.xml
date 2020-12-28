@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:hint="@string/title"
-            android:textColorHint="@color/hint_gray"
+            android:textColorHint="@color/divider_gray"
             android:textCursorDrawable="@drawable/cursor_color"
             app:layout_constraintTop_toBottomOf="@id/divider1"
             app:layout_constraintBottom_toTopOf="@id/divider2"
@@ -119,7 +119,7 @@
             android:gravity="center_vertical"
             android:text="@string/won"
             android:textSize="20dp"
-            android:textColor="@color/hint_gray"
+            android:textColor="@color/divider_gray"
             app:layout_constraintTop_toBottomOf="@id/divider3"
             app:layout_constraintBottom_toTopOf="@id/divider4"
             app:layout_constraintLeft_toLeftOf="parent" />
@@ -131,7 +131,7 @@
             android:layout_marginLeft="5dp"
             android:background="@null"
             android:hint="@string/price_hint"
-            android:textColorHint="@color/hint_gray"
+            android:textColorHint="@color/divider_gray"
             android:textCursorDrawable="@drawable/cursor_color"
             app:layout_constraintTop_toBottomOf="@id/divider3"
             app:layout_constraintBottom_toTopOf="@id/divider4"
@@ -158,7 +158,7 @@
                 android:layout_marginLeft="5dp"
                 android:text="@string/price_proposal"
                 android:textSize="16dp"
-                android:textColor="@color/hint_gray"
+                android:textColor="@color/divider_gray"
                 android:textStyle="bold"/>
             
         </LinearLayout>
@@ -181,7 +181,7 @@
             android:gravity="top|left"
             android:background="@null"
             android:hint="@string/content_hint"
-            android:textColorHint="@color/hint_gray"
+            android:textColorHint="@color/divider_gray"
             android:textCursorDrawable="@drawable/cursor_color"
             app:layout_constraintTop_toBottomOf="@id/divider4"
             app:layout_constraintLeft_toLeftOf="parent"
