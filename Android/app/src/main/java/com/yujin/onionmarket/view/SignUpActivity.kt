@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.yujin.onionmarket.R
@@ -18,9 +20,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 
 class SignUpActivity : AppCompatActivity() {
-    private lateinit var retrofit: Retrofit
-    private lateinit var signUpService: RetrofitService
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -29,46 +28,11 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        initView()
-        initRetrofit()
-    }
-
-    private fun initView() {
-        val btnSignUp = findViewById<AppCompatButton>(R.id.btn_sign_up)
-        btnSignUp.setOnClickListener {
-            signUp()
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            add<SignUpInfoFragment>(R.id.container)
         }
-    }
 
-    private fun initRetrofit() {
-        retrofit = RetrofitClient.getInstance()
-        signUpService = retrofit.create(RetrofitService::class.java)
-    }
 
-    // 회원가입
-    private fun signUp() {
-        val email = findViewById<TextInputEditText>(R.id.et_email).text.toString()
-        val nick = findViewById<TextInputEditText>(R.id.et_nick).text.toString()
-        val password = findViewById<TextInputEditText>(R.id.et_password).text.toString()
-
-        val callUser = signUpService.requestSignUp(email, nick, password)
-        callUser.enqueue(object: Callback<UserResponse> {
-            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
-                    finishSignUp()
-                } else {
-                    Log.d("SignUp", "[onResponse] 실패 : ${response.raw()}")
-                }
-            }
-
-            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                Log.d("SignUP", "[onFailure] 실패 : $t")
-            }
-        })
-    }
-
-    private fun finishSignUp() {
-        Toast.makeText(this, getString(R.string.signup_finish), Toast.LENGTH_SHORT).show()
-        finish()
     }
 }

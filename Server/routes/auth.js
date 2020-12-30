@@ -6,6 +6,19 @@ const User = require('../models/user');
 
 const router = express.Router();
 
+router.get('/isSignUp', isNotLoggedIn, async (req, res) => {
+    try {
+        const exUser = await User.findOne({ where: { email: req.query.email } });
+        if (exUser) {
+            return res.status(409).json({});
+        }
+        return res.status(200).json({});
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 router.post('/signup', isNotLoggedIn, async (req, res, next) => {
     const { email, nick, password } = req.body;
     try {

@@ -23,14 +23,20 @@
     <string name="login_en">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="sign_up_en">Sign up</string>
     <string name="sign_up">계정이 없으신가요? <b><u>가입하기</u></b></string>
     <string name="nick">Nickname</string>
     <string name="fail_login_message">이메일이나 비밀번호를 확인하세요.</string>
     <string name="ok">확인</string>
 
     <!-- SignUp -->
+    <string name="sign_up_en">Sign up</string>
+    <string name="next_en">Next</string>
+    <string name="require_input">정보를 입력해주세요.</string>
+    <string name="invalid_email">올바른 이메일을 입력하세요. ex) abc@example.com</string>
+    <string name="invalid_password">비밀번호는 6글자 이상 입력하세요.</string>
+    <string name="fail_email_message">이미 가입된 이메일입니다.</string>
     <string name="signup_finish">회원가입 완료</string>
+    <string name="location_hint">동명(읍, 면)으로 검색 (ex. 서초동)</string>
 
     <!-- Write -->
     <string name="write_title">중고거래 글쓰기</string>

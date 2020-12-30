@@ -1,12 +1,17 @@
 package com.yujin.onionmarket.network
 
+import com.yujin.onionmarket.data.CategoryResponse
+import com.yujin.onionmarket.data.IsSignUpResponse
 import com.yujin.onionmarket.data.UserResponse
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface RetrofitService {
+    @GET("auth/isSignUp")
+    fun requestIsSignUp(
+        @Query("email") email: String
+    ) : Call<IsSignUpResponse>
+
     @FormUrlEncoded
     @POST("auth/signup")
     fun requestSignUp(
@@ -21,4 +26,7 @@ interface RetrofitService {
         @Field("email") email: String,
         @Field("password") password: String
     ) : Call<UserResponse>
+
+    @GET("category")
+    fun requestCategory() : Call<CategoryResponse>
 }

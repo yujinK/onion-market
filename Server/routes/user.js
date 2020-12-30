@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.use((req, res, next) => {
     res.locals.user = req.user;
-    res.locals.user = null;
     next();
 });
 
