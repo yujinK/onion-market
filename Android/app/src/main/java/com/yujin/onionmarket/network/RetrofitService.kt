@@ -1,8 +1,6 @@
 package com.yujin.onionmarket.network
 
-import com.yujin.onionmarket.data.CategoryResponse
-import com.yujin.onionmarket.data.IsSignUpResponse
-import com.yujin.onionmarket.data.UserResponse
+import com.yujin.onionmarket.data.*
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -29,4 +27,8 @@ interface RetrofitService {
 
     @GET("category")
     fun requestCategory() : Call<CategoryResponse>
+
+    @GET("location")
+    fun requestLocation(
+    ) : Call<List<Location>>
 }

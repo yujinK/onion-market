@@ -94,7 +94,8 @@
         android:id="@+id/tv_sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+
+        android:padding="20dp"
         android:text="@string/sign_up"
         android:textSize="14dp"
         android:textColor="@color/black"
