@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
+import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import androidx.recyclerview.widget.RecyclerView
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.data.Location
-import com.yujin.onionmarket.data.LocationResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
 import retrofit2.Call
@@ -24,8 +26,8 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
     private lateinit var retrofit: Retrofit
     private lateinit var locationService: RetrofitService
 
-    private lateinit var allLocation: List<Location>
-    private lateinit var adapter: ArrayAdapter<String>
+    private lateinit var locationList: List<Location>
+    private lateinit var locationAdapter: LocationAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,10 +38,7 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
         initRetrofit()
         initSearch()
         getAllLocation()
-//        val location = requireView().findViewById<AppCompatAutoCompleteTextView>(R.id.tv_location)
-//        val array = arrayOf("인천", "서울")
-//        adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, array)
-//        location.setAdapter(adapter)
+        initRecyclerView()
     }
 
     private fun initRetrofit() {
@@ -51,9 +50,15 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
         val search = requireView().findViewById<EditText>(R.id.et_search)
         search.addTextChangedListener(DynamicTextWatcher(
             afterChanged = { s ->
-//                searchLocation(s.toString())
+                filter(s.toString())
             }
         ))
+    }
+
+    private fun initRecyclerView() {
+        val rvLocation = requireView().findViewById<RecyclerView>(R.id.rv_location)
+        locationAdapter = LocationAdapter(mutableListOf())
+        rvLocation.adapter = locationAdapter
     }
 
     private fun getAllLocation() {
@@ -61,7 +66,7 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
         callLocation.enqueue(object: Callback<List<Location>> {
             override fun onResponse(call: Call<List<Location>>, response: Response<List<Location>>) {
                  if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
-//                     Log.d("onResponse()", response.body()?.locations?.get(0)?.id.toString())
+                     locationList = response.body()!!
                      Log.d("onResponse()", response?.body()?.get(0)?.id.toString())
                 }
             }
@@ -70,6 +75,23 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
                 Log.e("LocationFragment", "getAllLocation() / $t")
             }
         })
+    }
+
+    // 지역 검색 filter
+    private fun filter(keyword: String) {
+        var filteredList = mutableListOf<Location>()
+        Log.d("filter()", keyword + "/" + locationList.size.toString())
+
+        if (keyword.isNotBlank()) {
+            for (location in locationList) {
+                // 일치하는 부분이 있으면
+                if (location.sido.contains(keyword) || location.sigun.contains(keyword) || location.dongmyeon.contains(keyword) || location.li.contains(keyword)) {
+                    filteredList.add(location)
+                }
+            }
+        }
+
+        locationAdapter.filterList(filteredList)
     }
 
 //    private fun searchLocation(keyword: String) {
@@ -128,20 +150,25 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
         }
     }
 
-//    class LocationAdapter(private val locationSet: Array<Location>) : RecyclerView.Adapter<LocationAdapter.ViewHolder>() {
-//        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-//            val location: TextView = view.findViewById(R.id.tv_location)
-//        }
-//
-//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-//            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_location, parent, false)
-//            return ViewHolder(view)
-//        }
-//
-//        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//            holder.location.text = locationSet[position].name
-//        }
-//
-//        override fun getItemCount(): Int = locationSet.size
-//    }
+    class LocationAdapter(private var locationSet: List<Location>) : RecyclerView.Adapter<LocationAdapter.ViewHolder>() {
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val location: TextView = view.findViewById(R.id.tv_location)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_location, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.location.text = "${locationSet[position].sido} ${locationSet[position].sigun} ${locationSet[position].dongmyeon} ${locationSet[position].li}"
+        }
+
+        override fun getItemCount(): Int = locationSet.size
+
+        fun filterList(filteredList: List<Location>) {
+            locationSet = filteredList
+            notifyDataSetChanged()
+        }
+    }
 }
