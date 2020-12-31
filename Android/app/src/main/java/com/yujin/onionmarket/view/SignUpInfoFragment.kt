@@ -141,23 +141,6 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
                 Log.e("SignUpInfo", "[onFailure] 실패 : $t")
             }
         })
-
-
-        
-//        val callUser = signUpService.requestSignUp(email, nick, password)
-//        callUser.enqueue(object: Callback<UserResponse> {
-//            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-//                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
-//                    finishSignUp()
-//                } else {
-//                    Log.d("SignUp", "[onResponse] 실패 : ${response.raw()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-//                Log.d("SignUP", "[onFailure] 실패 : $t")
-//            }
-//        })
     }
 
     private fun moveNext(email: String, nick: String, password: String) {
@@ -188,7 +171,6 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
             val isValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
             if (!isValid) {
                 emailLayout.error = getString(R.string.invalid_email)
-                emailView.requestFocus()
                 false
             } else {
                 emailLayout.error = null
