@@ -6,8 +6,21 @@ const User = require('../models/user');
 
 const router = express.Router();
 
+router.get('/isSignUp', isNotLoggedIn, async (req, res) => {
+    try {
+        const exUser = await User.findOne({ where: { email: req.query.email } });
+        if (exUser) {
+            return res.status(409).json({});
+        }
+        return res.status(200).json({});
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 router.post('/signup', isNotLoggedIn, async (req, res, next) => {
-    const { email, nick, password } = req.body;
+    const { email, nick, password, locationId } = req.body;
     try {
         const exUser = await User.findOne({ where: { email: email } });
         if (exUser) {
@@ -16,9 +29,11 @@ router.post('/signup', isNotLoggedIn, async (req, res, next) => {
         }
         const hash = await bcrypt.hash(password, 12);
         await User.create({
-            email,
-            nick,
+            email: email,
+            nick: nick,
             password: hash,
+            img: '',
+            locationId: locationId,
         });
         return res.status(201).json({
             user: [
@@ -26,7 +41,8 @@ router.post('/signup', isNotLoggedIn, async (req, res, next) => {
                     id: null, 
                     email: email, 
                     nick: nick, 
-                    img: null
+                    img: null,
+                    locationId,
                 }
             ]
         });

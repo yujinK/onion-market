@@ -6,14 +6,15 @@ module.exports = class Category extends Sequelize.Model {
             name: {
                 type: Sequelize.STRING(30),
                 allowNull: false,
+                unique: true,
             },
         }, {
             sequelize,
-            timestamps: true,
+            timestamps: false,
             underscored: false,
             modelName: 'Category',
             tableName: 'categories',
-            paranoid: true,
+            paranoid: false,
             charset: 'utf8',
             collate: 'utf8_general_ci',
         });
