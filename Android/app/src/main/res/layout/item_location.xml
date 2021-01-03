@@ -9,7 +9,7 @@
         android:id="@+id/tv_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:padding="10dp"
         android:textColor="@color/black"
         android:textSize="14dp"
         tools:text="서울특별시 강남구 서초동"/>

@@ -9,12 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.data.Location
+import com.yujin.onionmarket.data.User
+import com.yujin.onionmarket.data.UserResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
 import retrofit2.Call
@@ -22,7 +26,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 
-class LocationFragment : Fragment(R.layout.fragment_location) {
+class LocationFragment : Fragment(R.layout.fragment_location), OnItemClick {
     private lateinit var retrofit: Retrofit
     private lateinit var locationService: RetrofitService
 
@@ -57,7 +61,7 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
 
     private fun initRecyclerView() {
         val rvLocation = requireView().findViewById<RecyclerView>(R.id.rv_location)
-        locationAdapter = LocationAdapter(mutableListOf())
+        locationAdapter = LocationAdapter(mutableListOf(), this)
         rvLocation.adapter = locationAdapter
     }
 
@@ -94,41 +98,42 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
         locationAdapter.filterList(filteredList)
     }
 
-//    private fun searchLocation(keyword: String) {
-//        val callLocation = locationService.requestLocation()
-//        callLocation.enqueue(object: Callback<LocationResponse> {
-//            override fun onResponse(call: Call<LocationResponse>, response: Response<LocationResponse>) {
-//                if (response.isSuccessful &&  response.code() == ResponseCode.SUCCESS_GET) {
-//                    Log.d("onResponse()", response.body()!!.location[0].toString())
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<LocationResponse>, t: Throwable) {
-//                Log.e("LocationFragment", "initRetrofit() / $t")
-//            }
-//        })
-//    }
+    // 회원가입 진행
+    private fun signUp(email: String?, nick: String?, password: String?, locationId: Int) {
+        if (!email.isNullOrEmpty() && !nick.isNullOrEmpty() && !password.isNullOrEmpty()) {
+            val callSignUp = locationService.requestSignUp(email, nick, password, locationId)
+            callSignUp.enqueue(object: Callback<UserResponse> {
+                override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        finish()
+                    }
+                }
 
-    private fun getSignUpInfo() {
-        setFragmentResultListener("requestInfo") { requestKey, bundle ->
-            val email = bundle.getString("email")
-            val nick = bundle.getString("nick")
-            val password = bundle.getString("password")
-
-            Log.d("LocationFragment", "$email/$nick/$password")
-            /*val location = getLocation()*/
-//            signUp(email, nick, password, location)
+                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                    Log.e("LocationFragment", "signUp() / $t")
+                }
+            })
         }
     }
 
-    // 지역 검색
-    private fun getLocation() {
+    private fun finish() {
+        activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.remove(this)
+                ?.commit()
 
+        Toast.makeText(context, R.string.signup_finish, Toast.LENGTH_SHORT).show()
+        activity?.finish()
     }
 
-    private fun signUp(email: String?, nick: String?, password: String?, location: Int) {
-        if (!email.isNullOrEmpty() && !nick.isNullOrEmpty() && !password.isNullOrEmpty()) {
+    // 지역 선택
+    override fun onClick(locationId: Int) {
+        setFragmentResultListener("requestInfo") { requestKey, bundle ->
+            val email = bundle.getString("email")!!
+            val nick = bundle.getString("nick")!!
+            val password = bundle.getString("password")
 
+            signUp(email, nick, password, locationId)
         }
     }
 
@@ -150,14 +155,14 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
         }
     }
 
-    class LocationAdapter(private var locationSet: List<Location>) : RecyclerView.Adapter<LocationAdapter.ViewHolder>() {
+    class LocationAdapter(private var locationSet: List<Location>, private var onItemClick: OnItemClick) : RecyclerView.Adapter<LocationAdapter.ViewHolder>() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val location: TextView = view.findViewById(R.id.tv_location)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_location, parent, false)
-            return ViewHolder(view)
+            return ViewHolder(view).listen { position, type -> setLocation(locationSet[position].id) }
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -170,5 +175,19 @@ class LocationFragment : Fragment(R.layout.fragment_location) {
             locationSet = filteredList
             notifyDataSetChanged()
         }
+
+        private fun <T: RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
+            itemView.setOnClickListener { event.invoke(adapterPosition, itemViewType) }
+            return this
+        }
+        
+        // 지역 설정
+        private fun setLocation(id: Int) {
+            onItemClick.onClick(id)
+        }
     }
+}
+
+interface OnItemClick {
+    fun onClick(location: Int)
 }

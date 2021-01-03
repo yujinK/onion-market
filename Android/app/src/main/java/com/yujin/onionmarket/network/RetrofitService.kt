@@ -15,7 +15,8 @@ interface RetrofitService {
     fun requestSignUp(
         @Field("email") email: String,
         @Field("nick") nick: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("locationId") locationId: Int
     ) : Call<UserResponse>
 
     @FormUrlEncoded

@@ -27,12 +27,12 @@ class SignUpActivity : AppCompatActivity() {
         init()
     }
 
+
+
     private fun init() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             add<SignUpInfoFragment>(R.id.container)
         }
-
-
     }
 }

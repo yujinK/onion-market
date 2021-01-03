@@ -32,6 +32,6 @@ module.exports = class Location extends Sequelize.Model {
     }
 
     static associate(db) {
-
+        db.Location.hasOne(db.User, { foreignKey: 'locationId', sourceKey: 'id' });
     }
 };
