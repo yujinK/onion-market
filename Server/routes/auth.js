@@ -78,7 +78,7 @@ router.post('/login', async (req, res, next) => {
                         nick: user.nick,
                         img: user.img,
                         location: [{
-                            locationId: user.Location.id,
+                            id: user.Location.id,
                             sido: user.Location.sido,
                             sigun: user.Location.sigun,
                             dongmyeon: user.Location.dongmyeon,

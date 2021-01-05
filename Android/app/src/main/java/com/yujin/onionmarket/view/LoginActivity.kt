@@ -1,17 +1,16 @@
 package com.yujin.onionmarket.view
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
+import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.User
 import com.yujin.onionmarket.data.UserResponse
 import com.yujin.onionmarket.network.RetrofitClient
@@ -61,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
                     val user: User = response.body()!!.user[0]
                     val token: String = response.body()!!.token
                     Log.d("login()-onResponse", "${user.toString()}, token: $token")
-                    successLogin(user)
+                    successLogin(user, token)
                 } else {
                     failLogin()
                 }
@@ -74,8 +73,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // 로그인 성공
-    private fun successLogin(user: User) {
-        saveUserData(user)
+    private fun successLogin(user: User, token: String) {
+        saveUserData(user, token)
         setResult(RESULT_OK)
         finish()
     }
@@ -91,15 +90,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     // 사용자 데이터 저장
-    private fun saveUserData(user: User) {
-        val sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE) ?: return
-        with (sharedPref.edit()) {
-            putInt("id", user.id)
-            putString("nick", user.nick)
-            putString("img", user.img)
-            //TODO: 지역
-            commit()
-        }
+    private fun saveUserData(user: User, token: String) {
+//        val sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE) ?: return
+//        with (sharedPref.edit()) {
+//            putInt("id", user.id)
+//            putString("nick", user.nick)
+//            putString("img", user.img)
+//            //TODO: 지역
+//            commit()
+//        }
+
+        Util.saveUserInfo(this, user, token)
     }
 
     // 회원가입 이동

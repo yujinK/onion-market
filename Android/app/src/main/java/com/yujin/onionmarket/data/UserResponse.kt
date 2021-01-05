@@ -30,5 +30,5 @@ data class User(
 
     @SerializedName("location")
     @Expose
-    var location: Location
+    var location: List<Location>
 )
