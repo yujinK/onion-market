@@ -59,6 +59,8 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     val user: User = response.body()!!.user[0]
+                    val token: String = response.body()!!.token
+                    Log.d("login()-onResponse", "${user.toString()}, token: $token")
                     successLogin(user)
                 } else {
                     failLogin()

@@ -5,7 +5,10 @@ import com.google.gson.annotations.SerializedName
 
 data class UserResponse(
     @SerializedName("user")
-    var user: List<User>
+    var user: List<User>,
+
+    @SerializedName("token")
+    var token: String
 )
 
 data class User(
