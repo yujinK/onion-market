@@ -77,7 +77,13 @@ router.post('/login', async (req, res, next) => {
                         email: user.email,
                         nick: user.nick,
                         img: user.img,
-                        locationId: user.locationId
+                        location: [{
+                            locationId: user.Location.id,
+                            sido: user.Location.sido,
+                            sigun: user.Location.sigun,
+                            dongmyeon: user.Location.dongmyeon,
+                            li: user.Location.li
+                        }]
                     }],
                     token: token 
                 });

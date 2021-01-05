@@ -3,12 +3,18 @@ const { Strategy: LocalStrategy } = require('passport-local');
 const bcrypt = require('bcrypt');
 
 const User = require('../models/user');
+const Location = require('../models/location');
 
 const passportConfig = { usernameField: 'email', passwordField: 'password' };
 
 const passportVerify = async (email, password, done) => {
     try {
-        const user = await User.findOne({ where: { email: email } });
+        const user = await User.findOne({
+            include: [{
+                model: Location,
+            }],
+            where: { email: email }
+        });
         if (user) {
             const result = await bcrypt.compare(password, user.password);
             if (result) {

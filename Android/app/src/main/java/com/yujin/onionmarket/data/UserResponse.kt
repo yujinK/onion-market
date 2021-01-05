@@ -28,7 +28,7 @@ data class User(
     @Expose
     var img: String = "",
 
-    @SerializedName("locationId")
+    @SerializedName("location")
     @Expose
-    var locationId: Int = 0
+    var location: Location
 )
