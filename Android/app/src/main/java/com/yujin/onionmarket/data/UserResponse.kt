@@ -5,7 +5,10 @@ import com.google.gson.annotations.SerializedName
 
 data class UserResponse(
     @SerializedName("user")
-    var user: List<User>
+    var user: List<User>,
+
+    @SerializedName("token")
+    var token: String
 )
 
 data class User(
@@ -25,7 +28,7 @@ data class User(
     @Expose
     var img: String = "",
 
-    @SerializedName("locationId")
+    @SerializedName("location")
     @Expose
-    var locationId: Int = 0
+    var location: List<Location>
 )

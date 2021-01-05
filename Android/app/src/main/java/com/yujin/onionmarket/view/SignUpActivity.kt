@@ -27,8 +27,6 @@ class SignUpActivity : AppCompatActivity() {
         init()
     }
 
-
-
     private fun init() {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
