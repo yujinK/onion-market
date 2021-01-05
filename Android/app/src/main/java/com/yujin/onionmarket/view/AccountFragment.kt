@@ -3,8 +3,12 @@ package com.yujin.onionmarket.view
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.yujin.onionmarket.R
@@ -29,6 +33,24 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        setAccount()
+    }
+
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_account_toolbar, menu)
+//        super.onCreateOptionsMenu(menu, inflater)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+//        R.id.settings -> {
+//            moveSettings()
+//            true
+//        }
+//        else -> { super.onOptionsItemSelected(item) }
+//    }
+
     private fun init(view: View) {
         initView(view)
         setAccount()
@@ -39,11 +61,22 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         loginView.setOnClickListener { moveLogin() }
         profileView = view.findViewById(R.id.profile_container)
         profileView.setOnClickListener { moveProfile() }
+
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.settings -> {
+                    moveSettings()
+                    true
+                }
+                else -> { super.onOptionsItemSelected(it) }
+            }
+        }
     }
 
     // 계정 setting
     private fun setAccount() {
-        val user = Util.readUserInfo(requireActivity())
+        val user = Util.readUser(requireActivity())
         if (user != null) {
             // 로그인 한 유저
             setUserProfile(user)
@@ -63,17 +96,10 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     }
 
     private fun setUserInfo(user: User) {
-//        val sharedPref = activity?.getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE) ?: return
-//        val nick = sharedPref.getString("nick", "")
-//        val img = sharedPref.getString("img", "")
-//        //TODO: location 추가
-//
-//        if (!img.isNullOrEmpty()) {
-//            //TODO: Glide 써서 설정
-//        }
-
         profileView.getChildAt(1).findViewById<TextView>(R.id.tv_nick).text = user.nick
         profileView.getChildAt(2).findViewById<TextView>(R.id.tv_location).text = user.location[0].dongmyeon
+        
+        //TODO: profile 사진 설정
     }
 
     //로그인하기 layout visible
@@ -91,11 +117,17 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     // 로그인으로 이동
     private fun moveLogin() {
         val intent = Intent(activity, LoginActivity::class.java)
+        //TODO: deprecated method 처리
         startActivityForResult(intent, RequestCode.LOGIN)
     }
 
     // 프로필로 이동
     private fun moveProfile() {
 
+    }
+
+    // 설정으로 이동
+    private fun moveSettings() {
+        (requireActivity() as MainActivity).addFragment(SettingsFragment())
     }
 }

@@ -3,6 +3,7 @@ package com.yujin.onionmarket.view
 import android.graphics.drawable.AnimationDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -84,6 +85,13 @@ class MainActivity : AppCompatActivity() {
     private fun moveAccount() {
         supportFragmentManager.commit {
             replace<AccountFragment>(R.id.container)
+        }
+    }
+
+    // Fragment 이동
+    fun addFragment(fragment: Fragment) {
+        supportFragmentManager.commit {
+            add(R.id.container, fragment)
         }
     }
 }

@@ -38,6 +38,9 @@
     <string name="signup_finish">회원가입 완료</string>
     <string name="location_hint">동명(읍, 면)으로 검색 (ex. 서초동)</string>
 
+    <!-- Settings -->
+    <string name="logout">로그아웃</string>
+
     <!-- Location -->
 
 
