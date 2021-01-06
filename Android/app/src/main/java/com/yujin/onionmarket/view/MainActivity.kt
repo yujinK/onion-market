@@ -89,9 +89,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Fragment 이동
-    fun addFragment(fragment: Fragment) {
+    fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.commit {
-            add(R.id.container, fragment)
+            replace(R.id.container, fragment)
         }
     }
 }

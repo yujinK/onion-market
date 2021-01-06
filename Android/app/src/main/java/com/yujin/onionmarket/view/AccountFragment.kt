@@ -3,9 +3,6 @@ package com.yujin.onionmarket.view
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -37,19 +34,6 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         super.onResume()
         setAccount()
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.menu_account_toolbar, menu)
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-//        R.id.settings -> {
-//            moveSettings()
-//            true
-//        }
-//        else -> { super.onOptionsItemSelected(item) }
-//    }
 
     private fun init(view: View) {
         initView(view)
@@ -128,6 +112,6 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     // 설정으로 이동
     private fun moveSettings() {
-        (requireActivity() as MainActivity).addFragment(SettingsFragment())
+        (requireActivity() as MainActivity).replaceFragment(SettingsFragment())
     }
 }
