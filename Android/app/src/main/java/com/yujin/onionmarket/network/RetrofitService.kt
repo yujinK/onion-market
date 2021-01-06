@@ -8,7 +8,7 @@ interface RetrofitService {
     @GET("auth/isSignUp")
     fun requestIsSignUp(
         @Query("email") email: String
-    ) : Call<IsSignUpResponse>
+    ) : Call<EmptyResponse>
 
     @FormUrlEncoded
     @POST("auth/signup")
@@ -26,10 +26,20 @@ interface RetrofitService {
         @Field("password") password: String
     ) : Call<UserResponse>
 
-    @GET("category")
-    fun requestCategory() : Call<CategoryResponse>
-
     @GET("location")
-    fun requestLocation(
-    ) : Call<List<Location>>
+    fun requestLocation() : Call<List<Location>>
+
+    @GET("category")
+    fun requestCategory(@Header("authorization") token: String) : Call<CategoryResponse>
+
+    @FormUrlEncoded
+    @POST("sale/write")
+    fun requestWriteSale(@Header("authorization") token: String,
+                         @Field("title") title: String,
+                         @Field("content") content: String,
+                         @Field("price") price: Int,
+                         @Field("priceProposal") priceProposal: Int,
+                         @Field("writer") writer: Int,
+                         @Field("categoryId") categoryId: Int)
+    : Call<EmptyResponse>
 }

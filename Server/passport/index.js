@@ -1,6 +1,9 @@
 const passport = require('passport');
 const { Strategy: LocalStrategy } = require('passport-local');
+const { ExtractJwt, Strategy: JWTStrategy } = require('passport-jwt');
 const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const User = require('../models/user');
 const Location = require('../models/location');
@@ -34,6 +37,26 @@ const passportVerify = async (email, password, done) => {
     }
 };
 
+const JWTConfig = {
+    jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+    secretOrKey: process.env.JWT_SECRET,
+};
+
+const JWTVerify = async (jwtPayload, done) => {
+    try {
+        const user = await User.findOne({ where: { id: jwtPayload.id } });
+        if (user) {
+            done(null, user);
+            return;
+        }
+        done(null, false, { message: '올바르지 않은 인증정보입니다.' });
+    } catch(error) {
+        console.error(error);
+        done(error);
+    }
+};
+
 module.exports = () => {
     passport.use('local', new LocalStrategy(passportConfig, passportVerify));
+    passport.use('jwt', new JWTStrategy(JWTConfig, JWTVerify));
 };

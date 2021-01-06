@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:elevation="1dp"
+        app:navigationIcon="?homeAsUpIndicator"
         app:title="@string/write_title"
         app:titleTextAppearance="@style/toolbarTitleStyle"
         app:menu="@menu/menu_write_toolbar"
@@ -99,6 +100,8 @@
             android:id="@+id/spin_category"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
+            android:spinnerMode="dialog"
             app:layout_constraintTop_toBottomOf="@id/divider2"
             app:layout_constraintBottom_toTopOf="@id/divider3"
             app:layout_constraintLeft_toLeftOf="parent"

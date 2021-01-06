@@ -1,5 +1,5 @@
-const express = require('express'); 
-const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
+const express = require('express');
+const passport = require('passport');
 const Category = require('../models/category');
 
 const router = express.Router();
@@ -9,11 +9,12 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/', isLoggedIn, async (req, res, next) => {
+router.get('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        const categories = await Category.findAll();
-        console.log(JSON.stringify(categories));
-        // res.status(200).json(categories);
+        const categories = await Category.findAll({
+            order: ['id']
+        });
+        return res.status(200).json({ category: categories })
     } catch (error) {
         console.error(error);
         next(error);

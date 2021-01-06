@@ -10,6 +10,7 @@ const passportConfig = require('./passport');
 dotenv.config();
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
+const saleRouter = require('./routes/sale');
 const categoryRouter = require('./routes/category');
 const locationRouter = require('./routes/location');
 const { sequelize } = require('./models');
@@ -45,6 +46,7 @@ passportConfig();   //패스포트 설정
 
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
+app.use('/sale', saleRouter);
 app.use('/category', categoryRouter);
 app.use('/location', locationRouter);
 
