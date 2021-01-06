@@ -3,8 +3,10 @@ package com.yujin.onionmarket.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
+import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.CategoryResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
@@ -24,9 +26,10 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        initRetrofit();
+        initRetrofit()
         initToolbar()
         initCategory()
+        initContentHint()
     }
 
     private fun initRetrofit() {
@@ -50,6 +53,13 @@ class WriteActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun initContentHint() {
+        val user = Util.readUser(this)
+        val dongmyeon = user!!.location[0].dongmyeon
+        val content = findViewById<EditText>(R.id.et_content)
+        content.hint = getString(R.string.content_hint, dongmyeon)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
