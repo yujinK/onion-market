@@ -1,29 +1,40 @@
 package com.yujin.onionmarket.view
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
+import com.esafirm.imagepicker.features.ImagePicker
+import com.esafirm.imagepicker.model.Image
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.Category
 import com.yujin.onionmarket.data.CategoryResponse
 import com.yujin.onionmarket.data.EmptyResponse
+import com.yujin.onionmarket.data.WriteSaleResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.io.File
 
 class WriteActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var writeService: RetrofitService
 
+    private lateinit var token: String
+
     private lateinit var spinner: Spinner
+
+    private var images = mutableListOf<Image>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +42,20 @@ class WriteActivity : AppCompatActivity() {
         init()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            images = ImagePicker.getImages(data)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun init() {
+        token = Util.readToken(this)
         initRetrofit()
         initToolbar()
         initCategory()
         initContentHint()
+        initAddImage()
     }
 
     private fun initRetrofit() {
@@ -61,7 +81,6 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun getCategory() {
-        val token = Util.readToken(this)
         val callCategory = writeService.requestCategory(token)
         callCategory.enqueue(object: Callback<CategoryResponse> {
             override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
@@ -76,7 +95,7 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun setCategory(categories: List<Category>) {
-        spinner = findViewById<Spinner>(R.id.spin_category)
+        spinner = findViewById(R.id.spin_category)
         val names = Array(categories.size + 1) {""}
         for (index in categories.indices) {
             names[index] = categories[index].name
@@ -96,24 +115,88 @@ class WriteActivity : AppCompatActivity() {
         content.hint = getString(R.string.content_hint, dongmyeon)
     }
 
+    private fun initAddImage() {
+        val addImageView = findViewById<LinearLayout>(R.id.ll_add_image)
+        addImageView.setOnClickListener {
+            addImage()
+        }
+    }
+
+    private fun addImage() {
+        ImagePicker.create(this)
+            .start()
+    }
+
     private fun writeSale() {
-        val token = Util.readToken(this)
+        postContent()
+    }
+    
+    // 게시글 업로드
+    private fun postContent() {
         val title = findViewById<EditText>(R.id.et_title).text.toString()
         val content = findViewById<EditText>(R.id.et_content).text.toString()
         val price = findViewById<EditText>(R.id.et_price).text.toString().toInt()
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
         val callPost = writeService.requestWriteSale(token, title, content, price, 0, writer, categoryId)
-        callPost.enqueue(object: Callback<EmptyResponse> {
+        callPost.enqueue(object: Callback<WriteSaleResponse> {
+            override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
+                postImage(response.body()!!.id)
+//                showToast()
+//                finish()
+            }
+
+            override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
+                Log.e("WirteActivity", "writeSale()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+    
+    // 첨부 이미지 업로드
+    private fun postImage(saleId: Int) {
+//        val parts = getParts()
+//        val callImage = writeService.requestWriteSaleImage(token, saleId, parts)
+//        callImage.enqueue(object: Callback<EmptyResponse> {
+//            override fun onResponse(call: Call<EmptyResponse>, response: Response<EmptyResponse>) {
+//                showToast()
+//                finish()
+//            }
+//
+//            override fun onFailure(call: Call<EmptyResponse>, t: Throwable) {
+//                Log.e("WirteActivity", "postImage()-[onFailure] 실패 : $t")
+//            }
+//        })
+
+        for (i in images.indices) {
+            val part = prepareFilePart("img", Uri.parse(images[i].path))
+            val name = RequestBody.create(MediaType.parse("text/plain"), "img")
+            val callImage = writeService.requestWriteSaleImage(token, saleId, part, name)
+            callImage.enqueue(object: Callback<EmptyResponse> {
             override fun onResponse(call: Call<EmptyResponse>, response: Response<EmptyResponse>) {
                 showToast()
                 finish()
             }
 
             override fun onFailure(call: Call<EmptyResponse>, t: Throwable) {
-                Log.e("WirteActivity", "writeSale()-[onFailure] 실패 : $t")
+                Log.e("WirteActivity", "postImage()-[onFailure] 실패 : $t")
             }
         })
+        }
+    }
+
+    private fun getParts() : List<MultipartBody.Part> {
+        var parts = mutableListOf<MultipartBody.Part>()
+        for (i in images.indices) {
+            parts.add(prepareFilePart("image[${i}]", Uri.parse(images[i].path)))
+        }
+        return parts
+    }
+
+    private fun prepareFilePart(partName: String, fileUri: Uri) : MultipartBody.Part {
+        Log.d("prepareFilePart()", fileUri.toString())
+        val file = File(fileUri.path)
+        val requestBody = RequestBody.create(MediaType.parse("image/*"), file)
+        return MultipartBody.Part.createFormData(partName, file.name, requestBody)
     }
 
     private fun showToast() {

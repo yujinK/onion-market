@@ -1,6 +1,8 @@
 package com.yujin.onionmarket.network
 
 import com.yujin.onionmarket.data.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -41,5 +43,13 @@ interface RetrofitService {
                          @Field("priceProposal") priceProposal: Int,
                          @Field("writer") writer: Int,
                          @Field("categoryId") categoryId: Int)
+    : Call<WriteSaleResponse>
+
+    @Multipart
+    @POST("sale/write/image")
+    fun requestWriteSaleImage(@Header("authorization") token: String,
+                              @Query("saleId") saleId: Int,
+                              @Part image: MultipartBody.Part,
+                              @Part("img") name: RequestBody)
     : Call<EmptyResponse>
 }

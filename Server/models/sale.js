@@ -50,5 +50,6 @@ module.exports = class Sale extends Sequelize.Model {
     static associate(db) {
         db.Sale.belongsTo(db.User, { foreignKey: 'writer', targetKey: 'id' });
         db.Sale.belongsTo(db.Category, { foreignKey: 'categoryId', targetKey: 'id' });
+        db.Sale.hasMany(db.Image, { foreignKey: 'saleId', sourceKey: 'id' });
     }
 };
