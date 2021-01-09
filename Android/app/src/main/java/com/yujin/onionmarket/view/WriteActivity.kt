@@ -1,10 +1,14 @@
 package com.yujin.onionmarket.view
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import com.esafirm.imagepicker.features.ImagePicker
@@ -102,10 +106,11 @@ class WriteActivity : AppCompatActivity() {
         }
         names[categories.size] = getString(R.string.category)
 
-//        val adapter = CategoryAdapter(this, R.layout.item_category, names)
+        val adapter = CategoryAdapter(this, R.layout.item_category, names)
 //        val adapter = CategoryAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
-        val adapter = ArrayAdapter(this, R.layout.item_category, names)
+//        val adapter = ArrayAdapter(this, R.layout.item_category, names)
         spinner.adapter = adapter
+        spinner.setSelection(adapter.count)
     }
 
     private fun initContentHint() {
@@ -141,7 +146,12 @@ class WriteActivity : AppCompatActivity() {
         val callPost = writeService.requestWriteSale(token, title, content, price, 0, writer, categoryId)
         callPost.enqueue(object: Callback<WriteSaleResponse> {
             override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
-                postImage(response.body()!!.id)
+                if (images.size > 0) {
+                    postImage(response.body()!!.id)
+                } else {
+                    showToast()
+                    finish()
+                }
 //                showToast()
 //                finish()
             }
@@ -203,17 +213,17 @@ class WriteActivity : AppCompatActivity() {
         Toast.makeText(this, "거래글 올리기 성공", Toast.LENGTH_SHORT).show()
     }
 
-//    class CategoryAdapter(context: Context, layoutResource: Int, categories: Array<String>) : ArrayAdapter<String>(context, layoutResource, categories) {
-//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-//            val view = super.getView(position, convertView, parent)
-//            if (position == count) {
-//                view.findViewById<TextView>(android.R.id.text1).text = ""
-//                view.findViewById<TextView>(android.R.id.text1).hint = getItem(count)
-//            }
-//
-//            return view
-//        }
-//
-//        override fun getCount(): Int = super.getCount() - 1
-//    }
+    class CategoryAdapter(context: Context, layoutResource: Int, categories: Array<String>) : ArrayAdapter<String>(context, layoutResource, categories) {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            val view = super.getView(position, convertView, parent)
+            if (position == count) {
+                view.findViewById<TextView>(android.R.id.text1).text = ""
+                view.findViewById<TextView>(android.R.id.text1).hint = getItem(count)
+            }
+
+            return view
+        }
+
+        override fun getCount(): Int = super.getCount() - 1
+    }
 }
