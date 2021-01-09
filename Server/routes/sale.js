@@ -52,10 +52,9 @@ router.post('/write', passport.authenticate('jwt', { session: false }), async (r
 
 router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.single('img'), async (req, res, next) => {
     try {
-        const { saleId } = req.body
         await Image.create({
             path: req.file.filename,
-            priority: 0,
+            priority: req.query.priority,
             saleId: req.query.saleId
         });
         return res.status(201);

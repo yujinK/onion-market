@@ -167,10 +167,10 @@ class WriteActivity : AppCompatActivity() {
 //            }
 //        })
 
-        for (i in images.indices) {
-            val part = prepareFilePart("img", Uri.parse(images[i].path))
+        for (priority in images.indices) {
+            val part = prepareFilePart("img", Uri.parse(images[priority].path))
             val name = RequestBody.create(MediaType.parse("text/plain"), "img")
-            val callImage = writeService.requestWriteSaleImage(token, saleId, part, name)
+            val callImage = writeService.requestWriteSaleImage(token, saleId, priority, part, name)
             callImage.enqueue(object: Callback<EmptyResponse> {
             override fun onResponse(call: Call<EmptyResponse>, response: Response<EmptyResponse>) {
                 showToast()
