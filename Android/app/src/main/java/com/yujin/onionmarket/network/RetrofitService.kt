@@ -49,6 +49,7 @@ interface RetrofitService {
     @POST("sale/write/image")
     fun requestWriteSaleImage(@Header("authorization") token: String,
                               @Query("saleId") saleId: Int,
+                              @Query("priority") priority: Int,
                               @Part image: MultipartBody.Part,
                               @Part("img") name: RequestBody)
     : Call<EmptyResponse>
