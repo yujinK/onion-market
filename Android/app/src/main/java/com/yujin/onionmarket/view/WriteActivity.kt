@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -14,10 +13,10 @@ import androidx.appcompat.widget.Toolbar
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.Category
 import com.yujin.onionmarket.data.CategoryResponse
-import com.yujin.onionmarket.data.EmptyResponse
 import com.yujin.onionmarket.data.WriteSaleResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
@@ -146,14 +145,14 @@ class WriteActivity : AppCompatActivity() {
         val callPost = writeService.requestWriteSale(token, title, content, price, 0, writer, categoryId)
         callPost.enqueue(object: Callback<WriteSaleResponse> {
             override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
-                if (images.size > 0) {
-                    postImage(response.body()!!.id)
-                } else {
-                    showToast()
-                    finish()
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                    if (images.size > 0) {
+                        postImage(response.body()!!.id)
+                    } else {
+                        showToast()
+                        finish()
+                    }
                 }
-//                showToast()
-//                finish()
             }
 
             override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
@@ -164,42 +163,24 @@ class WriteActivity : AppCompatActivity() {
     
     // 첨부 이미지 업로드
     private fun postImage(saleId: Int) {
-//        val parts = getParts()
-//        val callImage = writeService.requestWriteSaleImage(token, saleId, parts)
-//        callImage.enqueue(object: Callback<EmptyResponse> {
-//            override fun onResponse(call: Call<EmptyResponse>, response: Response<EmptyResponse>) {
-//                showToast()
-//                finish()
-//            }
-//
-//            override fun onFailure(call: Call<EmptyResponse>, t: Throwable) {
-//                Log.e("WirteActivity", "postImage()-[onFailure] 실패 : $t")
-//            }
-//        })
-
-        for (priority in images.indices) {
-            val part = prepareFilePart("img", Uri.parse(images[priority].path))
-            val name = RequestBody.create(MediaType.parse("text/plain"), "img")
-            val callImage = writeService.requestWriteSaleImage(token, saleId, priority, part, name)
-            callImage.enqueue(object: Callback<EmptyResponse> {
-            override fun onResponse(call: Call<EmptyResponse>, response: Response<EmptyResponse>) {
-                showToast()
-                finish()
+        val name = RequestBody.create(MediaType.parse("text/plain"), "img")
+        var part = mutableListOf<MultipartBody.Part>()
+        for (i in images.indices) {
+            part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
+        }
+        val callImage = writeService.requestWriteSaleImage(token, saleId, part, name)
+        callImage.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                    showToast()
+                    finish()
+                }
             }
 
-            override fun onFailure(call: Call<EmptyResponse>, t: Throwable) {
-                Log.e("WirteActivity", "postImage()-[onFailure] 실패 : $t")
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("WriteActivity", "postImage()-[onFailure] 실패 : $t")
             }
         })
-        }
-    }
-
-    private fun getParts() : List<MultipartBody.Part> {
-        var parts = mutableListOf<MultipartBody.Part>()
-        for (i in images.indices) {
-            parts.add(prepareFilePart("image[${i}]", Uri.parse(images[i].path)))
-        }
-        return parts
     }
 
     private fun prepareFilePart(partName: String, fileUri: Uri) : MultipartBody.Part {

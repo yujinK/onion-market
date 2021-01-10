@@ -6,8 +6,6 @@ const fs = require('fs');
 
 const Sale = require('../models/sale');
 const Image = require('../models/image');
-const { isLoggedIn } = require('./middlewares');
-const { route } = require('./auth');
 
 const router = express.Router();
 
@@ -50,43 +48,20 @@ router.post('/write', passport.authenticate('jwt', { session: false }), async (r
     }
 });
 
-router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.single('img'), async (req, res, next) => {
+router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.array('img', 5), async (req, res, next) => {
     try {
-        await Image.create({
-            path: req.file.filename,
-            priority: req.query.priority,
-            saleId: req.query.saleId
-        });
-        return res.status(201);
+        for (var i=0; i<req.files.length; i++) {
+            await Image.create({
+                path: req.files[i].path,
+                priority: i,
+                saleId: req.query.saleId
+            });
+        }
+        return res.status(201).end();
     } catch(error) {
         console.error(error);
         next(error);
     }
 });
-
-
-
-// router.post('/img', isLoggedIn, upload.single('img'), (req, res) => {
-//     console.log(req.file);
-//     res.json({ url: `/img/${req.file.filename}` });
-// });
-
-// const upload2 = multer();
-// router.post('/', isLoggedIn, upload2.none(), async (req, res, next) => {
-//     try {
-//         const post = await Post.create({
-//             title: req.body.title,
-//             content: req.body.content,
-//             price: req.body.price,
-//             priceProposal: req.body.priceProposal,
-//             writer: req.user.id,
-//         });
-
-//         res.status(201).json({});   //TODO: json 수정
-//     } catch (error) {
-//         console.error(error);
-//         next(error);
-//     }
-// });
 
 module.exports = router;

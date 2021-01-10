@@ -13,7 +13,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
-import com.yujin.onionmarket.data.EmptyResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
 import retrofit2.Call
@@ -121,8 +120,8 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
         val password = passwordView.text.toString()
 
         val callUser = signUpService.requestIsSignUp(email)
-        callUser.enqueue(object: Callback<EmptyResponse> {
-            override fun onResponse(call: Call<EmptyResponse>, response: Response<EmptyResponse>) {
+        callUser.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     when (response.code()) {
                         ResponseCode.SUCCESS_GET -> {
@@ -137,7 +136,7 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
                 }
             }
 
-            override fun onFailure(call: Call<EmptyResponse>, t: Throwable) {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e("SignUpInfo", "[onFailure] 실패 : $t")
             }
         })

@@ -10,7 +10,7 @@ interface RetrofitService {
     @GET("auth/isSignUp")
     fun requestIsSignUp(
         @Query("email") email: String
-    ) : Call<EmptyResponse>
+    ) : Call<Void>
 
     @FormUrlEncoded
     @POST("auth/signup")
@@ -49,8 +49,16 @@ interface RetrofitService {
     @POST("sale/write/image")
     fun requestWriteSaleImage(@Header("authorization") token: String,
                               @Query("saleId") saleId: Int,
-                              @Query("priority") priority: Int,
-                              @Part image: MultipartBody.Part,
+                              @Part image: List<MultipartBody.Part>,
                               @Part("img") name: RequestBody)
-    : Call<EmptyResponse>
+            : Call<Void>
+
+//    @Multipart
+//    @POST("sale/write/image")
+//    fun requestWriteSaleImage(@Header("authorization") token: String,
+//                              @Query("saleId") saleId: Int,
+//                              @Query("priority") priority: Int,
+//                              @Part image: MultipartBody.Part,
+//                              @Part("img") name: RequestBody)
+//    : Call<EmptyResponse>
 }
