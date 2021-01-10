@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/iv_sale"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="95dp"
+        android:layout_height="95dp"
         android:src="@drawable/christmas"
         android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,7 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="120dp"/>
+        app:layout_constraintGuide_begin="115dp"/>
 
     <TextView
         android:id="@+id/tv_title"
@@ -31,7 +31,6 @@
         android:layout_height="wrap_content"
         android:textSize="18dp"
         android:textColor="@color/black"
-        android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toRightOf="@id/guideline"
         app:layout_constraintRight_toRightOf="parent"
