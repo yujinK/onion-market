@@ -51,14 +51,10 @@ interface RetrofitService {
                               @Query("saleId") saleId: Int,
                               @Part image: List<MultipartBody.Part>,
                               @Part("img") name: RequestBody)
-            : Call<Void>
+    : Call<Void>
 
-//    @Multipart
-//    @POST("sale/write/image")
-//    fun requestWriteSaleImage(@Header("authorization") token: String,
-//                              @Query("saleId") saleId: Int,
-//                              @Query("priority") priority: Int,
-//                              @Part image: MultipartBody.Part,
-//                              @Part("img") name: RequestBody)
-//    : Call<EmptyResponse>
+    @GET("sale/{locationId}")
+    fun requestReadSales(@Header("authorization") token: String,
+                     @Path("locationId") locationId: Int)
+    : Call<ReadSaleResponse>
 }
