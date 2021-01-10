@@ -3,8 +3,10 @@ package com.yujin.onionmarket
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.view.ReactionView
 
@@ -17,8 +19,13 @@ class SaleAdapter(private val dataSet: List<Sale>) : RecyclerView.Adapter<SaleAd
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val sale = dataSet[position]
         holder.title.text = sale.title
-        //TODO: 대표 사진 썸네일
-        
+
+        if (sale.images.isNotEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(holder.itemView.context.getString(R.string.thumbnail_url) + sale.images[0].path)
+                .into(holder.thumbnail)
+        }
+
         //채팅 아이콘 & 채팅수
         holder.chat.setIconSrc(ReactionView.TYPE_CHAT)
         holder.chat.setCountNum(sale.chatCount)
@@ -31,6 +38,7 @@ class SaleAdapter(private val dataSet: List<Sale>) : RecyclerView.Adapter<SaleAd
     override fun getItemCount(): Int = dataSet.size
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val thumbnail: ImageView = view.findViewById(R.id.iv_sale)
         val title: TextView = view.findViewById(R.id.tv_title)
         val chat: ReactionView = view.findViewById(R.id.v_chat)
         val favorite: ReactionView = view.findViewById(R.id.v_favorite)

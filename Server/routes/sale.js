@@ -88,7 +88,7 @@ router.post('/write/image', passport.authenticate('jwt', { session: false }), up
     }
 });
 
-router.get('/thumbnail/:filename', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get('/thumbnail/:filename', (req, res) => {
     var filePath = "uploads/" + req.params.filename;
     fs.readFile(filePath, function (err, data) {
         if(!err) {
