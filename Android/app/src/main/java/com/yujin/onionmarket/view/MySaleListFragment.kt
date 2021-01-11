@@ -114,7 +114,7 @@ class MySaleFragment(private val position: Int) : Fragment() {
     }
 
     private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(sales, 1)
+        val adapter = SaleAdapter(requireContext(), sales, 1)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }

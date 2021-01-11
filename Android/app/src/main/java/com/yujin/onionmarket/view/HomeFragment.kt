@@ -132,7 +132,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(sales, 0)
+        val adapter = SaleAdapter(requireContext(), sales, 0)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
