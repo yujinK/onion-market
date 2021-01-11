@@ -30,7 +30,7 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-router.get('/:locationId', async (req, res) => {
+router.get('/location/:locationId', async (req, res) => {
     try {
         const sales = await Sale.findAll({
             include: [
@@ -44,7 +44,32 @@ router.get('/:locationId', async (req, res) => {
                 {
                     model: Image
                 }
-            ]
+            ],
+            where: { state: req.query.state }
+        });
+        return res.status(200).json({ sales });
+    } catch(error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const sales = await Sale.findAll({
+            include: [
+                {
+                    model: User,
+                    required: true,
+                    where: {
+                        id: req.params.userId
+                    }
+                },
+                {
+                    model: Image
+                }
+            ],
+            where: { state: req.query.state }
         });
         return res.status(200).json({ sales });
     } catch(error) {

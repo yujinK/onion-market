@@ -35,6 +35,11 @@ module.exports = class Sale extends Sequelize.Model {
                 allowNull: false,
                 defaultValue: 0,
             },
+            state: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: 0,
+            }
         }, {
             sequelize,
             timestamps: true,

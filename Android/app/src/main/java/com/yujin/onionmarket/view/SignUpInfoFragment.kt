@@ -119,7 +119,7 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
         val nick = nickView.text.toString()
         val password = passwordView.text.toString()
 
-        val callUser = signUpService.requestIsSignUp(email)
+        val callUser = signUpService.isSignUp(email)
         callUser.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {

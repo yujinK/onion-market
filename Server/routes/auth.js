@@ -26,7 +26,7 @@ router.post('/signup', isNotLoggedIn, async (req, res, next) => {
         const exUser = await User.findOne({ where: { email: email } });
         if (exUser) {
             // 이미 존재하는 사용자
-            return res.status(409);
+            return res.status(409).end();
         }
         const hash = await bcrypt.hash(password, 12);
         await User.create({

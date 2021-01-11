@@ -13,11 +13,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.data.Location
-import com.yujin.onionmarket.data.User
 import com.yujin.onionmarket.data.UserResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
@@ -66,7 +64,7 @@ class LocationFragment : Fragment(R.layout.fragment_location), OnItemClick {
     }
 
     private fun getAllLocation() {
-        val callLocation = locationService.requestLocation()
+        val callLocation = locationService.getLocation()
         callLocation.enqueue(object: Callback<List<Location>> {
             override fun onResponse(call: Call<List<Location>>, response: Response<List<Location>>) {
                  if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
@@ -101,7 +99,7 @@ class LocationFragment : Fragment(R.layout.fragment_location), OnItemClick {
     // 회원가입 진행
     private fun signUp(email: String?, nick: String?, password: String?, locationId: Int) {
         if (!email.isNullOrEmpty() && !nick.isNullOrEmpty() && !password.isNullOrEmpty()) {
-            val callSignUp = locationService.requestSignUp(email, nick, password, locationId)
+            val callSignUp = locationService.signUp(email, nick, password, locationId)
             callSignUp.enqueue(object: Callback<UserResponse> {
                 override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {

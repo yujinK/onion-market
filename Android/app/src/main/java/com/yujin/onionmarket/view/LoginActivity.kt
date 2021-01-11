@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
         val email = findViewById<TextInputEditText>(R.id.et_email).text.toString()
         val password = findViewById<TextInputEditText>(R.id.et_password).text.toString()
 
-        val callUser = loginService.requestLogin(email, password)
+        val callUser = loginService.login(email, password)
         callUser.enqueue(object: Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {

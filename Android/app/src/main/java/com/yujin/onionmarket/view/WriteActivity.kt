@@ -84,7 +84,7 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun getCategory() {
-        val callCategory = writeService.requestCategory(token)
+        val callCategory = writeService.getCategory(token)
         callCategory.enqueue(object: Callback<CategoryResponse> {
             override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
                 val categories = response.body()!!.category
@@ -142,7 +142,7 @@ class WriteActivity : AppCompatActivity() {
         val price = findViewById<EditText>(R.id.et_price).text.toString().toInt()
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
-        val callPost = writeService.requestWriteSale(token, title, content, price, 0, writer, categoryId)
+        val callPost = writeService.writeSale(token, title, content, price, 0, writer, categoryId)
         callPost.enqueue(object: Callback<WriteSaleResponse> {
             override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
@@ -168,7 +168,7 @@ class WriteActivity : AppCompatActivity() {
         for (i in images.indices) {
             part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
         }
-        val callImage = writeService.requestWriteSaleImage(token, saleId, part, name)
+        val callImage = writeService.writeSaleImage(token, saleId, part, name)
         callImage.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
