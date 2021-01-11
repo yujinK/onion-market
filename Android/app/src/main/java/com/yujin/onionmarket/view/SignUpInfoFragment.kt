@@ -152,7 +152,7 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
             setFragmentResult("requestInfo", bundle)
 
             setReorderingAllowed(true)
-            add<LocationFragment>(R.id.container)
+            add<LocationFragment>(R.id.user_container)
         }
     }
 

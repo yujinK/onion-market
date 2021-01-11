@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
-                add<HomeFragment>(R.id.container)
+                add<HomeFragment>(R.id.user_container)
             }
         }
 
@@ -56,42 +56,42 @@ class MainActivity : AppCompatActivity() {
     //홈
     private fun moveHome() {
         supportFragmentManager.commit {
-            replace<HomeFragment>(R.id.container)
+            replace<HomeFragment>(R.id.user_container)
         }
     }
     
     //동네생활
     private fun moveCityLife() {
         supportFragmentManager.commit {
-            replace<CityLifeFragment>(R.id.container)
+            replace<CityLifeFragment>(R.id.user_container)
         }
     }
     
     //내 근처
     private fun moveNearMe() {
         supportFragmentManager.commit {
-            replace<NearMeFragment>(R.id.container)
+            replace<NearMeFragment>(R.id.user_container)
         }
     }
     
     //채팅
     private fun moveChat() {
         supportFragmentManager.commit {
-            replace<ChatFragment>(R.id.container)
+            replace<ChatFragment>(R.id.user_container)
         }
     }
     
     //나의 양파
     private fun moveAccount() {
         supportFragmentManager.commit {
-            replace<AccountFragment>(R.id.container)
+            replace<AccountFragment>(R.id.user_container)
         }
     }
 
     // Fragment 이동
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.commit {
-            replace(R.id.container, fragment)
+            replace(R.id.user_container, fragment)
         }
     }
 }

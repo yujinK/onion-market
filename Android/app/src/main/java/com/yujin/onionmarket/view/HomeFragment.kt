@@ -71,11 +71,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initLocationView(view: View) {
         locationView = view.findViewById(R.id.location)
-        val location = Util.readUser(requireActivity())!!.location[0].dongmyeon
-        locationView.setLocation(location)
-        locationView.setOnClickListener {
-            setDropDown()
-            isOpen = !isOpen
+        val user = Util.readUser(requireActivity())
+        if (user != null) {
+            val location = Util.readUser(requireActivity())!!.location[0].dongmyeon
+            locationView.setLocation(location)
+            locationView.setOnClickListener {
+                setDropDown()
+                isOpen = !isOpen
+            }
         }
     }
 
@@ -86,20 +89,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun readSales() {
         val token = Util.readToken(requireActivity())
-        val locationId = Util.readUser(requireActivity())!!.location[0].id
-        val callSales = homeService.requestReadSales(token, locationId)
-        callSales.enqueue(object: Callback<ReadSaleResponse> {
-            override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
-                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
-                    val sales = response.body()!!.sales
-                    setSaleAdapter(sales)
+        if (token != "") {
+            val locationId = Util.readUser(requireActivity())!!.location[0].id
+            val callSales = homeService.requestReadSales(token, locationId)
+            callSales.enqueue(object : Callback<ReadSaleResponse> {
+                override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                        val sales = response.body()!!.sales
+                        setSaleAdapter(sales)
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<ReadSaleResponse>, t: Throwable) {
-                Log.e("HomeFragment", "readSales() / $t")
-            }
-        })
+                override fun onFailure(call: Call<ReadSaleResponse>, t: Throwable) {
+                    Log.e("HomeFragment", "readSales() / $t")
+                }
+            })
+        }
     }
 
     private fun setSaleAdapter(sales: List<Sale>) {
