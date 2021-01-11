@@ -30,7 +30,7 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-router.get('/:locationId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.get('/:locationId', async (req, res) => {
     try {
         const sales = await Sale.findAll({
             include: [
