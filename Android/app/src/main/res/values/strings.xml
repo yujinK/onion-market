@@ -43,6 +43,9 @@
 
     <!-- Settings -->
     <string name="logout">로그아웃</string>
+    <string name="require_login_message">회원가입 또는 로그인후 이용할 수 있습니다.</string>
+    <string name="login_sign_up">로그인/가입</string>
+    <string name="cancel">취소</string>
 
     <!-- Location -->
 

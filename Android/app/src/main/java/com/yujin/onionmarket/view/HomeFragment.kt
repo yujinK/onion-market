@@ -1,5 +1,6 @@
 package com.yujin.onionmarket.view
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -38,6 +39,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(view)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == RequestCode.LOGIN) {
+            if (resultCode == RESULT_OK) {
+                init(requireView())
+            }
+        }
     }
 
     private fun init(view: View) {
@@ -84,7 +93,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initFAB(view: View) {
         val writeSale = view.findViewById<FloatingActionButton>(R.id.btn_write_sale)
-        writeSale.setOnClickListener { moveWriteSale() }
+        writeSale.setOnClickListener {
+            val user = Util.readUser(requireActivity())
+            if (user == null) {
+                // Login 안 한 유저
+                Util.requireLogin(requireContext()) { _, _ -> moveLogin() }
+            } else {
+                // Login 한 유저
+                moveWriteSale()
+            }
+        }
+    }
+
+    // 로그인으로 이동
+    private fun moveLogin() {
+        val intent = Intent(activity, LoginActivity::class.java)
+        startActivityForResult(intent, RequestCode.LOGIN)
     }
 
     private fun readSales() {

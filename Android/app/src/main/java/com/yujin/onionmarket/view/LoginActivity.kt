@@ -83,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
     private fun failLogin() {
         MaterialAlertDialogBuilder(this)
                 .setMessage(getString(R.string.fail_login_message))
-                .setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
                     
                 }
                 .show()
