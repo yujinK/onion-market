@@ -115,7 +115,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val token = Util.readToken(requireActivity())
         if (token != "") {
             val locationId = Util.readUser(requireActivity())!!.location[0].id
-            val callSales = homeService.requestReadSales(token, locationId)
+            val callSales = homeService.readSaleWithLocation(token, locationId, 0)
             callSales.enqueue(object : Callback<ReadSaleResponse> {
                 override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
@@ -132,7 +132,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(sales)
+        val adapter = SaleAdapter(sales, 0)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
