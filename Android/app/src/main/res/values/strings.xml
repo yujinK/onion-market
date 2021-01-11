@@ -22,6 +22,10 @@
     <string name="buy_list">구매내역</string>
     <string name="favorite_list">관심목록</string>
 
+    <string name="sale_ing">판매중</string>
+    <string name="sale_done">거래완료</string>
+    <string name="sale_hide">숨김</string>
+
     <!-- Login -->
     <string name="login_en">Login</string>
     <string name="email">Email</string>
