@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const User = require('../models/user');
 const Sale = require('../models/sale');
 const Image = require('../models/image');
 
@@ -29,6 +30,54 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+router.get('/location/:locationId', async (req, res) => {
+    try {
+        const sales = await Sale.findAll({
+            include: [
+                {
+                    model: User,
+                    required: true,
+                    where: {
+                        locationId: req.params.locationId
+                    }
+                },
+                {
+                    model: Image
+                }
+            ],
+            where: { state: req.query.state }
+        });
+        return res.status(200).json({ sales });
+    } catch(error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const sales = await Sale.findAll({
+            include: [
+                {
+                    model: User,
+                    required: true,
+                    where: {
+                        id: req.params.userId
+                    }
+                },
+                {
+                    model: Image
+                }
+            ],
+            where: { state: req.query.state }
+        });
+        return res.status(200).json({ sales });
+    } catch(error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 router.post('/write', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     const { title, content, price, priceProposal, writer, categoryId } = req.body;
     try {
@@ -52,7 +101,7 @@ router.post('/write/image', passport.authenticate('jwt', { session: false }), up
     try {
         for (var i=0; i<req.files.length; i++) {
             await Image.create({
-                path: req.files[i].path,
+                path: req.files[i].filename,
                 priority: i,
                 saleId: req.query.saleId
             });
@@ -62,6 +111,17 @@ router.post('/write/image', passport.authenticate('jwt', { session: false }), up
         console.error(error);
         next(error);
     }
+});
+
+router.get('/thumbnail/:filename', (req, res) => {
+    var filePath = "uploads/" + req.params.filename;
+    fs.readFile(filePath, function (err, data) {
+        if(!err) {
+            return res.status(200).send(data);
+        } else {
+            console.error(err);
+        }
+    })
 });
 
 module.exports = router;

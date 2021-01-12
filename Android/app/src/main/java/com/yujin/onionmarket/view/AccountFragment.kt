@@ -1,9 +1,11 @@
 package com.yujin.onionmarket.view
 
 import android.app.Activity.RESULT_OK
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -37,6 +39,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     private fun init(view: View) {
         initView(view)
+        initToolbar(view)
+        initMyPage(view)
         setAccount()
     }
 
@@ -45,7 +49,9 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         loginView.setOnClickListener { moveLogin() }
         profileView = view.findViewById(R.id.profile_container)
         profileView.setOnClickListener { moveProfile() }
+    }
 
+    private fun initToolbar(view: View) {
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
         toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
@@ -56,6 +62,15 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 else -> { super.onOptionsItemSelected(it) }
             }
         }
+    }
+
+    private fun initMyPage(view: View) {
+        val saleList = view.findViewById<LinearLayout>(R.id.ll_sale)
+        saleList.setOnClickListener { moveSaleList() }
+        val buyList = view.findViewById<LinearLayout>(R.id.ll_buy)
+        buyList.setOnClickListener { moveBuyList() }
+        val favoriteList = view.findViewById<LinearLayout>(R.id.ll_favorite)
+        favoriteList.setOnClickListener { moveFavoriteList() }
     }
 
     // 계정 setting
@@ -113,5 +128,30 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     // 설정으로 이동
     private fun moveSettings() {
         (requireActivity() as MainActivity).replaceFragment(SettingsFragment())
+    }
+    
+    // 판매내역으로 이동
+    private fun moveSaleList() {
+        val user = Util.readUser(requireActivity())
+        if (user == null) {
+            // Login 안 한 유저
+            Util.requireLogin(requireContext()) { _, _ ->
+                moveLogin()
+            }
+        } else {
+            // Login 한 유저
+            val intent = Intent(activity, SaleListActivity::class.java)
+            startActivity(intent)
+        }
+    }
+    
+    // 구매내역으로 이동
+    private fun moveBuyList() {
+        
+    }
+    
+    // 관심목록으로 이동
+    private fun moveFavoriteList() {
+        
     }
 }
