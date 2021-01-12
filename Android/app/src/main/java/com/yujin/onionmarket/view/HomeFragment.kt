@@ -70,7 +70,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun initRecyclerView(view: View) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.rv_sale)
+        recyclerView = view.findViewById(R.id.rv_sale)
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val dividerItemDecoration = DividerItemDecoration(recyclerView.context, layoutManager.orientation)
         recyclerView.layoutManager = layoutManager

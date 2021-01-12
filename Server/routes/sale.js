@@ -97,7 +97,7 @@ router.post('/write', passport.authenticate('jwt', { session: false }), async (r
     }
 });
 
-router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.array('img', 5), async (req, res, next) => {
+router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), async (req, res, next) => {
     try {
         for (var i=0; i<req.files.length; i++) {
             await Image.create({

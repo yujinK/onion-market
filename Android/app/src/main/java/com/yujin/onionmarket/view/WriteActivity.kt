@@ -6,10 +6,14 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esafirm.imagepicker.model.Image
 import com.yujin.onionmarket.R
@@ -36,6 +40,9 @@ class WriteActivity : AppCompatActivity() {
     private lateinit var token: String
 
     private lateinit var spinner: Spinner
+    private lateinit var rvImage: RecyclerView
+    private lateinit var imageAdapter: ImageAdapter
+    private lateinit var tvImageCount: TextView
 
     private var images = mutableListOf<Image>()
 
@@ -48,6 +55,7 @@ class WriteActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             images = ImagePicker.getImages(data)
+            addImageThumbnail()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -106,8 +114,6 @@ class WriteActivity : AppCompatActivity() {
         names[categories.size] = getString(R.string.category)
 
         val adapter = CategoryAdapter(this, R.layout.item_category, names)
-//        val adapter = CategoryAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
-//        val adapter = ArrayAdapter(this, R.layout.item_category, names)
         spinner.adapter = adapter
         spinner.setSelection(adapter.count)
     }
@@ -120,15 +126,28 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun initAddImage() {
-        val addImageView = findViewById<LinearLayout>(R.id.ll_add_image)
+        tvImageCount = findViewById(R.id.tv_image_count)
+
+        val addImageView = findViewById<ConstraintLayout>(R.id.cl_add_image)
         addImageView.setOnClickListener {
             addImage()
         }
+
+        rvImage = findViewById(R.id.rv_image)
+        imageAdapter = ImageAdapter(this, mutableListOf())
+        rvImage.adapter = imageAdapter
     }
 
     private fun addImage() {
         ImagePicker.create(this)
             .start()
+    }
+    
+    // 추가된 사진 thumbnail 추가
+    private fun addImageThumbnail() {
+        for (i in images.indices) {
+            imageAdapter.addItem(images[i])
+        }
     }
 
     private fun writeSale() {
@@ -206,5 +225,52 @@ class WriteActivity : AppCompatActivity() {
         }
 
         override fun getCount(): Int = super.getCount() - 1
+    }
+
+    class ImageAdapter(private val context: Context, private val dataSet: MutableList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
+            return ViewHolder(view).listen { position, type ->
+                removeImage(position)
+            }
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            Glide.with(context)
+                    .load(dataSet[position].uri)
+                    .into(holder.image)
+        }
+
+        override fun getItemCount(): Int = dataSet.size
+
+        fun addItem(item: Image) {
+            dataSet.add(item)
+            (context as WriteActivity).tvImageCount.text = dataSet.size.toString()
+            context.tvImageCount.setTextColor(context.getColor(R.color.greenery))
+            notifyDataSetChanged()
+        }
+
+        private fun removeImage(position: Int) {
+            dataSet.removeAt(position)
+            if (dataSet.size > 0) {
+                (context as WriteActivity).tvImageCount.text = dataSet.size.toString()
+                context.tvImageCount.setTextColor(context.getColor(R.color.greenery))
+            } else {
+                (context as WriteActivity).tvImageCount.text = "0"
+                context.tvImageCount.setTextColor(context.getColor(R.color.gray))
+            }
+            notifyDataSetChanged()
+        }
+
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val image: ImageView = view.findViewById(R.id.iv_image)
+        }
+
+        private fun <T: RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
+            itemView.setOnClickListener {
+                event.invoke(adapterPosition, itemViewType)
+            }
+            return this
+        }
     }
 }
