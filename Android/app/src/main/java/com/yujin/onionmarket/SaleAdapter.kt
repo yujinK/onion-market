@@ -59,7 +59,7 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val thumbnail: ImageView = view.findViewById(R.id.iv_sale)
+        val thumbnail: ImageView = view.findViewById(R.id.iv_thumbnail)
         val title: TextView = view.findViewById(R.id.tv_title)
         val chat: ReactionView = view.findViewById(R.id.v_chat)
         val favorite: ReactionView = view.findViewById(R.id.v_favorite)
