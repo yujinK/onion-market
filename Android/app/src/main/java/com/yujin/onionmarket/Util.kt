@@ -2,8 +2,12 @@ package com.yujin.onionmarket
 
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.GsonBuilder
 import com.yujin.onionmarket.data.User
+import com.yujin.onionmarket.view.LoginActivity
 
 class Util {
     companion object {
@@ -44,6 +48,17 @@ class Util {
                 clear()
                 commit()
             }
+        }
+
+        // 로그인 요청 Dialog
+        fun requireLogin(context: Context, positiveListener: DialogInterface.OnClickListener) {
+            MaterialAlertDialogBuilder(context)
+                .setMessage(context.getString(R.string.require_login_message))
+                .setPositiveButton(context.getString(R.string.login_sign_up), positiveListener)
+                .setNegativeButton(context.getString(R.string.cancel)) { _, _ ->
+
+                }
+                .show()
         }
     }
 }

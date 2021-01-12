@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.SaleListActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        app:title="@string/sale_list"
+        app:titleTextAppearance="@style/toolbarTitleStyle"
+        app:navigationIcon="?homeAsUpIndicator"
+        app:contentInsetStartWithNavigation="0dp" />
+
+    <fragment
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:name="com.yujin.onionmarket.view.MySaleListFragment"/>
+
+</LinearLayout>

@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OnionMarket"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.WriteActivity"></activity>
+        <activity android:name=".view.SaleListActivity"></activity>
+        <activity android:name=".view.WriteActivity" />
         <activity android:name=".view.SignUpActivity" />
         <activity android:name=".view.LoginActivity" />
         <activity android:name=".view.MainActivity">

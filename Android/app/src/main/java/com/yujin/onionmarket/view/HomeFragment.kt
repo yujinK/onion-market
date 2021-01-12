@@ -1,5 +1,6 @@
 package com.yujin.onionmarket.view
 
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -40,6 +41,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         init(view)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == RequestCode.LOGIN) {
+            if (resultCode == RESULT_OK) {
+                init(requireView())
+            }
+        }
+    }
+
     private fun init(view: View) {
         initRetrofit()
         initSwipeRefreshLayout(view)
@@ -71,39 +80,59 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initLocationView(view: View) {
         locationView = view.findViewById(R.id.location)
-        val location = Util.readUser(requireActivity())!!.location[0].dongmyeon
-        locationView.setLocation(location)
-        locationView.setOnClickListener {
-            setDropDown()
-            isOpen = !isOpen
+        val user = Util.readUser(requireActivity())
+        if (user != null) {
+            val location = Util.readUser(requireActivity())!!.location[0].dongmyeon
+            locationView.setLocation(location)
+            locationView.setOnClickListener {
+                setDropDown()
+                isOpen = !isOpen
+            }
         }
     }
 
     private fun initFAB(view: View) {
         val writeSale = view.findViewById<FloatingActionButton>(R.id.btn_write_sale)
-        writeSale.setOnClickListener { moveWriteSale() }
+        writeSale.setOnClickListener {
+            val user = Util.readUser(requireActivity())
+            if (user == null) {
+                // Login 안 한 유저
+                Util.requireLogin(requireContext()) { _, _ -> moveLogin() }
+            } else {
+                // Login 한 유저
+                moveWriteSale()
+            }
+        }
+    }
+
+    // 로그인으로 이동
+    private fun moveLogin() {
+        val intent = Intent(activity, LoginActivity::class.java)
+        startActivityForResult(intent, RequestCode.LOGIN)
     }
 
     private fun readSales() {
         val token = Util.readToken(requireActivity())
-        val locationId = Util.readUser(requireActivity())!!.location[0].id
-        val callSales = homeService.requestReadSales(token, locationId)
-        callSales.enqueue(object: Callback<ReadSaleResponse> {
-            override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
-                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
-                    val sales = response.body()!!.sales
-                    setSaleAdapter(sales)
+        if (token != "") {
+            val locationId = Util.readUser(requireActivity())!!.location[0].id
+            val callSales = homeService.readSaleWithLocation(token, locationId, 0)
+            callSales.enqueue(object : Callback<ReadSaleResponse> {
+                override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                        val sales = response.body()!!.sales
+                        setSaleAdapter(sales)
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<ReadSaleResponse>, t: Throwable) {
-                Log.e("HomeFragment", "readSales() / $t")
-            }
-        })
+                override fun onFailure(call: Call<ReadSaleResponse>, t: Throwable) {
+                    Log.e("HomeFragment", "readSales() / $t")
+                }
+            })
+        }
     }
 
     private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(sales)
+        val adapter = SaleAdapter(requireContext(), sales, 0)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
