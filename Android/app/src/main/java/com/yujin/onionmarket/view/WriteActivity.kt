@@ -148,9 +148,6 @@ class WriteActivity : AppCompatActivity() {
         for (i in images.indices) {
             imageAdapter.addItem(images[i])
         }
-        tvImageCount.text = images.size.toString()
-        tvImageCount.setTextColor(getColor(R.color.greenery))
-        imageAdapter.notifyDataSetChanged()
     }
 
     private fun writeSale() {
@@ -233,7 +230,9 @@ class WriteActivity : AppCompatActivity() {
     class ImageAdapter(private val context: Context, private val dataSet: MutableList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
-            return ViewHolder(view)
+            return ViewHolder(view).listen { position, type ->
+                removeImage(position)
+            }
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -246,10 +245,32 @@ class WriteActivity : AppCompatActivity() {
 
         fun addItem(item: Image) {
             dataSet.add(item)
+            (context as WriteActivity).tvImageCount.text = dataSet.size.toString()
+            context.tvImageCount.setTextColor(context.getColor(R.color.greenery))
+            notifyDataSetChanged()
+        }
+
+        private fun removeImage(position: Int) {
+            dataSet.removeAt(position)
+            if (dataSet.size > 0) {
+                (context as WriteActivity).tvImageCount.text = dataSet.size.toString()
+                context.tvImageCount.setTextColor(context.getColor(R.color.greenery))
+            } else {
+                (context as WriteActivity).tvImageCount.text = "0"
+                context.tvImageCount.setTextColor(context.getColor(R.color.gray))
+            }
+            notifyDataSetChanged()
         }
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val image: ImageView = view.findViewById(R.id.iv_image)
+        }
+
+        private fun <T: RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
+            itemView.setOnClickListener {
+                event.invoke(adapterPosition, itemViewType)
+            }
+            return this
         }
     }
 }
