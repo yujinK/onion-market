@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.yujin.onionmarket.data.Sale
+import com.yujin.onionmarket.view.HomeFragment
 import com.yujin.onionmarket.view.ManageSaleSheet
 import com.yujin.onionmarket.view.ReactionView
 
@@ -19,7 +20,9 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_sale, parent, false)
         return ViewHolder(view).listen { pos, type ->
-            showManage()
+            when(state) {
+                1 -> showManage()
+            }
         }
     }
 
