@@ -87,6 +87,11 @@ class MySaleFragment(private val position: Int) : Fragment() {
         readSale()
     }
 
+    override fun onResume() {
+        super.onResume()
+        readSale()
+    }
+
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
         saleService = retrofit.create(RetrofitService::class.java)

@@ -48,13 +48,14 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
             1 -> holder.more.visibility = View.VISIBLE
         }
 
+        holder.more.tag = position
         holder.more.setOnClickListener(this)
     }
 
     override fun getItemCount(): Int = dataSet.size
 
-    private fun showManage() {
-        val manageSheet = ManageSaleSheet()
+    private fun showManage(sale: Sale, position: Int) {
+        val manageSheet = ManageSaleSheet(sale, position)
         val fm = (context as AppCompatActivity).supportFragmentManager
         manageSheet.show(fm, "showManage()")
     }
@@ -68,8 +69,11 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
     }
 
     override fun onClick(v: View?) {
-        when (v!!.id) {
-            R.id.ib_more -> showManage()
+        when(v!!.id) {
+            R.id.ib_more -> {
+                val position = v!!.tag as Int
+                showManage(dataSet[position], position)
+            }
         }
     }
 }

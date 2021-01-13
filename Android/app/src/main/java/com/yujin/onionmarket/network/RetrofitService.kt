@@ -65,4 +65,10 @@ interface RetrofitService {
                          @Path("userId") userId: Int,
                          @Query("state") state: Int)
     : Call<ReadSaleResponse>
+
+    @FormUrlEncoded
+    @POST("sale/delete")
+    fun deleteSale(@Header("authorization") token: String,
+                   @Field("id") id: Int)
+    : Call<Void>
 }

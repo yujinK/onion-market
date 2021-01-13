@@ -124,4 +124,17 @@ router.get('/thumbnail/:filename', (req, res) => {
     })
 });
 
+router.post('/delete', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    try {
+        await Sale.destroy({
+            where: { id: req.body.id }
+        }).then(function(result) {
+            return res.status(201).end();
+        });
+    } catch(error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 module.exports = router;

@@ -9,6 +9,7 @@ import android.view.*
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,8 +34,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var popupWindow: PopupWindow
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: SaleAdapter
 
     private var isOpen = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setFragmentResultListener("position") { key, bundle ->
+            val position = bundle.getInt("position")
+            adapter.notifyItemRemoved(position)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -132,7 +142,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(requireContext(), sales, 0)
+        adapter = SaleAdapter(requireContext(), sales, 0)
         recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
