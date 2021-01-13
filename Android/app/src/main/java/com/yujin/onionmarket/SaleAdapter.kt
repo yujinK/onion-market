@@ -28,10 +28,12 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
         val sale = dataSet[position]
         holder.title.text = sale.title
 
-        if (sale.images.isNotEmpty()) {
+        if (sale.images.isEmpty()) {
+            holder.thumbnail.setImageDrawable(context.getDrawable(R.drawable.ic_mood))
+        } else {
             Glide.with(holder.itemView.context)
-                .load(holder.itemView.context.getString(R.string.thumbnail_url) + sale.images[0].path)
-                .into(holder.thumbnail)
+                    .load(holder.itemView.context.getString(R.string.thumbnail_url) + sale.images[0].path)
+                    .into(holder.thumbnail)
         }
 
         //채팅 아이콘 & 채팅수
