@@ -1,12 +1,14 @@
 package com.yujin.onionmarket
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -16,14 +18,10 @@ import com.yujin.onionmarket.view.ManageSaleSheet
 import com.yujin.onionmarket.view.ReactionView
 
 // state: 0(HomeFragment), 1(MySaleFragment)
-class SaleAdapter(private val context: Context, private val dataSet: List<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
+class SaleAdapter(private val context: Context, private val dataSet: List<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>(), View.OnClickListener {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_sale, parent, false)
-        return ViewHolder(view).listen { pos, type ->
-            when(state) {
-                1 -> showManage()
-            }
-        }
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -46,11 +44,11 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
 
         //게시글 관리 설정
         when(state) {
-            0 -> {
-                holder.more.visibility = View.GONE
-            }
+            0 -> holder.more.visibility = View.GONE
             1 -> holder.more.visibility = View.VISIBLE
         }
+
+        holder.more.setOnClickListener(this)
     }
 
     override fun getItemCount(): Int = dataSet.size
@@ -69,10 +67,9 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
         val more: ImageButton = view.findViewById(R.id.ib_more)
     }
 
-    private fun <T: RecyclerView.ViewHolder> T.listen(event: (position: Int, type: Int) -> Unit): T {
-        itemView.setOnClickListener {
-            event.invoke(adapterPosition, itemViewType)
+    override fun onClick(v: View?) {
+        when (v!!.id) {
+            R.id.ib_more -> showManage()
         }
-        return this
     }
 }

@@ -71,5 +71,5 @@
     <string name="category">카테고리</string>
 
     <!-- Sale -->
-    <string name="thumbnail_url">http://172.30.1.4:3000/sale/thumbnail/</string>
+    <string name="thumbnail_url">http://172.30.1.43:3000/sale/thumbnail/</string>
 </resources>
