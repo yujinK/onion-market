@@ -45,7 +45,10 @@ router.get('/location/:locationId', async (req, res) => {
                     model: Image
                 }
             ],
-            where: { state: req.query.state }
+            where: { state: req.query.state },
+            order: [
+                ['id', 'DESC']
+            ]
         });
         return res.status(200).json({ sales });
     } catch(error) {
@@ -69,7 +72,10 @@ router.get('/user/:userId', async (req, res) => {
                     model: Image
                 }
             ],
-            where: { state: req.query.state }
+            where: { state: req.query.state },
+            order: [
+                ['id', 'DESC']
+            ]
         });
         return res.status(200).json({ sales });
     } catch(error) {
