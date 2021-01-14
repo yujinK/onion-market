@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ReadSaleResponse(
     @SerializedName("sales")
-    var sales: List<Sale>
+    var sales: ArrayList<Sale>
 )
 
 data class Sale(

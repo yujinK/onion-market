@@ -38,14 +38,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var isOpen = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setFragmentResultListener("position") { key, bundle ->
-            val position = bundle.getInt("position")
-            adapter.notifyItemRemoved(position)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(view)
@@ -129,7 +121,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             callSales.enqueue(object : Callback<ReadSaleResponse> {
                 override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
-                        val sales = response.body()!!.sales
+                        val sales = response.body()?.sales
                         setSaleAdapter(sales)
                     }
                 }
@@ -141,10 +133,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun setSaleAdapter(sales: List<Sale>) {
-        adapter = SaleAdapter(requireContext(), sales, 0)
-        recyclerView.adapter = adapter
-        adapter.notifyDataSetChanged()
+    private fun setSaleAdapter(sales: ArrayList<Sale>?) {
+        if (sales != null) {
+            adapter = SaleAdapter(requireContext(), sales, 0)
+            recyclerView.adapter = adapter
+            adapter.notifyDataSetChanged()
+        }
     }
 
     // 글쓰기 Activity 이동

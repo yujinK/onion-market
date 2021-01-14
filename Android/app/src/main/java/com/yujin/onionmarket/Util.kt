@@ -30,6 +30,11 @@ class Util {
             return sharedPref.getString("token", "")!!
         }
 
+        fun readToken(context: Context) : String {
+            val sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            return sharedPref.getString("token", "")!!
+        }
+
         // 유저 정보 저장
         fun saveUserInfo(activity: Activity, user: User, token: String) {
             val strUser = gson.toJson(user, User::class.java)

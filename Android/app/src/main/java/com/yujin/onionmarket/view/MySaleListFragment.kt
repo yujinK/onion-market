@@ -5,7 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,6 +55,11 @@ class MySaleListFragment : Fragment() {
             }
         }.attach()
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("onResume()", "MySaleListFragment onResume()")
+    }
 }
 
 class SaleListAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
@@ -87,11 +95,6 @@ class MySaleFragment(private val position: Int) : Fragment() {
         readSale()
     }
 
-    override fun onResume() {
-        super.onResume()
-        readSale()
-    }
-
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
         saleService = retrofit.create(RetrofitService::class.java)
@@ -106,7 +109,7 @@ class MySaleFragment(private val position: Int) : Fragment() {
             callSales.enqueue(object: Callback<ReadSaleResponse> {
                 override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
-                        val sales = response.body()!!.sales
+                        val sales = response.body()?.sales
                         setSaleAdapter(sales)
                     }
                 }
@@ -118,9 +121,11 @@ class MySaleFragment(private val position: Int) : Fragment() {
         }
     }
 
-    private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(requireContext(), sales, 1)
-        recyclerView.adapter = adapter
-        adapter.notifyDataSetChanged()
+    private fun setSaleAdapter(sales: ArrayList<Sale>?) {
+        if (sales != null) {
+            val adapter = SaleAdapter(requireContext(), sales, 1)
+            recyclerView.adapter = adapter
+            adapter.notifyDataSetChanged()
+        }
     }
 }

@@ -8,20 +8,35 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yujin.onionmarket.data.Sale
-import com.yujin.onionmarket.view.HomeFragment
-import com.yujin.onionmarket.view.ManageSaleSheet
+import com.yujin.onionmarket.network.RetrofitClient
+import com.yujin.onionmarket.network.RetrofitService
 import com.yujin.onionmarket.view.ReactionView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 // state: 0(HomeFragment), 1(MySaleFragment)
-class SaleAdapter(private val context: Context, private val dataSet: List<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>(), View.OnClickListener {
+class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
+    private lateinit var retrofit: Retrofit
+    private lateinit var manageService: RetrofitService
+
+    private lateinit var manageSheet: BottomSheetDialog
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_sale, parent, false)
+        initRetrofit()
         return ViewHolder(view)
+    }
+
+    private fun initRetrofit() {
+        retrofit = RetrofitClient.getInstance()
+        manageService = retrofit.create(RetrofitService::class.java)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -51,15 +66,54 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
         }
 
         holder.more.tag = position
-        holder.more.setOnClickListener(this)
+        holder.more.setOnClickListener {
+            showManage(position)
+        }
     }
 
     override fun getItemCount(): Int = dataSet.size
 
-    private fun showManage(sale: Sale, position: Int) {
-        val manageSheet = ManageSaleSheet(sale, position)
-        val fm = (context as AppCompatActivity).supportFragmentManager
-        manageSheet.show(fm, "showManage()")
+    private fun showManage(position: Int) {
+        manageSheet = BottomSheetDialog(context)
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_manage_sale, null, false)
+        manageSheet.setContentView(view)
+        manageSheet.show()
+        manageSheet.findViewById<TextView>(R.id.tv_delete)?.setOnClickListener { alertDelete(position) }
+    }
+
+    private fun alertDelete(position: Int) {
+        MaterialAlertDialogBuilder(context)
+                .setMessage(context.getString(R.string.delete_message))
+                .setPositiveButton(context.getString(R.string.delete)) { _, _ ->
+                    deleteSale(position)
+                }
+                .setNegativeButton(context.getString(R.string.cancel)) { _, _ ->
+
+                }
+                .show()
+    }
+
+    private fun deleteSale(position: Int) {
+        val token = Util.readToken(context)
+        val callDelete = manageService.deleteSale(token, dataSet[position].id)
+        callDelete.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                    manageSheet.dismiss()
+                    removeAt(position)
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("ManageSaleSheet", "delete(): $t")
+            }
+        })
+    }
+
+    private fun removeAt(position: Int) {
+        dataSet.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemChanged(position)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -68,14 +122,5 @@ class SaleAdapter(private val context: Context, private val dataSet: List<Sale>,
         val chat: ReactionView = view.findViewById(R.id.v_chat)
         val favorite: ReactionView = view.findViewById(R.id.v_favorite)
         val more: ImageButton = view.findViewById(R.id.ib_more)
-    }
-
-    override fun onClick(v: View?) {
-        when(v!!.id) {
-            R.id.ib_more -> {
-                val position = v!!.tag as Int
-                showManage(dataSet[position], position)
-            }
-        }
     }
 }
