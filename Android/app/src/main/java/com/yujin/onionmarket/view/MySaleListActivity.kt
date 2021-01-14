@@ -7,12 +7,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.yujin.onionmarket.R
 
-class SaleListActivity : AppCompatActivity() {
-    private lateinit var viewPager: ViewPager2
-
+class MySaleListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sale_list)
+        setContentView(R.layout.activity_my_sale_list)
         init()
     }
 

@@ -1,7 +1,6 @@
 package com.yujin.onionmarket.view
 
 import android.app.Activity.RESULT_OK
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -140,7 +139,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             }
         } else {
             // Login 한 유저
-            val intent = Intent(activity, SaleListActivity::class.java)
+            val intent = Intent(activity, MySaleListActivity::class.java)
             startActivity(intent)
         }
     }
