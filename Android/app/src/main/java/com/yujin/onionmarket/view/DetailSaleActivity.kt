@@ -4,7 +4,6 @@ import android.app.Activity
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -21,7 +20,7 @@ class DetailSaleActivity : AppCompatActivity() {
 
     private fun init() {
         makeStatusBarTransparent()
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.ll_detail)) { _, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.cl_detail)) { _, insets ->
             findViewById<Toolbar>(R.id.toolbar).setMarginTop(insets.systemWindowInsetTop)
             insets.consumeSystemWindowInsets()
         }
