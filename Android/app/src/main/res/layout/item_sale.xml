@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_sale"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="20dp"
@@ -50,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="12dp"
-        android:background="@drawable/ic_more_vert"
+        android:background="@drawable/ic_more_vert_black"
         app:layout_constraintTop_toTopOf="@id/tv_title"
         app:layout_constraintRight_toRightOf="parent"/>
 

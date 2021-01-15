@@ -1,6 +1,7 @@
 package com.yujin.onionmarket
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -15,6 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.view.DetailSaleActivity
 import com.yujin.onionmarket.view.ReactionView
 import retrofit2.Call
 import retrofit2.Callback
@@ -69,6 +72,10 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         holder.more.setOnClickListener {
             showManage(position)
         }
+
+        holder.container.setOnClickListener {
+            moveDetail()
+        }
     }
 
     override fun getItemCount(): Int = dataSet.size
@@ -79,6 +86,11 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         manageSheet.setContentView(view)
         manageSheet.show()
         manageSheet.findViewById<TextView>(R.id.tv_delete)?.setOnClickListener { alertDelete(position) }
+    }
+
+    private fun moveDetail() {
+        val intent = Intent(context, DetailSaleActivity::class.java)
+        context.startActivity(intent)
     }
 
     private fun alertDelete(position: Int) {
@@ -117,6 +129,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val container: ConstraintLayout = view.findViewById(R.id.ll_sale)
         val thumbnail: ImageView = view.findViewById(R.id.iv_thumbnail)
         val title: TextView = view.findViewById(R.id.tv_title)
         val chat: ReactionView = view.findViewById(R.id.v_chat)

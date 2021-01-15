@@ -76,4 +76,8 @@
     <!-- Manage Sale -->
     <string name="delete_message">게시글을 정말 삭제 하시겠습니까?</string>
     <string name="delete">삭제</string>
+
+    <!-- Detail Sale -->
+    <string name="share">공유하기</string>
+    <string name="sub_menu">하위메뉴</string>
 </resources>
