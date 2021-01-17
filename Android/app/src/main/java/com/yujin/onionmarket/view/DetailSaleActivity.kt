@@ -1,9 +1,12 @@
 package com.yujin.onionmarket.view
 
 import android.app.Activity
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -11,15 +14,21 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.asksira.loopingviewpager.LoopingViewPager
 import com.asksira.loopingviewpager.indicator.CustomShapePagerIndicator
 import com.bumptech.glide.Glide
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.Image
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.data.User
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DetailSaleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,17 +81,19 @@ class DetailSaleActivity : AppCompatActivity() {
             val indicator = findViewById<CustomShapePagerIndicator>(R.id.indicator)
             indicator.highlighterViewDelegate = {
                 val highlighter = View(this)
-                highlighter.layoutParams = FrameLayout.LayoutParams(16, 2)
-                highlighter.setBackgroundColor(getColor(R.color.white))
+                highlighter.layoutParams = FrameLayout.LayoutParams(16.dp(), 2.dp())
+                highlighter.setBackgroundColor(getColorCompat(R.color.white))
                 highlighter
             }
             indicator.unselectedViewDelegate = {
                 val unselected = View(this)
-                unselected.layoutParams = LinearLayout.LayoutParams(16, 2)
-                unselected.setBackgroundColor(getColor(R.color.white))
+                unselected.layoutParams = LinearLayout.LayoutParams(16.dp(), 2.dp())
+                unselected.setBackgroundColor(getColorCompat(R.color.white))
                 unselected.alpha = 0.4f
                 unselected
             }
+            loopingViewPager.onIndicatorProgress = { selectingPosition, progress -> indicator.onPageScrolled(selectingPosition, progress) }
+            indicator.updateIndicatorCounts(loopingViewPager.indicatorCount)
         }
     }
 
@@ -91,7 +102,7 @@ class DetailSaleActivity : AppCompatActivity() {
         title.text = sale?.title
 
         val categoryAndDate = findViewById<TextView>(R.id.tv_category_and_date)
-        val calDate = "10분 전"   // TODO: 시간 계산 함수 개발
+        val calDate = Util.timeDifferentiation(sale?.createdAt)   // TODO: 시간 계산 함수 개발
         categoryAndDate.text = getString(R.string.category_and_date, sale?.category?.name, calDate)
 
         val content = findViewById<TextView>(R.id.tv_content)
@@ -101,7 +112,7 @@ class DetailSaleActivity : AppCompatActivity() {
         chatFavView.text = getString(R.string.chat_fav_view, sale?.chatCount, sale?.favoriteCount, sale?.viewCount)
 
         val price = findViewById<TextView>(R.id.tv_price)
-        price.text = sale?.price.toString() // TODO: 가격 콤마 처리
+        price.text = getString(R.string.price_won, NumberFormat.getNumberInstance(Locale.KOREA).format(sale?.price))
 
         val proposal = findViewById<TextView>(R.id.tv_proposal)
         if (sale?.priceProposal == true) {
@@ -124,5 +135,13 @@ class DetailSaleActivity : AppCompatActivity() {
         val menuLayoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
         menuLayoutParams.setMargins(0, marginTop, 0, 0)
         this.layoutParams = menuLayoutParams
+    }
+
+    private fun Int.dp(): Int {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics).toInt()
+    }
+
+    private fun Context.getColorCompat(colorRes: Int): Int {
+        return ContextCompat.getColor(this, colorRes)
     }
 }
