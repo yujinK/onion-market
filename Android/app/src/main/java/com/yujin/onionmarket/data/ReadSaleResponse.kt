@@ -4,6 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class ReadSaleResponse(
     @SerializedName("sales")
@@ -35,6 +37,9 @@ data class Sale(
 
     @SerializedName("viewCount")
     var viewCount: Int = 0,
+
+    @SerializedName("createdAt")
+    var createdAt: String,
 
     @SerializedName("Category")
     var category: Category,
