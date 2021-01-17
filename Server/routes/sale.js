@@ -3,11 +3,14 @@ const passport = require('passport');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const async = require('async');
 
 const User = require('../models/user');
 const Sale = require('../models/sale');
 const Image = require('../models/image');
-const Location = require('../models/location')
+const Location = require('../models/location');
+const Category = require('../models/category');
+const { response } = require('express');
 
 const router = express.Router();
 
@@ -41,12 +44,15 @@ router.get('/location/:locationId', async (req, res) => {
                     where: {
                         locationId: req.params.locationId
                     },
-                    include: [{ // TODO: Location join
+                    include: [{
                         model: Location,
                         where: {
                             id: req.params.locationId
                         }
                     }]
+                },
+                {
+                    model: Category
                 },
                 {
                     model: Image
@@ -126,16 +132,64 @@ router.post('/write/image', passport.authenticate('jwt', { session: false }), up
     }
 });
 
-router.get('/thumbnail/:filename', (req, res) => {
-    var filePath = "uploads/" + req.params.filename;
-    fs.readFile(filePath, function (err, data) {
-        if(!err) {
-            return res.status(200).send(data);
-        } else {
-            console.error(err);
-        }
-    })
-});
+// router.get('/thumbnail/:saleId', async (req, res) => {
+//     try {
+//         var thumbnail = await Image.findOne({
+//             where: {
+//                 saleId: req.params.saleId,
+//                 priority: 0
+//             }
+//         });
+
+//         var filePath = "uploads/" + thumbnail.path;
+//         fs.readFile(filePath, function (err, data) {
+//             if(!err) {
+//                 return res.status(200).send(data);
+//             } else {
+//                 console.error(err);
+//             }
+//         })
+//     } catch(error) {
+//         console.error(error);
+//     }
+// });
+
+// router.get('/image/:saleId', async (req, res) => {
+//     try {
+//         await Image.findAll({
+//             where: {
+//                 saleId: req.params.saleId
+//             },
+//             order: [
+//                 ['priority', 'ASC']
+//             ]
+//         }).then(function(result) {
+//             let images = [];
+//             var promises = result.map(function(_path) {
+//                 return new Promise(function(_path, resolve, reject) {
+//                     fs.readFile("uploads/" + _path.path, function(err, data) {
+//                         if (err) {
+//                             console.error(err);
+//                         }
+//                     });
+//                 }).then((image) => {
+//                     images.push(image);
+//                 });
+//             });
+    
+//             Promise.all(promises).then(() => {
+//                 res.status(200).json(images);
+//             });
+//         });
+//     } catch(error) {
+//         console.error(error);
+//     }
+// });
+
+// router.get('/image/:filename', (req, res) => {
+//     var filePath = "uploads/" + req.params.filename;
+//     fs.readFile(filepa)
+// });
 
 router.post('/delete', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
