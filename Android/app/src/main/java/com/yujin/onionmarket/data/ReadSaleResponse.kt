@@ -36,12 +36,12 @@ data class Sale(
     @SerializedName("viewCount")
     var viewCount: Int = 0,
 
-    @SerializedName("categoryId")
-    var categoryId: Int = -1,
+    @SerializedName("Category")
+    var category: Category,
 
     @SerializedName("User")
     var user: User,
 
     @SerializedName("Images")
-    var images: List<Image> = listOf()
+    var images: ArrayList<Image> = arrayListOf()
 ) : Parcelable

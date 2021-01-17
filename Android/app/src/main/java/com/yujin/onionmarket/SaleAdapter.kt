@@ -50,7 +50,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
             holder.thumbnail.setImageDrawable(context.getDrawable(R.drawable.ic_mood))
         } else {
             Glide.with(holder.itemView.context)
-                    .load(holder.itemView.context.getString(R.string.thumbnail_url) + sale.images[0].path)
+                    .load(holder.itemView.context.getString(R.string.img_url) + sale.images[0].path)
                     .into(holder.thumbnail)
         }
 

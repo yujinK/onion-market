@@ -39,9 +39,20 @@
                 android:layout_height="300dp"
                 app:isInfinite="false"
                 app:autoScroll="false"
+                android:clipToPadding="false"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"/>
+
+            <com.asksira.loopingviewpager.indicator.CustomShapePagerIndicator
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/pager_image"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:indicator_spacing="4dp"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_user"
@@ -120,7 +131,7 @@
                     tools:text="가방"/>
 
                 <TextView
-                    android:id="@+id/tv_category_n_date"
+                    android:id="@+id/tv_category_and_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -129,7 +140,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_title"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    tools:text="@string/category_n_date" />
+                    tools:text="@string/category_and_date" />
 
                 <TextView
                     android:id="@+id/tv_content"
@@ -138,7 +149,7 @@
                     android:layout_marginTop="15dp"
                     android:textSize="18dp"
                     android:textColor="@color/black"
-                    app:layout_constraintTop_toBottomOf="@id/tv_category_n_date"
+                    app:layout_constraintTop_toBottomOf="@id/tv_category_and_date"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     tools:text="10000원 새거임 직거래 네고 가능"/>

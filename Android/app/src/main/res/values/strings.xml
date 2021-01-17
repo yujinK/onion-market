@@ -71,8 +71,8 @@
     <string name="category">카테고리</string>
 
     <!-- Sale -->
-    <string name="thumbnail_url">http://172.30.1.43:3000/sale/thumbnail/</string>
-    <string name="category_n_date">%1$s · %2$s</string>
+    <string name="img_url">http://172.30.1.43:3000/img/</string>
+    <string name="category_and_date">%1$s · %2$s</string>
 
     <!-- Manage Sale -->
     <string name="delete_message">게시글을 정말 삭제 하시겠습니까?</string>
@@ -82,6 +82,7 @@
     <string name="share">공유하기</string>
     <string name="sub_menu">하위메뉴</string>
     <string name="chat_fav_view">채팅 %1$d개 · 관심 %2$d · 조회 %3$d</string>
+    <string name="ok_proposal">가격제안가능</string>
     <string name="no_proposal">가격제안불가</string>
     <string name="chat_buy">채팅으로 거래하기</string>
 </resources>
