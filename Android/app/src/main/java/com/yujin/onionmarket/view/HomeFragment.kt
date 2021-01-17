@@ -84,7 +84,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         locationView = view.findViewById(R.id.location)
         val user = Util.readUser(requireActivity())
         if (user != null) {
-            val location = Util.readUser(requireActivity())!!.location[0].dongmyeon
+            val location = Util.readUser(requireActivity())?.location?.dongmyeon
             locationView.setLocation(location)
             locationView.setOnClickListener {
                 setDropDown()
@@ -115,8 +115,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun readSales() {
         val token = Util.readToken(requireActivity())
-        if (token != "") {
-            val locationId = Util.readUser(requireActivity())!!.location[0].id
+        val locationId = Util.readUser(requireActivity())?.location?.id
+        if (token != "" && locationId != null) {
             val callSales = homeService.readSaleWithLocation(token, locationId, 0)
             callSales.enqueue(object : Callback<ReadSaleResponse> {
                 override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {

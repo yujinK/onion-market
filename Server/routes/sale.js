@@ -7,6 +7,7 @@ const fs = require('fs');
 const User = require('../models/user');
 const Sale = require('../models/sale');
 const Image = require('../models/image');
+const Location = require('../models/location')
 
 const router = express.Router();
 
@@ -39,7 +40,13 @@ router.get('/location/:locationId', async (req, res) => {
                     required: true,
                     where: {
                         locationId: req.params.locationId
-                    }
+                    },
+                    include: [{ // TODO: Location join
+                        model: Location,
+                        where: {
+                            id: req.params.locationId
+                        }
+                    }]
                 },
                 {
                     model: Image

@@ -28,10 +28,12 @@ class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(con
         closeAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_close_location)
     }
 
-    fun setLocation(location: String) {
-        myLocation.text = location
-        invalidate()
-        requestLayout()
+    fun setLocation(location: String?) {
+        if (!location.isNullOrEmpty()) {
+            myLocation.text = location
+            invalidate()
+            requestLayout()
+        }
     }
 
     fun setOpen() {

@@ -95,7 +95,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     private fun setUserInfo(user: User) {
         profileView.getChildAt(1).findViewById<TextView>(R.id.tv_nick).text = user.nick
-        profileView.getChildAt(2).findViewById<TextView>(R.id.tv_location).text = user.location[0].dongmyeon
+        profileView.getChildAt(2).findViewById<TextView>(R.id.tv_location).text = user.location.dongmyeon
         
         //TODO: profile 사진 설정
     }

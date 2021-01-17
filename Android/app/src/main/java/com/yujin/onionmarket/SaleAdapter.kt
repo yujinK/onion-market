@@ -74,7 +74,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         }
 
         holder.container.setOnClickListener {
-            moveDetail()
+            moveDetail(position)
         }
     }
 
@@ -88,8 +88,9 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         manageSheet.findViewById<TextView>(R.id.tv_delete)?.setOnClickListener { alertDelete(position) }
     }
 
-    private fun moveDetail() {
+    private fun moveDetail(position: Int) {
         val intent = Intent(context, DetailSaleActivity::class.java)
+        intent.putExtra("sale", dataSet[position])
         context.startActivity(intent)
     }
 

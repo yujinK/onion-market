@@ -120,7 +120,7 @@ class WriteActivity : AppCompatActivity() {
 
     private fun initContentHint() {
         val user = Util.readUser(this)
-        val dongmyeon = user!!.location[0].dongmyeon
+        val dongmyeon = user!!.location.dongmyeon
         val content = findViewById<EditText>(R.id.et_content)
         content.hint = getString(R.string.content_hint, dongmyeon)
     }

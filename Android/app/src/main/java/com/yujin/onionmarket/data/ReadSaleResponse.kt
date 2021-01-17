@@ -1,12 +1,16 @@
 package com.yujin.onionmarket.data
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class ReadSaleResponse(
     @SerializedName("sales")
     var sales: ArrayList<Sale>
 )
 
+@Parcelize
 data class Sale(
     @SerializedName("id")
     var id: Int = -1,
@@ -39,5 +43,5 @@ data class Sale(
     var user: User,
 
     @SerializedName("Images")
-    var images: List<Image>
-)
+    var images: List<Image> = listOf()
+) : Parcelable

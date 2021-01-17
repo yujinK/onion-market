@@ -4,12 +4,14 @@ import android.app.Activity
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.data.Sale
 
 class DetailSaleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +26,13 @@ class DetailSaleActivity : AppCompatActivity() {
             findViewById<Toolbar>(R.id.toolbar).setMarginTop(insets.systemWindowInsetTop)
             insets.consumeSystemWindowInsets()
         }
+
+        getSale()
+    }
+
+    private fun getSale() {
+        val sale = intent.getParcelableExtra<Sale>("sale")
+        Log.d("sale", sale.toString())
     }
 
     private fun Activity.makeStatusBarTransparent() {
@@ -35,7 +44,7 @@ class DetailSaleActivity : AppCompatActivity() {
         }
     }
 
-    fun View.setMarginTop(marginTop: Int) {
+    private fun View.setMarginTop(marginTop: Int) {
         val menuLayoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
         menuLayoutParams.setMargins(0, marginTop, 0, 0)
         this.layoutParams = menuLayoutParams
