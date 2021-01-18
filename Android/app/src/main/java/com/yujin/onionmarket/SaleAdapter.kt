@@ -66,12 +66,16 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         holder.price.text = context.getString(R.string.price_won, NumberFormat.getNumberInstance(Locale.KOREA).format(sale?.price))
 
         //채팅 아이콘 & 채팅수
-        holder.chat.setIconSrc(ReactionView.TYPE_CHAT)
-        holder.chat.setCountNum(sale.chatCount)
+        if (sale.chatCount > 0) {
+            holder.chat.setIconSrc(ReactionView.TYPE_CHAT)
+            holder.chat.setCountNum(sale.chatCount)
+        }
         
         //관심 아이콘 & 관심수
-        holder.favorite.setIconSrc(ReactionView.TYPE_FAVORITE)
-        holder.favorite.setCountNum(sale.favoriteCount)
+        if (sale.favoriteCount > 0) {
+            holder.favorite.setIconSrc(ReactionView.TYPE_FAVORITE)
+            holder.favorite.setCountNum(sale.favoriteCount)
+        }
 
         //게시글 관리 설정
         when(state) {
