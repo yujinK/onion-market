@@ -79,7 +79,10 @@ router.get('/user/:userId', async (req, res) => {
                     required: true,
                     where: {
                         id: req.params.userId
-                    }
+                    },
+                    include: [{
+                        model: Location
+                    }]
                 },
                 {
                     model: Image
