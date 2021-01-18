@@ -39,7 +39,7 @@ data class Sale(
     var viewCount: Int = 0,
 
     @SerializedName("createdAt")
-    var createdAt: String,
+    var createdAt: String = "",
 
     @SerializedName("Category")
     var category: Category,

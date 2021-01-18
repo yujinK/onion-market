@@ -2,6 +2,7 @@ package com.yujin.onionmarket
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
 import com.yujin.onionmarket.view.DetailSaleActivity
 import com.yujin.onionmarket.view.ReactionView
+import com.yujin.onionmarket.view.WriteActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -100,11 +102,24 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_manage_sale, null, false)
         manageSheet.setContentView(view)
         manageSheet.show()
-        manageSheet.findViewById<TextView>(R.id.tv_delete)?.setOnClickListener { alertDelete(position) }
+        manageSheet.findViewById<TextView>(R.id.tv_edit)?.setOnClickListener {
+            manageSheet.dismiss()
+            editSale(position)
+        }
+        manageSheet.findViewById<TextView>(R.id.tv_delete)?.setOnClickListener {
+            manageSheet.dismiss()
+            alertDelete(position)
+        }
     }
 
     private fun moveDetail(position: Int) {
         val intent = Intent(context, DetailSaleActivity::class.java)
+        intent.putExtra("sale", dataSet[position])
+        context.startActivity(intent)
+    }
+
+    private fun editSale(position: Int) {
+        val intent = Intent(context, WriteActivity::class.java)
         intent.putExtra("sale", dataSet[position])
         context.startActivity(intent)
     }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.Category
 import com.yujin.onionmarket.data.CategoryResponse
+import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.data.WriteSaleResponse
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
@@ -62,11 +64,16 @@ class WriteActivity : AppCompatActivity() {
 
     private fun init() {
         token = Util.readToken(this)
+        val sale = intent.getParcelableExtra<Sale>("sale")
         initRetrofit()
         initToolbar()
-        initCategory()
+        initCategory(sale?.category?.id)
         initContentHint()
         initAddImage()
+
+        if (sale != null) {
+            setEdit(sale)
+        }
     }
 
     private fun initRetrofit() {
@@ -87,16 +94,21 @@ class WriteActivity : AppCompatActivity() {
         }
     }
 
-    private fun initCategory() {
-        getCategory()
+    private fun initCategory(categoryId: Int?) {
+        getCategory(categoryId)
     }
 
-    private fun getCategory() {
+    private fun getCategory(categoryId: Int?) {
         val callCategory = writeService.getCategory(token)
         callCategory.enqueue(object: Callback<CategoryResponse> {
             override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
                 val categories = response.body()!!.category
                 setCategory(categories)
+
+                // edit 모드일 경우
+                if (categoryId != null) {
+                    spinner.setSelection(categoryId)
+                }
             }
 
             override fun onFailure(call: Call<CategoryResponse>, t: Throwable) {
@@ -150,6 +162,38 @@ class WriteActivity : AppCompatActivity() {
         }
     }
 
+    // 수정모드
+    private fun setEdit(sale: Sale) {
+        val title = findViewById<EditText>(R.id.et_title)
+        title.text = sale.title.toEditable()
+        
+        val price = findViewById<EditText>(R.id.et_price)
+        price.text = sale.price.toString().toEditable()
+        val won = findViewById<TextView>(R.id.tv_won)
+        won.setTextColor(getColor(R.color.black))
+
+        val ivProposal = findViewById<ImageView>(R.id.iv_proposal)
+        val tvProposal = findViewById<TextView>(R.id.tv_proposal)
+        if (sale.priceProposal) {
+            ivProposal.isSelected = true
+            tvProposal.setTextColor(getColor(R.color.black))
+        } else {
+            ivProposal.isSelected = false
+            tvProposal.setTextColor(getColor(R.color.divider_gray))
+        }
+
+        val content = findViewById<EditText>(R.id.et_content)
+        content.text = sale.content.toEditable()
+
+        //TODO: image
+        for (saleImage in sale.images) {
+            images.add(Image(-1, saleImage.path, saleImage.path))
+        }
+        addImageThumbnail()
+    }
+
+    private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
     private fun writeSale() {
         postContent()
     }
@@ -161,6 +205,7 @@ class WriteActivity : AppCompatActivity() {
         val price = findViewById<EditText>(R.id.et_price).text.toString().toInt()
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
+        //TODO: 가격제안 수정
         val callPost = writeService.writeSale(token, title, content, price, 0, writer, categoryId)
         callPost.enqueue(object: Callback<WriteSaleResponse> {
             override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
@@ -236,9 +281,15 @@ class WriteActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            Glide.with(context)
-                    .load(dataSet[position].uri)
-                    .into(holder.image)
+            if (dataSet[position].id == -1L) {
+                Glide.with(context)
+                        .load(context.getString(R.string.img_url) + dataSet[position].path)
+                        .into(holder.image)
+            } else {
+                Glide.with(context)
+                        .load(dataSet[position].uri)
+                        .into(holder.image)
+            }
         }
 
         override fun getItemCount(): Int = dataSet.size
