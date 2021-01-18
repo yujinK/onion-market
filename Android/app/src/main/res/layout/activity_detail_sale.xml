@@ -140,7 +140,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_title"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    tools:text="@string/category_and_date" />
+                    tools:text="@string/str_dot_str" />
 
                 <TextView
                     android:id="@+id/tv_content"

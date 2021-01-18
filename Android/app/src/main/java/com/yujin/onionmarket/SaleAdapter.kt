@@ -23,6 +23,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 // state: 0(HomeFragment), 1(MySaleFragment)
 class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
@@ -53,6 +56,14 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
                     .load(holder.itemView.context.getString(R.string.img_url) + sale.images[0].path)
                     .into(holder.thumbnail)
         }
+
+        //지역 & 시간
+        val location = "${dataSet[position].user.location.sigun} ${dataSet[position].user.location.dongmyeon} ${dataSet[position].user.location.li}"
+        val timeDiff = Util.timeDifferentiation(dataSet[position].createdAt)
+        holder.information.text = context.getString(R.string.str_dot_str, location, timeDiff)
+
+        //가격
+        holder.price.text = context.getString(R.string.price_won, NumberFormat.getNumberInstance(Locale.KOREA).format(sale?.price))
 
         //채팅 아이콘 & 채팅수
         holder.chat.setIconSrc(ReactionView.TYPE_CHAT)
@@ -133,6 +144,8 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
         val container: ConstraintLayout = view.findViewById(R.id.ll_sale)
         val thumbnail: ImageView = view.findViewById(R.id.iv_thumbnail)
         val title: TextView = view.findViewById(R.id.tv_title)
+        val information: TextView = view.findViewById(R.id.tv_information)
+        val price: TextView = view.findViewById(R.id.tv_price)
         val chat: ReactionView = view.findViewById(R.id.v_chat)
         val favorite: ReactionView = view.findViewById(R.id.v_favorite)
         val more: ImageButton = view.findViewById(R.id.ib_more)

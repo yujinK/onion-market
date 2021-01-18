@@ -72,7 +72,7 @@
 
     <!-- Sale -->
     <string name="img_url">http://172.30.1.43:3000/img/</string>
-    <string name="category_and_date">%1$s · %2$s</string>
+    <string name="str_dot_str">%1$s · %2$s</string>
     <string name="price_won">%1$s원</string>
 
     <!-- Manage Sale -->
@@ -86,4 +86,7 @@
     <string name="ok_proposal">가격제안가능</string>
     <string name="no_proposal">가격제안불가</string>
     <string name="chat_buy">채팅으로 거래하기</string>
+
+    <!-- message -->
+    <string name="server_connect_message">서버와의 통신에 문제가 있습니다. 관리자에게 문의해주세요.</string>
 </resources>

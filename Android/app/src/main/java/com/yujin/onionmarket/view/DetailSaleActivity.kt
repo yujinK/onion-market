@@ -14,7 +14,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.ColorRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -103,7 +102,7 @@ class DetailSaleActivity : AppCompatActivity() {
 
         val categoryAndDate = findViewById<TextView>(R.id.tv_category_and_date)
         val calDate = Util.timeDifferentiation(sale?.createdAt)   // TODO: 시간 계산 함수 개발
-        categoryAndDate.text = getString(R.string.category_and_date, sale?.category?.name, calDate)
+        categoryAndDate.text = getString(R.string.str_dot_str, sale?.category?.name, calDate)
 
         val content = findViewById<TextView>(R.id.tv_content)
         content.text = sale?.content
