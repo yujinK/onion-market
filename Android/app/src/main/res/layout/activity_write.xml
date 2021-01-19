@@ -185,6 +185,7 @@
             app:layout_constraintLeft_toRightOf="@id/tv_won"/>
         
         <LinearLayout
+            android:id="@+id/ll_proposal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
