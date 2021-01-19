@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -87,7 +88,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val location = Util.readUser(requireActivity())?.location?.dongmyeon
             locationView.setLocation(location)
             locationView.setOnClickListener {
-                setDropDown()
+                setDropDown(location)
                 isOpen = !isOpen
             }
         }
@@ -148,19 +149,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     // Toolbar 지역
-    private fun setDropDown() {
+    private fun setDropDown(location: String?) {
         if (!isOpen) {
             // 메뉴 Open
-            open()
+            open(location)
         } else {
             // 메뉴 Close
             close()
         }
     }
 
-    private fun open() {
+    private fun open(location: String?) {
         locationView.setOpen()
-        setPopupWindow()
+        setPopupWindow(location)
     }
 
     private fun close() {
@@ -169,26 +170,29 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     // PopupWindow 지역
-    private fun setPopupWindow() {
-        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val customView = inflater.inflate(R.layout.view_popup_location, null)
-        popupWindow  = PopupWindow(
-                customView,
-                600,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        popupWindow.elevation = 10.0f
-        popupWindow.showAsDropDown(locationView, 0, -30)
-        popupWindow.setTouchInterceptor { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_OUTSIDE -> {
-                    close()
-                    true
+    private fun setPopupWindow(location: String?) {
+        if (location != null) {
+            val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val customView = inflater.inflate(R.layout.view_popup_location, null)
+            customView.findViewById<TextView>(R.id.tv_popup_location).text = location
+            popupWindow = PopupWindow(
+                    customView,
+                    600,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            popupWindow.elevation = 10.0f
+            popupWindow.showAsDropDown(locationView, 0, -30)
+            popupWindow.setTouchInterceptor { v, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_OUTSIDE -> {
+                        close()
+                        true
+                    }
+                    else -> false
                 }
-                else -> false
             }
+            popupWindow.isOutsideTouchable = true
         }
-        popupWindow.isOutsideTouchable = true
     }
 
     // SwipeRefreshLayout
