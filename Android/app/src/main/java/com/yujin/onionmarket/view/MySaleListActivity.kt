@@ -2,6 +2,7 @@ package com.yujin.onionmarket.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -15,5 +16,7 @@ class MySaleListActivity : AppCompatActivity() {
     }
 
     private fun init() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.setNavigationOnClickListener { finish() }
     }
 }

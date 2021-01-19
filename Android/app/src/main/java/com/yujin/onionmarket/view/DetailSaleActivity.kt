@@ -38,10 +38,12 @@ class DetailSaleActivity : AppCompatActivity() {
 
     private fun init() {
         makeStatusBarTransparent()
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.cl_detail)) { _, insets ->
-            findViewById<Toolbar>(R.id.toolbar).setMarginTop(insets.systemWindowInsetTop)
+            toolbar.setMarginTop(insets.systemWindowInsetTop)
             insets.consumeSystemWindowInsets()
         }
+        toolbar.setNavigationOnClickListener { finish() }
 
         setView()
     }
