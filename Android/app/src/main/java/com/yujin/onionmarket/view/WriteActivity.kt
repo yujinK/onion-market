@@ -46,6 +46,8 @@ class WriteActivity : AppCompatActivity() {
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var tvImageCount: TextView
 
+    private var isProposal: Boolean = false
+
     private var images = mutableListOf<Image>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +70,7 @@ class WriteActivity : AppCompatActivity() {
         initRetrofit()
         initToolbar()
         initCategory(sale?.category?.id)
+        initProposal()
         initContentHint()
         initAddImage()
 
@@ -128,6 +131,27 @@ class WriteActivity : AppCompatActivity() {
         val adapter = CategoryAdapter(this, R.layout.item_category, names)
         spinner.adapter = adapter
         spinner.setSelection(adapter.count)
+    }
+
+    private fun initProposal() {
+        val proposal = findViewById<LinearLayout>(R.id.ll_proposal)
+        proposal.setOnClickListener {
+            isProposal = !isProposal
+            setProposal(isProposal)
+        }
+    }
+
+    private fun setProposal(state: Boolean) {
+        val ivProposal = findViewById<ImageView>(R.id.iv_proposal)
+        val tvProposal = findViewById<TextView>(R.id.tv_proposal)
+        if (state) {
+            // 가격제안 받기
+            ivProposal.isSelected = true
+            tvProposal.setTextColor(getColor(R.color.black))
+        } else {
+            ivProposal.isSelected = false
+            tvProposal.setTextColor(getColor(R.color.divider_gray))
+        }
     }
 
     private fun initContentHint() {
@@ -205,8 +229,8 @@ class WriteActivity : AppCompatActivity() {
         val price = findViewById<EditText>(R.id.et_price).text.toString().toInt()
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
-        //TODO: 가격제안 수정
-        val callPost = writeService.writeSale(token, title, content, price, 0, writer, categoryId)
+        var proposal = if (isProposal) { 1 } else { 0 }
+        val callPost = writeService.writeSale(token, title, content, price, proposal, writer, categoryId)
         callPost.enqueue(object: Callback<WriteSaleResponse> {
             override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
