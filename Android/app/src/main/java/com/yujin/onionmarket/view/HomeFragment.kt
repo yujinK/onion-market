@@ -51,17 +51,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    private val loginContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+        if (result?.resultCode == RESULT_OK) {
+            init(requireView())
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(view)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RequestCode.LOGIN) {
-            if (resultCode == RESULT_OK) {
-                init(requireView())
-            }
-        }
     }
 
     private fun init(view: View) {
@@ -123,7 +121,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // 로그인으로 이동
     private fun moveLogin() {
         val intent = Intent(activity, LoginActivity::class.java)
-        startActivityForResult(intent, RequestCode.LOGIN)
+        loginContract.launch(intent)
     }
 
     private fun readSales() {
