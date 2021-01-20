@@ -1,5 +1,6 @@
 package com.yujin.onionmarket.view
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,9 @@ import android.view.*
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -25,6 +29,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import java.lang.Boolean.TRUE
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var retrofit: Retrofit
@@ -38,6 +43,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var adapter: SaleAdapter
 
     private var isOpen = false
+
+    // 게시글 작성 후
+    private val writeContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+        if (result?.resultCode == RESULT_OK) {
+            readSales()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -145,7 +157,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // 글쓰기 Activity 이동
     private fun moveWriteSale() {
         val intent = Intent(activity, WriteActivity::class.java)
-        startActivity(intent)
+        writeContract.launch(intent)
     }
 
     // Toolbar 지역
@@ -197,7 +209,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     // SwipeRefreshLayout
     private fun refresh() {
-        Toast.makeText(requireContext(), "refresh!!!", Toast.LENGTH_SHORT).show()
+        readSales()
         swipeRefreshLayout.isRefreshing = false
     }
 }

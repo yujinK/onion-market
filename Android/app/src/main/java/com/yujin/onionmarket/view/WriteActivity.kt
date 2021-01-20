@@ -47,6 +47,7 @@ class WriteActivity : AppCompatActivity() {
     private lateinit var tvImageCount: TextView
 
     private var isProposal: Boolean = false
+    private var editSale: Sale? = null
 
     private var images = mutableListOf<Image>()
 
@@ -66,16 +67,16 @@ class WriteActivity : AppCompatActivity() {
 
     private fun init() {
         token = Util.readToken(this)
-        val sale = intent.getParcelableExtra<Sale>("sale")
+        editSale = intent.getParcelableExtra("sale")
         initRetrofit()
         initToolbar()
-        initCategory(sale?.category?.id)
+        initCategory(editSale?.category?.id)
         initProposal()
         initContentHint()
         initAddImage()
 
-        if (sale != null) {
-            setEdit(sale)
+        if (editSale != null) {
+            setEdit()
         }
     }
 
@@ -89,7 +90,7 @@ class WriteActivity : AppCompatActivity() {
         toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.finish -> {
-                    writeSale()
+                    postContent()
                     true
                 }
                 else -> { super.onOptionsItemSelected(it) }
@@ -175,8 +176,7 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun addImage() {
-        ImagePicker.create(this)
-            .start()
+        ImagePicker.create(this).start()
     }
     
     // 추가된 사진 thumbnail 추가
@@ -187,18 +187,18 @@ class WriteActivity : AppCompatActivity() {
     }
 
     // 수정모드
-    private fun setEdit(sale: Sale) {
+    private fun setEdit() {
         val title = findViewById<EditText>(R.id.et_title)
-        title.text = sale.title.toEditable()
+        title.text = editSale!!.title.toEditable()
         
         val price = findViewById<EditText>(R.id.et_price)
-        price.text = sale.price.toString().toEditable()
+        price.text = editSale!!.price.toString().toEditable()
         val won = findViewById<TextView>(R.id.tv_won)
         won.setTextColor(getColor(R.color.black))
 
         val ivProposal = findViewById<ImageView>(R.id.iv_proposal)
         val tvProposal = findViewById<TextView>(R.id.tv_proposal)
-        if (sale.priceProposal) {
+        if (editSale!!.priceProposal) {
             ivProposal.isSelected = true
             tvProposal.setTextColor(getColor(R.color.black))
         } else {
@@ -207,10 +207,11 @@ class WriteActivity : AppCompatActivity() {
         }
 
         val content = findViewById<EditText>(R.id.et_content)
-        content.text = sale.content.toEditable()
+        content.text = editSale!!.content.toEditable()
 
         //TODO: image
-        for (saleImage in sale.images) {
+        val editImages = editSale!!.images
+        for (saleImage in editImages) {
             images.add(Image(-1, saleImage.path, saleImage.path))
         }
         addImageThumbnail()
@@ -218,10 +219,6 @@ class WriteActivity : AppCompatActivity() {
 
     private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
-    private fun writeSale() {
-        postContent()
-    }
-    
     // 게시글 업로드
     private fun postContent() {
         val title = findViewById<EditText>(R.id.et_title).text.toString()
@@ -230,23 +227,47 @@ class WriteActivity : AppCompatActivity() {
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
         var proposal = if (isProposal) { 1 } else { 0 }
-        val callPost = writeService.writeSale(token, title, content, price, proposal, writer, categoryId)
-        callPost.enqueue(object: Callback<WriteSaleResponse> {
-            override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
-                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
-                    if (images.size > 0) {
-                        postImage(response.body()!!.id)
-                    } else {
-                        showToast()
-                        finish()
+
+        // 게시글 등록
+        if (editSale == null) {
+            val callPost = writeService.writeSale(token, title, content, price, proposal, writer, categoryId)
+            callPost.enqueue(object : Callback<WriteSaleResponse> {
+                override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        if (images.size > 0) {
+                            postImage(response.body()!!.id)
+                        } else {
+                            showToast()
+                            setResult(RESULT_OK)
+                            finish()
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
-                Log.e("WirteActivity", "writeSale()-[onFailure] 실패 : $t")
-            }
-        })
+                override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
+                    Log.e("WirteActivity", "writeSale()-[onFailure] 등록 실패 : $t")
+                }
+            })
+        } else {
+            // 게시글 수정
+            val callEdit = writeService.editSale(token, editSale!!.id, title, content, price, proposal, categoryId)
+            callEdit.enqueue(object: Callback<WriteSaleResponse> {
+                override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        if (images.size > 0) {
+                            postImage(editSale!!.id)
+                        } else {
+                            showToast()
+                            finish()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
+                    Log.e("WirteActivity", "writeSale()-[onFailure] 수정 실패 : $t")
+                }
+            })
+        }
     }
     
     // 첨부 이미지 업로드
@@ -256,8 +277,9 @@ class WriteActivity : AppCompatActivity() {
         for (i in images.indices) {
             part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
         }
+        val priority = imageAdapter.getNewPriority()
         val callImage = writeService.writeSaleImage(token, saleId, part, name)
-        callImage.enqueue(object: Callback<Void> {
+        callImage.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     showToast()
@@ -297,8 +319,13 @@ class WriteActivity : AppCompatActivity() {
     }
 
     class ImageAdapter(private val context: Context, private val dataSet: MutableList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+        private lateinit var retrofit: Retrofit
+        private lateinit var deleteService: RetrofitService
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
+            retrofit = RetrofitClient.getInstance()
+            deleteService = retrofit.create(RetrofitService::class.java)
             return ViewHolder(view).listen { position, type ->
                 removeImage(position)
             }
@@ -323,6 +350,15 @@ class WriteActivity : AppCompatActivity() {
             (context as WriteActivity).tvImageCount.text = dataSet.size.toString()
             context.tvImageCount.setTextColor(context.getColor(R.color.greenery))
             notifyDataSetChanged()
+        }
+
+        fun getNewPriority() : Int {
+            for (index in dataSet.indices) {
+                if (dataSet[index].id != -1L) {
+                    return index
+                }
+            }
+            return -1
         }
 
         private fun removeImage(position: Int) {

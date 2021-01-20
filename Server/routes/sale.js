@@ -10,7 +10,7 @@ const Sale = require('../models/sale');
 const Image = require('../models/image');
 const Location = require('../models/location');
 const Category = require('../models/category');
-const { response } = require('express');
+const { sequelize } = require('../models');
 
 const router = express.Router();
 
@@ -28,12 +28,13 @@ const upload = multer({
         },
         filename(req, file, cb) {
             const ext = path.extname(file.originalname);
-            cb(null, "OM-" + path.basename(file.originalname, ext) + Date.now() + ext);
+            cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
         },
     }),
     limits: { fileSize: 5 * 1024 * 1024 },
 });
 
+// 지역 게시글 가져오기
 router.get('/location/:locationId', async (req, res) => {
     try {
         const sales = await Sale.findAll({
@@ -66,10 +67,10 @@ router.get('/location/:locationId', async (req, res) => {
         return res.status(200).json({ sales });
     } catch(error) {
         console.error(error);
-        next(error);
     }
 });
 
+// 유저 판매정보 가져오기
 router.get('/user/:userId', async (req, res) => {
     try {
         const sales = await Sale.findAll({
@@ -99,11 +100,11 @@ router.get('/user/:userId', async (req, res) => {
         return res.status(200).json({ sales });
     } catch(error) {
         console.error(error);
-        next(error);
     }
 });
 
-router.post('/write', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+// 게시글 쓰기
+router.post('/write', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { title, content, price, priceProposal, writer, categoryId } = req.body;
     try {
         await Sale.create({
@@ -118,86 +119,29 @@ router.post('/write', passport.authenticate('jwt', { session: false }), async (r
         });
     } catch(error) {
         console.error(error);
-        next(error);
     }
 });
 
-router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), async (req, res, next) => {
+// 게시글 이미지 저장
+router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), async (req, res) => {
     try {
         for (var i=0; i<req.files.length; i++) {
-            await Image.create({
-                path: req.files[i].filename,
-                priority: i,
-                saleId: req.query.saleId
-            });
+            //TODO: query error 해결!!!!!
+            // await sequelize.query(
+            //     `INSERT INTO images (path, priority, saleId) VALUES (
+            //         "${req.files[i].filename}",
+            //         (SELECT max FROM (SELECT MAX(priority)+1 AS max FROM images WHERE saleID = ${req.query.saleId}) AS temp),
+            //         ${req.query.saleId})`
+            // )
         }
         return res.status(201).end();
     } catch(error) {
         console.error(error);
-        next(error);
     }
 });
 
-// router.get('/thumbnail/:saleId', async (req, res) => {
-//     try {
-//         var thumbnail = await Image.findOne({
-//             where: {
-//                 saleId: req.params.saleId,
-//                 priority: 0
-//             }
-//         });
-
-//         var filePath = "uploads/" + thumbnail.path;
-//         fs.readFile(filePath, function (err, data) {
-//             if(!err) {
-//                 return res.status(200).send(data);
-//             } else {
-//                 console.error(err);
-//             }
-//         })
-//     } catch(error) {
-//         console.error(error);
-//     }
-// });
-
-// router.get('/image/:saleId', async (req, res) => {
-//     try {
-//         await Image.findAll({
-//             where: {
-//                 saleId: req.params.saleId
-//             },
-//             order: [
-//                 ['priority', 'ASC']
-//             ]
-//         }).then(function(result) {
-//             let images = [];
-//             var promises = result.map(function(_path) {
-//                 return new Promise(function(_path, resolve, reject) {
-//                     fs.readFile("uploads/" + _path.path, function(err, data) {
-//                         if (err) {
-//                             console.error(err);
-//                         }
-//                     });
-//                 }).then((image) => {
-//                     images.push(image);
-//                 });
-//             });
-    
-//             Promise.all(promises).then(() => {
-//                 res.status(200).json(images);
-//             });
-//         });
-//     } catch(error) {
-//         console.error(error);
-//     }
-// });
-
-// router.get('/image/:filename', (req, res) => {
-//     var filePath = "uploads/" + req.params.filename;
-//     fs.readFile(filepa)
-// });
-
-router.post('/delete', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+// 게시글 삭제
+router.post('/delete', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
         await Sale.destroy({
             where: { id: req.body.id }
@@ -206,8 +150,46 @@ router.post('/delete', passport.authenticate('jwt', { session: false }), async (
         });
     } catch(error) {
         console.error(error);
-        next(error);
     }
 });
+
+// 게시글 이미지 삭제
+router.post('/delete/image', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        await Image.destroy({
+            where: { 
+                path: req.body.path
+            }
+        }).then(function(result) {
+            return res.status(201).end();
+        });
+    } catch(error) {
+        console.error(error);
+    }
+});
+
+// 게시글 수정
+router.post('/edit', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        await Sale.update(
+            { 
+                title: req.body.title, 
+                content: req.body.content,
+                price: req.body.price,
+                priceProposal: req.body.priceProposal,
+                categoryId: req.body.categoryId
+            },
+            {
+                where: {
+                    id: req.body.id
+                }
+            }
+        ).then(function(result) {
+            return res.status(201).json({ id: result.id });
+        });
+    } catch(error) {
+        console.error(error);
+    }
+})
 
 module.exports = router;

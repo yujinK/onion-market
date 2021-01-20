@@ -71,4 +71,21 @@ interface RetrofitService {
     fun deleteSale(@Header("authorization") token: String,
                    @Field("id") id: Int)
     : Call<Void>
+
+    @FormUrlEncoded
+    @POST("sale/delete/image")
+    fun deleteSaleImage(@Header("authorization") token: String,
+                        @Field("path") path: String)
+    : Call<Void>
+
+    @FormUrlEncoded
+    @POST("sale/edit")
+    fun editSale(@Header("authorization") token: String,
+                 @Field("id") id: Int,
+                 @Field("title") title: String,
+                 @Field("content") content: String,
+                 @Field("price") price: Int,
+                 @Field("priceProposal") priceProposal: Int,
+                 @Field("categoryId") categoryId: Int)
+    : Call<WriteSaleResponse>
 }

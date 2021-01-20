@@ -15,6 +15,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.Constraints
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.asksira.loopingviewpager.LoopingViewPager
@@ -74,12 +77,15 @@ class DetailSaleActivity : AppCompatActivity() {
     }
 
     private fun setImages(images: ArrayList<Image>?) {
+        val loopingViewPager = findViewById<LoopingViewPager>(R.id.pager_image)
+        val indicator = findViewById<CustomShapePagerIndicator>(R.id.indicator)
         if (!images.isNullOrEmpty()) {
+            loopingViewPager.visibility = View.VISIBLE
+            indicator.visibility = View.VISIBLE
+
             val adapter = ImageAdapter(this, images, false)
-            val loopingViewPager = findViewById<LoopingViewPager>(R.id.pager_image)
             loopingViewPager.adapter = adapter
 
-            val indicator = findViewById<CustomShapePagerIndicator>(R.id.indicator)
             indicator.highlighterViewDelegate = {
                 val highlighter = View(this)
                 highlighter.layoutParams = FrameLayout.LayoutParams(16.dp(), 2.dp())
