@@ -101,6 +101,7 @@ class WriteActivity : AppCompatActivity() {
                 else -> { super.onOptionsItemSelected(it) }
             }
         }
+        toolbar.setNavigationOnClickListener { finish() }
     }
 
     private fun initCategory(categoryId: Int?) {
