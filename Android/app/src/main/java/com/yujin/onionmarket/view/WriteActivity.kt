@@ -6,10 +6,12 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -34,6 +36,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
+import java.text.NumberFormat
+import java.util.*
 
 class WriteActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
@@ -71,6 +75,7 @@ class WriteActivity : AppCompatActivity() {
         initRetrofit()
         initToolbar()
         initCategory(editSale?.category?.id)
+        initPrice()
         initProposal()
         initContentHint()
         initAddImage()
@@ -132,6 +137,41 @@ class WriteActivity : AppCompatActivity() {
         val adapter = CategoryAdapter(this, R.layout.item_category, names)
         spinner.adapter = adapter
         spinner.setSelection(adapter.count)
+    }
+
+    private fun initPrice() {
+        val won = findViewById<TextView>(R.id.tv_won)
+        val price = findViewById<EditText>(R.id.et_price)
+        price.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isEmpty()) {
+                    won.setTextColor(getColor(R.color.divider_gray))
+                } else {
+                    won.setTextColor(getColor(R.color.black))
+                }
+            }
+        })
+
+        // focus in: comma(x), focus out: comma(O)
+        price.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                val commaPrice = price.text.toString().replace(",", "")
+                price.text = commaPrice.toEditable()
+            } else {
+                if (price.text.toString().isNotEmpty()) {
+                    val intPrice = price.text.toString().toInt()
+                    price.text = NumberFormat.getNumberInstance(Locale.KOREA).format(intPrice).toEditable()
+                }
+            }
+        }
     }
 
     private fun initProposal() {
