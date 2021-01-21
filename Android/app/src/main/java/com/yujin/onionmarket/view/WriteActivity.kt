@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -35,6 +36,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
+import java.text.NumberFormat
+import java.util.*
 
 class WriteActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
@@ -156,6 +159,19 @@ class WriteActivity : AppCompatActivity() {
                 }
             }
         })
+
+        // focus in: comma(x), focus out: comma(O)
+        price.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                val commaPrice = price.text.toString().replace(",", "")
+                price.text = commaPrice.toEditable()
+            } else {
+                if (price.text.toString().isNotEmpty()) {
+                    val intPrice = price.text.toString().toInt()
+                    price.text = NumberFormat.getNumberInstance(Locale.KOREA).format(intPrice).toEditable()
+                }
+            }
+        }
     }
 
     private fun initProposal() {
