@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -71,6 +72,7 @@ class WriteActivity : AppCompatActivity() {
         initRetrofit()
         initToolbar()
         initCategory(editSale?.category?.id)
+        initPrice()
         initProposal()
         initContentHint()
         initAddImage()
@@ -132,6 +134,28 @@ class WriteActivity : AppCompatActivity() {
         val adapter = CategoryAdapter(this, R.layout.item_category, names)
         spinner.adapter = adapter
         spinner.setSelection(adapter.count)
+    }
+
+    private fun initPrice() {
+        val won = findViewById<TextView>(R.id.tv_won)
+        val price = findViewById<EditText>(R.id.et_price)
+        price.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isEmpty()) {
+                    won.setTextColor(getColor(R.color.divider_gray))
+                } else {
+                    won.setTextColor(getColor(R.color.black))
+                }
+            }
+        })
     }
 
     private fun initProposal() {
