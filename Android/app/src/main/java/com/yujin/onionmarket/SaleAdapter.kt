@@ -36,12 +36,6 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
 
     private lateinit var manageSheet: BottomSheetDialog
 
-    private val editContract = (context as MySaleListActivity).registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
-        if (result?.resultCode == Activity.RESULT_OK) {
-            fragment?.readSale()
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_sale, parent, false)
         initRetrofit()
@@ -127,7 +121,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
     private fun editSale(position: Int) {
         val intent = Intent(context, WriteActivity::class.java)
         intent.putExtra("sale", dataSet[position])
-        editContract.launch(intent)
+        context.startActivity(intent)
     }
 
     private fun alertDelete(position: Int) {

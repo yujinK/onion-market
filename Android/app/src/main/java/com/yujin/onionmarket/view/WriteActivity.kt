@@ -312,10 +312,12 @@ class WriteActivity : AppCompatActivity() {
     private fun uploadImage(saleId: Int) {
         var part = mutableListOf<MultipartBody.Part>()
         val images = imageAdapter.getItems()
+        var index = 0
         for (i in images.indices) {
             // 새로 추가된 이미지
             if (images[i].id != -1L) {
-                part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
+                part.add(index, prepareFilePart("img", Uri.parse(images[i].path)))
+                index += 1
             }
         }
 
