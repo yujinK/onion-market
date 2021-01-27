@@ -45,12 +45,26 @@ interface RetrofitService {
                   @Field("categoryId") categoryId: Int)
     : Call<WriteSaleResponse>
 
+//    @Multipart
+//    @POST("sale/write/image")
+//    fun writeSaleImage(@Header("authorization") token: String,
+//                       @Query("saleId") saleId: Int,
+//                       @Part image: List<MultipartBody.Part>,
+//                       @Part("img") name: RequestBody)
+//    : Call<Void>
+
     @Multipart
+    @POST("sale/upload/image")
+    fun uploadImage(@Header("authorization") token: String,
+                    @Part image: List<MultipartBody.Part>)
+    : Call<ImageUploadResponse>
+
+    @FormUrlEncoded
     @POST("sale/write/image")
-    fun writeSaleImage(@Header("authorization") token: String,
-                       @Query("saleId") saleId: Int,
-                       @Part image: List<MultipartBody.Part>,
-                       @Part("img") name: RequestBody)
+    fun writeImage(@Header("authorization") token: String,
+                   @Field("saleId") saleId: Int,
+                   @Field("count") count: Int,
+                   @Field("images") images: ArrayList<String>)
     : Call<Void>
 
     // state : 0(판매중), 1(거래완료), 2(숨김)

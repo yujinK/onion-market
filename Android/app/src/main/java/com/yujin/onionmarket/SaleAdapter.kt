@@ -1,8 +1,8 @@
 package com.yujin.onionmarket
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,9 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
-import com.yujin.onionmarket.view.DetailSaleActivity
-import com.yujin.onionmarket.view.ReactionView
-import com.yujin.onionmarket.view.WriteActivity
+import com.yujin.onionmarket.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,11 +30,17 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 // state: 0(HomeFragment), 1(MySaleFragment)
-class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
+class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int, private val fragment: MySaleFragment?) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
     private lateinit var retrofit: Retrofit
     private lateinit var manageService: RetrofitService
 
     private lateinit var manageSheet: BottomSheetDialog
+
+    private val editContract = (context as MySaleListActivity).registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+        if (result?.resultCode == Activity.RESULT_OK) {
+            fragment?.readSale()
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_sale, parent, false)
@@ -121,7 +127,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
     private fun editSale(position: Int) {
         val intent = Intent(context, WriteActivity::class.java)
         intent.putExtra("sale", dataSet[position])
-        context.startActivity(intent)
+        editContract.launch(intent)
     }
 
     private fun alertDelete(position: Int) {

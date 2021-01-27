@@ -122,19 +122,61 @@ router.post('/write', passport.authenticate('jwt', { session: false }), async (r
     }
 });
 
-// 게시글 이미지 저장
-router.post('/write/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), async (req, res) => {
+// // 게시글 이미지 저장
+// router.post('/upload/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), (req, res) => {
+//     try {
+//         // for (var i=0; i<req.files.length; i++) {
+//         //     await Image.create({
+//         //         path: req.files[i].filename,
+//         //         priority: i,
+//         //         saleId: req.query.saleId
+//         //     });
+//         //     //TODO: query error 해결!!!!!
+//         //     // await sequelize.query(
+//         //     //     `INSERT INTO images (path, priority, saleId) VALUES (
+//         //     //         "${req.files[i].filename}",
+//         //     //         (SELECT max FROM (SELECT MAX(priority)+1 AS max FROM images WHERE saleID = ${req.query.saleId}) AS temp),
+//         //     //         ${req.query.saleId})`
+//         //     // )
+//         // }
+//         return res.status(201).json(req.files);
+//     } catch(error) {
+//         console.error(error);
+//     }
+// });
+
+// 게시글 이미지 서버 저장
+router.post('/upload/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), (req, res) => {
+    return res.status(201).json({"upload": req.files});
+});
+
+// 게시글 이미지 DB 저장
+router.post('/write/image', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const t = await sequelize.transaction();
     try {
-        for (var i=0; i<req.files.length; i++) {
-            //TODO: query error 해결!!!!!
-            // await sequelize.query(
-            //     `INSERT INTO images (path, priority, saleId) VALUES (
-            //         "${req.files[i].filename}",
-            //         (SELECT max FROM (SELECT MAX(priority)+1 AS max FROM images WHERE saleID = ${req.query.saleId}) AS temp),
-            //         ${req.query.saleId})`
-            // )
-        }
-        return res.status(201).end();
+        await Image.destroy({
+            where: { saleId: req.body.saleId }
+        }, { transaction: t });
+
+        if (req.body.count <= 1) {
+            await Image.create({
+                path: req.body.images.toString(),
+                priority: 0,
+                saleId: req.body.saleId
+            }, { transaction: t });
+        } else {
+            for (var i=0; i<req.body.count; i++) {
+                await Image.create({
+                    path: req.body.images[i],
+                    priority: i,
+                    saleId: req.body.saleId
+                }, { transaction: t })
+            }
+        }        
+
+        await t.commit().then(function(result) {
+            return res.status(201).end();
+        });
     } catch(error) {
         console.error(error);
     }

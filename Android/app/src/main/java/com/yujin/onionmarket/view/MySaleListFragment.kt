@@ -100,7 +100,7 @@ class MySaleFragment(private val position: Int) : Fragment() {
         saleService = retrofit.create(RetrofitService::class.java)
     }
 
-    private fun readSale() {
+    fun readSale() {
         val token = Util.readToken(requireActivity())
         if (token != "") {
             val userId = Util.readUser(requireActivity())!!.id
@@ -123,7 +123,7 @@ class MySaleFragment(private val position: Int) : Fragment() {
 
     private fun setSaleAdapter(sales: ArrayList<Sale>?) {
         if (sales != null) {
-            val adapter = SaleAdapter(requireContext(), sales, 1)
+            val adapter = SaleAdapter(requireContext(), sales, 1, this)
             recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }

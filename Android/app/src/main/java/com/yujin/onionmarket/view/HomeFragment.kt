@@ -146,7 +146,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setSaleAdapter(sales: ArrayList<Sale>?) {
         if (sales != null) {
-            adapter = SaleAdapter(requireContext(), sales, 0)
+            adapter = SaleAdapter(requireContext(), sales, 0, null)
             recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }

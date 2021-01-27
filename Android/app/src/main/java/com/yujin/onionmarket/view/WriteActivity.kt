@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -22,10 +21,7 @@ import com.esafirm.imagepicker.model.Image
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
-import com.yujin.onionmarket.data.Category
-import com.yujin.onionmarket.data.CategoryResponse
-import com.yujin.onionmarket.data.Sale
-import com.yujin.onionmarket.data.WriteSaleResponse
+import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
 import okhttp3.MediaType
@@ -38,6 +34,7 @@ import retrofit2.Retrofit
 import java.io.File
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class WriteActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
@@ -53,7 +50,7 @@ class WriteActivity : AppCompatActivity() {
     private var isProposal: Boolean = false
     private var editSale: Sale? = null
 
-    private var images = mutableListOf<Image>()
+    private var pickerImages = mutableListOf<Image>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +60,7 @@ class WriteActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-            images = ImagePicker.getImages(data)
+            pickerImages = ImagePicker.getImages(data)
             addImageThumbnail()
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -212,7 +209,7 @@ class WriteActivity : AppCompatActivity() {
         }
 
         rvImage = findViewById(R.id.rv_image)
-        imageAdapter = ImageAdapter(this, mutableListOf())
+        imageAdapter = ImageAdapter(this, arrayListOf())
         rvImage.adapter = imageAdapter
     }
 
@@ -222,8 +219,8 @@ class WriteActivity : AppCompatActivity() {
     
     // 추가된 사진 thumbnail 추가
     private fun addImageThumbnail() {
-        for (i in images.indices) {
-            imageAdapter.addItem(images[i])
+        for (i in pickerImages.indices) {
+            imageAdapter.addItem(pickerImages[i])
         }
     }
 
@@ -253,7 +250,7 @@ class WriteActivity : AppCompatActivity() {
         //TODO: image
         val editImages = editSale!!.images
         for (saleImage in editImages) {
-            images.add(Image(-1, saleImage.path, saleImage.path))
+            pickerImages.add(Image(-1, saleImage.path, saleImage.path))
         }
         addImageThumbnail()
     }
@@ -264,7 +261,7 @@ class WriteActivity : AppCompatActivity() {
     private fun postContent() {
         val title = findViewById<EditText>(R.id.et_title).text.toString()
         val content = findViewById<EditText>(R.id.et_content).text.toString()
-        val price = findViewById<EditText>(R.id.et_price).text.toString().toInt()
+        val price = findViewById<EditText>(R.id.et_price).text.toString().replace(",", "").toInt()
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
         var proposal = if (isProposal) { 1 } else { 0 }
@@ -275,8 +272,8 @@ class WriteActivity : AppCompatActivity() {
             callPost.enqueue(object : Callback<WriteSaleResponse> {
                 override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
-                        if (images.size > 0) {
-                            postImage(response.body()!!.id)
+                        if (pickerImages.size > 0) {
+                            uploadImage(response.body()!!.id)
                         } else {
                             showToast()
                             setResult(RESULT_OK)
@@ -295,8 +292,8 @@ class WriteActivity : AppCompatActivity() {
             callEdit.enqueue(object: Callback<WriteSaleResponse> {
                 override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
-                        if (images.size > 0) {
-                            postImage(editSale!!.id)
+                        if (pickerImages.size > 0) {
+                            uploadImage(editSale!!.id)
                         } else {
                             showToast()
                             finish()
@@ -312,15 +309,55 @@ class WriteActivity : AppCompatActivity() {
     }
     
     // 첨부 이미지 업로드
-    private fun postImage(saleId: Int) {
-        val name = RequestBody.create(MediaType.parse("text/plain"), "img")
+    private fun uploadImage(saleId: Int) {
         var part = mutableListOf<MultipartBody.Part>()
+        val images = imageAdapter.getItems()
         for (i in images.indices) {
-            part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
+            // 새로 추가된 이미지
+            if (images[i].id != -1L) {
+                part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
+            }
         }
-        val priority = imageAdapter.getNewPriority()
-        val callImage = writeService.writeSaleImage(token, saleId, part, name)
-        callImage.enqueue(object : Callback<Void> {
+
+        // 새로 추가된 사진이 있는 경우
+        if (part.size > 0) {
+            val callImage = writeService.uploadImage(token, part)
+            callImage.enqueue(object : Callback<ImageUploadResponse> {
+                override fun onResponse(call: Call<ImageUploadResponse>, response: Response<ImageUploadResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        val pImages = arrayListOf<String>()
+                        var index = 0
+                        for (i in images.indices) {
+                            if (images[i].id == -1L) {
+                                pImages.add(images[i].path)
+                            } else {
+                                pImages.add(response.body()!!.uploadImage[index].filename)
+                                index += 1
+                            }
+                        }
+
+                        postImage(saleId, pImages)
+                    }
+                }
+
+                override fun onFailure(call: Call<ImageUploadResponse>, t: Throwable) {
+                    Log.e("WriteActivity", "uploadImage()-[onFailure] 실패 : $t")
+                }
+            })
+        } else {
+            // 추가된 사진이 없는 경우
+            val pImages = arrayListOf<String>()
+            for (i in images.indices) {
+                pImages.add(images[i].path)
+            }
+            postImage(saleId, pImages)
+        }
+    }
+
+    // 첨부 이미지 DB 업로드
+    private fun postImage(saleId: Int, pImages: ArrayList<String>) {
+        val callImage = writeService.writeImage(token, saleId, pImages.size, pImages)
+        callImage.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     showToast()
@@ -359,7 +396,7 @@ class WriteActivity : AppCompatActivity() {
         override fun getCount(): Int = super.getCount() - 1
     }
 
-    class ImageAdapter(private val context: Context, private val dataSet: MutableList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+    class ImageAdapter(private val context: Context, private val dataSet: ArrayList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
         private lateinit var retrofit: Retrofit
         private lateinit var deleteService: RetrofitService
 
@@ -367,7 +404,7 @@ class WriteActivity : AppCompatActivity() {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
             retrofit = RetrofitClient.getInstance()
             deleteService = retrofit.create(RetrofitService::class.java)
-            return ViewHolder(view).listen { position, type ->
+            return ViewHolder(view).listen { position, _ ->
                 removeImage(position)
             }
         }
@@ -385,6 +422,8 @@ class WriteActivity : AppCompatActivity() {
         }
 
         override fun getItemCount(): Int = dataSet.size
+
+        fun getItems() = dataSet
 
         fun addItem(item: Image) {
             dataSet.add(item)
