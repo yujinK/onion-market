@@ -12,7 +12,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -30,7 +32,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 // state: 0(HomeFragment), 1(MySaleFragment)
-class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int, private val fragment: MySaleFragment?) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
+class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
     private lateinit var retrofit: Retrofit
     private lateinit var manageService: RetrofitService
 

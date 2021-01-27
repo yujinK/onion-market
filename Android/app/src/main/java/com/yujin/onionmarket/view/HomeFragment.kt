@@ -29,7 +29,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import java.lang.Boolean.TRUE
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var retrofit: Retrofit
@@ -146,7 +145,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setSaleAdapter(sales: ArrayList<Sale>?) {
         if (sales != null) {
-            adapter = SaleAdapter(requireContext(), sales, 0, null)
+            adapter = SaleAdapter(requireContext(), sales, 0)
             recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()
         }
