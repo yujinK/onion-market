@@ -3,11 +3,12 @@ package com.yujin.onionmarket
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.GsonBuilder
 import com.yujin.onionmarket.data.User
-import com.yujin.onionmarket.view.LoginActivity
+import java.text.ParsePosition
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Util {
     companion object {
@@ -27,6 +28,11 @@ class Util {
         // 토큰 정보 가져오기
         fun readToken(activity: Activity) : String {
             val sharedPref = activity.getSharedPreferences(activity.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            return sharedPref.getString("token", "")!!
+        }
+
+        fun readToken(context: Context) : String {
+            val sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
             return sharedPref.getString("token", "")!!
         }
 
@@ -59,6 +65,50 @@ class Util {
 
                 }
                 .show()
+        }
+
+        // 게시글 시간 경과 표시
+        fun timeDifferentiation(createdAt: String?) : String {
+            if (!createdAt.isNullOrEmpty()) {
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                val pos = ParsePosition(0)
+                val then = formatter.parse(createdAt, pos).time
+                val now = Date().time
+
+                val seconds = (now - then) / 1000
+                val minutes = seconds / 60
+                val hours = minutes / 60
+                val days = hours / 24
+                val weeks = days / 7
+                val months = weeks / 30
+
+                var lapse = ""
+                var num: Long = 0
+                if (months > 0) {
+                    lapse = "${months}달 전"
+                }
+                else if (weeks > 0) {
+                    lapse = "${weeks}주 전"
+                }
+                else if (days > 0) {
+                    lapse = "${days}일 전"
+                }
+                else if (hours > 0) {
+                    lapse = "${hours}시간 전"
+                }
+                else if (minutes > 0) {
+                    lapse = "${minutes}분 전"
+                }
+                else if (seconds > 0) {
+                    lapse = "${seconds}초 전"
+                }
+                else {
+                    lapse = "방금 전"
+                }
+
+                return lapse
+            }
+            return ""
         }
     }
 }

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -59,4 +60,7 @@ dependencies {
 
     //Image picker
     implementation 'com.github.esafirm.android-image-picker:imagepicker:2.4.0'
+
+    //LoopingViewPager (Image Scrolling)
+    implementation 'com.asksira.android:loopingviewpager:1.3.1'
 }

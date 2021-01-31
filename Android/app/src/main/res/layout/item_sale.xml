@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_sale"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="20dp"
@@ -47,11 +48,10 @@
 
     <ImageButton
         android:id="@+id/ib_more"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:padding="10dp"
-        android:layout_marginRight="5dp"
-        android:background="@drawable/ic_more_vert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:background="@drawable/ic_more_vert_black"
         app:layout_constraintTop_toTopOf="@id/tv_title"
         app:layout_constraintRight_toRightOf="parent"/>
 
@@ -64,8 +64,7 @@
         android:textColor="@color/gray"
         app:layout_constraintTop_toBottomOf="@id/tv_title"
         app:layout_constraintLeft_toRightOf="@id/guideline"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="용산구 이태원동 · 6초 전"/>
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
         android:id="@+id/tv_price"

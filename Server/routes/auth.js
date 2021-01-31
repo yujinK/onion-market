@@ -72,18 +72,18 @@ router.post('/login', async (req, res, next) => {
                 }, process.env.JWT_SECRET);
 
                 return res.status(201).json({ 
-                    user: [{
+                    User: [{
                         id: user.id,
                         email: user.email,
                         nick: user.nick,
                         img: user.img,
-                        location: [{
+                        Location: {
                             id: user.Location.id,
                             sido: user.Location.sido,
                             sigun: user.Location.sigun,
                             dongmyeon: user.Location.dongmyeon,
                             li: user.Location.li
-                        }]
+                        }
                     }],
                     token: token 
                 });

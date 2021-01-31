@@ -1,7 +1,10 @@
 package com.yujin.onionmarket.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Location(
     @SerializedName("id")
     var id: Int = -1,
@@ -17,4 +20,4 @@ data class Location(
 
     @SerializedName("li")
     var li: String = ""
-)
+) : Parcelable

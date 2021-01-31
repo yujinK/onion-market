@@ -1,5 +1,6 @@
 package com.yujin.onionmarket.view
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -7,8 +8,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,20 +39,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var popupWindow: PopupWindow
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: SaleAdapter
 
     private var isOpen = false
+
+    // 게시글 작성 후
+    private val writeContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+        if (result?.resultCode == RESULT_OK) {
+            readSales()
+        }
+    }
+
+    private val loginContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+        if (result?.resultCode == RESULT_OK) {
+            init(requireView())
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(view)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RequestCode.LOGIN) {
-            if (resultCode == RESULT_OK) {
-                init(requireView())
-            }
-        }
     }
 
     private fun init(view: View) {
@@ -82,10 +94,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         locationView = view.findViewById(R.id.location)
         val user = Util.readUser(requireActivity())
         if (user != null) {
-            val location = Util.readUser(requireActivity())!!.location[0].dongmyeon
+            val location = Util.readUser(requireActivity())?.location?.dongmyeon
             locationView.setLocation(location)
             locationView.setOnClickListener {
-                setDropDown()
+                setDropDown(location)
                 isOpen = !isOpen
             }
         }
@@ -108,18 +120,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // 로그인으로 이동
     private fun moveLogin() {
         val intent = Intent(activity, LoginActivity::class.java)
-        startActivityForResult(intent, RequestCode.LOGIN)
+        loginContract.launch(intent)
     }
 
     private fun readSales() {
         val token = Util.readToken(requireActivity())
-        if (token != "") {
-            val locationId = Util.readUser(requireActivity())!!.location[0].id
+        val locationId = Util.readUser(requireActivity())?.location?.id
+        if (token != "" && locationId != null) {
             val callSales = homeService.readSaleWithLocation(token, locationId, 0)
             callSales.enqueue(object : Callback<ReadSaleResponse> {
                 override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
-                        val sales = response.body()!!.sales
+                        val sales = response.body()?.sales
                         setSaleAdapter(sales)
                     }
                 }
@@ -131,32 +143,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    private fun setSaleAdapter(sales: List<Sale>) {
-        val adapter = SaleAdapter(requireContext(), sales, 0)
-        recyclerView.adapter = adapter
-        adapter.notifyDataSetChanged()
+    private fun setSaleAdapter(sales: ArrayList<Sale>?) {
+        if (sales != null) {
+            adapter = SaleAdapter(requireContext(), sales, 0)
+            recyclerView.adapter = adapter
+            adapter.notifyDataSetChanged()
+        }
     }
 
     // 글쓰기 Activity 이동
     private fun moveWriteSale() {
         val intent = Intent(activity, WriteActivity::class.java)
-        startActivity(intent)
+        writeContract.launch(intent)
     }
 
     // Toolbar 지역
-    private fun setDropDown() {
+    private fun setDropDown(location: String?) {
         if (!isOpen) {
             // 메뉴 Open
-            open()
+            open(location)
         } else {
             // 메뉴 Close
             close()
         }
     }
 
-    private fun open() {
+    private fun open(location: String?) {
         locationView.setOpen()
-        setPopupWindow()
+        setPopupWindow(location)
     }
 
     private fun close() {
@@ -165,31 +179,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     // PopupWindow 지역
-    private fun setPopupWindow() {
-        val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val customView = inflater.inflate(R.layout.view_popup_location, null)
-        popupWindow  = PopupWindow(
-                customView,
-                600,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        popupWindow.elevation = 10.0f
-        popupWindow.showAsDropDown(locationView, 0, -30)
-        popupWindow.setTouchInterceptor { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_OUTSIDE -> {
-                    close()
-                    true
+    private fun setPopupWindow(location: String?) {
+        if (location != null) {
+            val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val customView = inflater.inflate(R.layout.view_popup_location, null)
+            customView.findViewById<TextView>(R.id.tv_popup_location).text = location
+            popupWindow = PopupWindow(
+                    customView,
+                    600,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            popupWindow.elevation = 10.0f
+            popupWindow.showAsDropDown(locationView, 0, -30)
+            popupWindow.setTouchInterceptor { v, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_OUTSIDE -> {
+                        close()
+                        true
+                    }
+                    else -> false
                 }
-                else -> false
             }
+            popupWindow.isOutsideTouchable = true
         }
-        popupWindow.isOutsideTouchable = true
     }
 
     // SwipeRefreshLayout
     private fun refresh() {
-        Toast.makeText(requireContext(), "refresh!!!", Toast.LENGTH_SHORT).show()
+        readSales()
         swipeRefreshLayout.isRefreshing = false
     }
 }

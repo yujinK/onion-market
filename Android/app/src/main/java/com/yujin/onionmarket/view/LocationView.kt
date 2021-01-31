@@ -28,10 +28,12 @@ class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(con
         closeAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_close_location)
     }
 
-    fun setLocation(location: String) {
-        myLocation.text = location
-        invalidate()
-        requestLayout()
+    fun setLocation(location: String?) {
+        if (!location.isNullOrEmpty()) {
+            myLocation.text = location
+            invalidate()
+            requestLayout()
+        }
     }
 
     fun setOpen() {
@@ -50,13 +52,11 @@ class LocationView(context: Context, attrs: AttributeSet) : ConstraintLayout(con
         arrow.startAnimation(openAnimation)
         openAnimation.fillAfter = true
         arrow.setImageDrawable(resources.getDrawable(R.drawable.ic_down, null))
-        Toast.makeText(context, "open", Toast.LENGTH_SHORT).show()
     }
 
     private fun closeAnimation() {
         arrow.startAnimation(closeAnimation)
         closeAnimation.fillAfter = true
         arrow.setImageDrawable(resources.getDrawable(R.drawable.ic_up, null))
-        Toast.makeText(context, "close", Toast.LENGTH_SHORT).show()
     }
 }

@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +21,7 @@ import com.esafirm.imagepicker.model.Image
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
-import com.yujin.onionmarket.data.Category
-import com.yujin.onionmarket.data.CategoryResponse
-import com.yujin.onionmarket.data.WriteSaleResponse
+import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.RetrofitService
 import okhttp3.MediaType
@@ -32,6 +32,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class WriteActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
@@ -44,7 +47,10 @@ class WriteActivity : AppCompatActivity() {
     private lateinit var imageAdapter: ImageAdapter
     private lateinit var tvImageCount: TextView
 
-    private var images = mutableListOf<Image>()
+    private var isProposal: Boolean = false
+    private var editSale: Sale? = null
+
+    private var pickerImages = mutableListOf<Image>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +60,7 @@ class WriteActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-            images = ImagePicker.getImages(data)
+            pickerImages = ImagePicker.getImages(data)
             addImageThumbnail()
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -62,11 +68,18 @@ class WriteActivity : AppCompatActivity() {
 
     private fun init() {
         token = Util.readToken(this)
+        editSale = intent.getParcelableExtra("sale")
         initRetrofit()
         initToolbar()
-        initCategory()
+        initCategory(editSale?.category?.id)
+        initPrice()
+        initProposal()
         initContentHint()
         initAddImage()
+
+        if (editSale != null) {
+            setEdit()
+        }
     }
 
     private fun initRetrofit() {
@@ -79,24 +92,30 @@ class WriteActivity : AppCompatActivity() {
         toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.finish -> {
-                    writeSale()
+                    postContent()
                     true
                 }
                 else -> { super.onOptionsItemSelected(it) }
             }
         }
+        toolbar.setNavigationOnClickListener { finish() }
     }
 
-    private fun initCategory() {
-        getCategory()
+    private fun initCategory(categoryId: Int?) {
+        getCategory(categoryId)
     }
 
-    private fun getCategory() {
+    private fun getCategory(categoryId: Int?) {
         val callCategory = writeService.getCategory(token)
         callCategory.enqueue(object: Callback<CategoryResponse> {
             override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
                 val categories = response.body()!!.category
                 setCategory(categories)
+
+                // edit 모드일 경우
+                if (categoryId != null) {
+                    spinner.setSelection(categoryId)
+                }
             }
 
             override fun onFailure(call: Call<CategoryResponse>, t: Throwable) {
@@ -118,9 +137,65 @@ class WriteActivity : AppCompatActivity() {
         spinner.setSelection(adapter.count)
     }
 
+    private fun initPrice() {
+        val won = findViewById<TextView>(R.id.tv_won)
+        val price = findViewById<EditText>(R.id.et_price)
+        price.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isEmpty()) {
+                    won.setTextColor(getColor(R.color.divider_gray))
+                } else {
+                    won.setTextColor(getColor(R.color.black))
+                }
+            }
+        })
+
+        // focus in: comma(x), focus out: comma(O)
+        price.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                val commaPrice = price.text.toString().replace(",", "")
+                price.text = commaPrice.toEditable()
+            } else {
+                if (price.text.toString().isNotEmpty()) {
+                    val intPrice = price.text.toString().toInt()
+                    price.text = NumberFormat.getNumberInstance(Locale.KOREA).format(intPrice).toEditable()
+                }
+            }
+        }
+    }
+
+    private fun initProposal() {
+        val proposal = findViewById<LinearLayout>(R.id.ll_proposal)
+        proposal.setOnClickListener {
+            isProposal = !isProposal
+            setProposal(isProposal)
+        }
+    }
+
+    private fun setProposal(state: Boolean) {
+        val ivProposal = findViewById<ImageView>(R.id.iv_proposal)
+        val tvProposal = findViewById<TextView>(R.id.tv_proposal)
+        if (state) {
+            // 가격제안 받기
+            ivProposal.isSelected = true
+            tvProposal.setTextColor(getColor(R.color.black))
+        } else {
+            ivProposal.isSelected = false
+            tvProposal.setTextColor(getColor(R.color.divider_gray))
+        }
+    }
+
     private fun initContentHint() {
         val user = Util.readUser(this)
-        val dongmyeon = user!!.location[0].dongmyeon
+        val dongmyeon = user!!.location.dongmyeon
         val content = findViewById<EditText>(R.id.et_content)
         content.hint = getString(R.string.content_hint, dongmyeon)
     }
@@ -134,60 +209,156 @@ class WriteActivity : AppCompatActivity() {
         }
 
         rvImage = findViewById(R.id.rv_image)
-        imageAdapter = ImageAdapter(this, mutableListOf())
+        imageAdapter = ImageAdapter(this, arrayListOf())
         rvImage.adapter = imageAdapter
     }
 
     private fun addImage() {
-        ImagePicker.create(this)
-            .start()
+        ImagePicker.create(this).start()
     }
     
     // 추가된 사진 thumbnail 추가
     private fun addImageThumbnail() {
-        for (i in images.indices) {
-            imageAdapter.addItem(images[i])
+        for (i in pickerImages.indices) {
+            imageAdapter.addItem(pickerImages[i])
         }
     }
 
-    private fun writeSale() {
-        postContent()
+    // 수정모드
+    private fun setEdit() {
+        val title = findViewById<EditText>(R.id.et_title)
+        title.text = editSale!!.title.toEditable()
+        
+        val price = findViewById<EditText>(R.id.et_price)
+        price.text = editSale!!.price.toString().toEditable()
+        val won = findViewById<TextView>(R.id.tv_won)
+        won.setTextColor(getColor(R.color.black))
+
+        val ivProposal = findViewById<ImageView>(R.id.iv_proposal)
+        val tvProposal = findViewById<TextView>(R.id.tv_proposal)
+        if (editSale!!.priceProposal) {
+            ivProposal.isSelected = true
+            tvProposal.setTextColor(getColor(R.color.black))
+        } else {
+            ivProposal.isSelected = false
+            tvProposal.setTextColor(getColor(R.color.divider_gray))
+        }
+
+        val content = findViewById<EditText>(R.id.et_content)
+        content.text = editSale!!.content.toEditable()
+
+        //TODO: image
+        val editImages = editSale!!.images
+        for (saleImage in editImages) {
+            pickerImages.add(Image(-1, saleImage.path, saleImage.path))
+        }
+        addImageThumbnail()
     }
-    
+
+    private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
     // 게시글 업로드
     private fun postContent() {
         val title = findViewById<EditText>(R.id.et_title).text.toString()
         val content = findViewById<EditText>(R.id.et_content).text.toString()
-        val price = findViewById<EditText>(R.id.et_price).text.toString().toInt()
+        val price = findViewById<EditText>(R.id.et_price).text.toString().replace(",", "").toInt()
         val writer = Util.readUser(this)!!.id
         val categoryId = spinner.selectedItemPosition
-        val callPost = writeService.writeSale(token, title, content, price, 0, writer, categoryId)
-        callPost.enqueue(object: Callback<WriteSaleResponse> {
-            override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
-                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
-                    if (images.size > 0) {
-                        postImage(response.body()!!.id)
-                    } else {
-                        showToast()
-                        finish()
+        var proposal = if (isProposal) { 1 } else { 0 }
+
+        // 게시글 등록
+        if (editSale == null) {
+            val callPost = writeService.writeSale(token, title, content, price, proposal, writer, categoryId)
+            callPost.enqueue(object : Callback<WriteSaleResponse> {
+                override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        if (pickerImages.size > 0) {
+                            uploadImage(response.body()!!.id)
+                        } else {
+                            showToast()
+                            setResult(RESULT_OK)
+                            finish()
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
-                Log.e("WirteActivity", "writeSale()-[onFailure] 실패 : $t")
-            }
-        })
+                override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
+                    Log.e("WirteActivity", "writeSale()-[onFailure] 등록 실패 : $t")
+                }
+            })
+        } else {
+            // 게시글 수정
+            val callEdit = writeService.editSale(token, editSale!!.id, title, content, price, proposal, categoryId)
+            callEdit.enqueue(object: Callback<WriteSaleResponse> {
+                override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        if (pickerImages.size > 0) {
+                            uploadImage(editSale!!.id)
+                        } else {
+                            showToast()
+                            finish()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<WriteSaleResponse>, t: Throwable) {
+                    Log.e("WirteActivity", "writeSale()-[onFailure] 수정 실패 : $t")
+                }
+            })
+        }
     }
     
     // 첨부 이미지 업로드
-    private fun postImage(saleId: Int) {
-        val name = RequestBody.create(MediaType.parse("text/plain"), "img")
+    private fun uploadImage(saleId: Int) {
         var part = mutableListOf<MultipartBody.Part>()
+        val images = imageAdapter.getItems()
+        var index = 0
         for (i in images.indices) {
-            part.add(i, prepareFilePart("img", Uri.parse(images[i].path)))
+            // 새로 추가된 이미지
+            if (images[i].id != -1L) {
+                part.add(index, prepareFilePart("img", Uri.parse(images[i].path)))
+                index += 1
+            }
         }
-        val callImage = writeService.writeSaleImage(token, saleId, part, name)
+
+        // 새로 추가된 사진이 있는 경우
+        if (part.size > 0) {
+            val callImage = writeService.uploadImage(token, part)
+            callImage.enqueue(object : Callback<ImageUploadResponse> {
+                override fun onResponse(call: Call<ImageUploadResponse>, response: Response<ImageUploadResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        val pImages = arrayListOf<String>()
+                        var index = 0
+                        for (i in images.indices) {
+                            if (images[i].id == -1L) {
+                                pImages.add(images[i].path)
+                            } else {
+                                pImages.add(response.body()!!.uploadImage[index].filename)
+                                index += 1
+                            }
+                        }
+
+                        postImage(saleId, pImages)
+                    }
+                }
+
+                override fun onFailure(call: Call<ImageUploadResponse>, t: Throwable) {
+                    Log.e("WriteActivity", "uploadImage()-[onFailure] 실패 : $t")
+                }
+            })
+        } else {
+            // 추가된 사진이 없는 경우
+            val pImages = arrayListOf<String>()
+            for (i in images.indices) {
+                pImages.add(images[i].path)
+            }
+            postImage(saleId, pImages)
+        }
+    }
+
+    // 첨부 이미지 DB 업로드
+    private fun postImage(saleId: Int, pImages: ArrayList<String>) {
+        val callImage = writeService.writeImage(token, saleId, pImages.size, pImages)
         callImage.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
@@ -227,27 +398,49 @@ class WriteActivity : AppCompatActivity() {
         override fun getCount(): Int = super.getCount() - 1
     }
 
-    class ImageAdapter(private val context: Context, private val dataSet: MutableList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+    class ImageAdapter(private val context: Context, private val dataSet: ArrayList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+        private lateinit var retrofit: Retrofit
+        private lateinit var deleteService: RetrofitService
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
-            return ViewHolder(view).listen { position, type ->
+            retrofit = RetrofitClient.getInstance()
+            deleteService = retrofit.create(RetrofitService::class.java)
+            return ViewHolder(view).listen { position, _ ->
                 removeImage(position)
             }
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            Glide.with(context)
-                    .load(dataSet[position].uri)
-                    .into(holder.image)
+            if (dataSet[position].id == -1L) {
+                Glide.with(context)
+                        .load(context.getString(R.string.img_url) + dataSet[position].path)
+                        .into(holder.image)
+            } else {
+                Glide.with(context)
+                        .load(dataSet[position].uri)
+                        .into(holder.image)
+            }
         }
 
         override fun getItemCount(): Int = dataSet.size
+
+        fun getItems() = dataSet
 
         fun addItem(item: Image) {
             dataSet.add(item)
             (context as WriteActivity).tvImageCount.text = dataSet.size.toString()
             context.tvImageCount.setTextColor(context.getColor(R.color.greenery))
             notifyDataSetChanged()
+        }
+
+        fun getNewPriority() : Int {
+            for (index in dataSet.indices) {
+                if (dataSet[index].id != -1L) {
+                    return index
+                }
+            }
+            return -1
         }
 
         private fun removeImage(position: Int) {

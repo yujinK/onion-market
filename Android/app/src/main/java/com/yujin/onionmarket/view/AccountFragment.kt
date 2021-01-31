@@ -1,12 +1,13 @@
 package com.yujin.onionmarket.view
 
 import android.app.Activity.RESULT_OK
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -19,17 +20,15 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     private lateinit var loginView: ConstraintLayout
     private lateinit var profileView: ConstraintLayout
 
+    private val loginContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult? ->
+        if (result?.resultCode == RESULT_OK) {
+            setAccount()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(view)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RequestCode.LOGIN) {
-            if (resultCode == RESULT_OK) {
-                setAccount()
-            }
-        }
     }
 
     override fun onResume() {
@@ -96,7 +95,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     private fun setUserInfo(user: User) {
         profileView.getChildAt(1).findViewById<TextView>(R.id.tv_nick).text = user.nick
-        profileView.getChildAt(2).findViewById<TextView>(R.id.tv_location).text = user.location[0].dongmyeon
+        profileView.getChildAt(2).findViewById<TextView>(R.id.tv_location).text = user.location.dongmyeon
         
         //TODO: profile 사진 설정
     }
@@ -116,8 +115,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     // 로그인으로 이동
     private fun moveLogin() {
         val intent = Intent(activity, LoginActivity::class.java)
-        //TODO: deprecated method 처리
-        startActivityForResult(intent, RequestCode.LOGIN)
+        loginContract.launch(intent)
     }
 
     // 프로필로 이동
@@ -140,7 +138,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             }
         } else {
             // Login 한 유저
-            val intent = Intent(activity, SaleListActivity::class.java)
+            val intent = Intent(activity, MySaleListActivity::class.java)
             startActivity(intent)
         }
     }

@@ -1,16 +1,19 @@
 package com.yujin.onionmarket.data
 
+import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class UserResponse(
-    @SerializedName("user")
+    @SerializedName("User")
     var user: List<User>,
 
     @SerializedName("token")
     var token: String
 )
 
+@Parcelize
 data class User(
     @SerializedName("id")
     @Expose
@@ -28,7 +31,7 @@ data class User(
     @Expose
     var img: String = "",
 
-    @SerializedName("location")
+    @SerializedName("Location")
     @Expose
-    var location: List<Location>
-)
+    var location: Location
+) : Parcelable
