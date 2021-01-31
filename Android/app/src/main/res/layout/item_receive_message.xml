@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:paddingTop="5dp"
     android:paddingBottom="5dp"
-    android:paddingRight="10dp">
+    android:paddingLeft="10dp">
 
     <TextView
         android:id="@+id/tv_time"
@@ -17,7 +17,7 @@
         android:textSize="12dp"
         android:textColor="@color/gray"
         app:layout_constraintBottom_toBottomOf="@id/tv_message"
-        app:layout_constraintRight_toLeftOf="@id/tv_message"
+        app:layout_constraintLeft_toRightOf="@id/tv_message"
         tools:text="5:01 오후"/>
 
     <TextView
@@ -29,10 +29,10 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:textSize="16dp"
-        android:textColor="@color/white"
-        android:background="@drawable/bg_send_message"
+        android:textColor="@color/black"
+        android:background="@drawable/bg_receive_message"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="거래가능합니다"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:text="아직 판매하시나요?"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
