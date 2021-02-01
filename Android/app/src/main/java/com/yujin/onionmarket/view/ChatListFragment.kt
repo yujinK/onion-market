@@ -17,7 +17,7 @@ import com.yujin.onionmarket.R
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.Chat
 
-class ChatFragment : Fragment(R.layout.fragment_chat) {
+class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
@@ -28,10 +28,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val dividerItemDecoration = DividerItemDecoration(chat?.context, layoutManager.orientation)
         val chatSet = ArrayList<Chat>()
-        chatSet.add(Chat("", "안녕", "논현동", "", "이거 팔렸나요?"))
-        chatSet.add(Chat("", "안녕2", "삼성동", "", "오늘 시간 되시나요"))
-        chatSet.add(Chat("", "안녕3", "갈산동", "", "어디서 거래하나요?"))
-        chatSet.add(Chat("", "안녕4", "잠원동", "", "제가 살게요"))
+        chatSet.add(Chat("", "안녕", "논현동", "이거 팔렸나요?", ""))
+        chatSet.add(Chat("", "안녕2", "삼성동", "오늘 시간 되시나요", ""))
+        chatSet.add(Chat("", "안녕3", "갈산동", "어디서 거래하나요?", ""))
+        chatSet.add(Chat("", "안녕4", "잠원동", "제가 살게요", ""))
         chat?.layoutManager = layoutManager
         chat?.addItemDecoration(dividerItemDecoration)
         val adapter = ChatAdapter(requireContext(), chatSet)
@@ -63,7 +63,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             holder.info.text = context.getString(R.string.receive_info, chatSet[position].location, "어제")
 
             // 최근 메시지
-            holder.lastMessage.text = chatSet[position].lastMessage
+            holder.lastMessage.text = chatSet[position].message
         }
 
         override fun getItemCount(): Int = chatSet.size

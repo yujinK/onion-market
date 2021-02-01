@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OnionMarket"
         android:usesCleartextTraffic="true">
-        <activity android:name=".view.SaleChatActivity"></activity>
+        <activity android:name=".view.ChatActivity"></activity>
+        <activity android:name=".view.SaleChatActivity" />
         <activity
             android:name=".view.DetailSaleActivity"
             android:theme="@style/FullScreenTheme" />

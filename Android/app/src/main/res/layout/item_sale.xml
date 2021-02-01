@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="12dp"
-        android:background="@drawable/ic_more_vert_black"
+        android:background="@drawable/ic_more_vert_black_12"
         app:layout_constraintTop_toTopOf="@id/tv_title"
         app:layout_constraintRight_toRightOf="parent"/>
 

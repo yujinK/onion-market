@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
+        android:theme="@style/BlackToolbarTheme"
         app:title="@string/sale_list"
         app:titleTextAppearance="@style/toolbarTitleStyle"
         app:navigationIcon="?homeAsUpIndicator"

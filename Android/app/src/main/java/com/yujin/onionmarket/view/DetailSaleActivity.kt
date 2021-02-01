@@ -2,6 +2,7 @@ package com.yujin.onionmarket.view
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +11,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -48,14 +46,23 @@ class DetailSaleActivity : AppCompatActivity() {
         }
         toolbar.setNavigationOnClickListener { finish() }
 
-        setView()
+        val sale = intent.getParcelableExtra<Sale>("sale")!!
+
+        val btnChat = findViewById<Button>(R.id.btn_chat_buy)
+        btnChat.setOnClickListener { buyChat(sale) }
+
+        setView(sale)
     }
 
-    private fun setView() {
-        val sale = intent.getParcelableExtra<Sale>("sale")
+    private fun buyChat(sale: Sale) {
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("sale", sale)
+        startActivity(intent)
+    }
 
-        setUser(sale?.user)
-        setImages(sale?.images)
+    private fun setView(sale: Sale) {
+        setUser(sale.user)
+        setImages(sale.images)
         setGoods(sale)
     }
 

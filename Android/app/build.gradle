@@ -67,4 +67,7 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.1.1')
     implementation 'com.google.firebase:firebase-database-ktx'
+
+    //Socket.IO
+    implementation 'com.github.nkzawa:socket.io-client:0.6.0'
 }

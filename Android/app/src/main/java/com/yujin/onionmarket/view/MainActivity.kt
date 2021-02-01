@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     //채팅
     private fun moveChat() {
         supportFragmentManager.commit {
-            replace<ChatFragment>(R.id.user_container)
+            replace<ChatListFragment>(R.id.user_container)
         }
     }
     
