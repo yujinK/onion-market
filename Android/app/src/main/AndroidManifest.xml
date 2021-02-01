@@ -9,13 +9,15 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OnionMarket"
-        android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true">
-        <activity android:name=".view.DetailSaleActivity"
-            android:theme="@style/FullScreenTheme"></activity>
+        android:usesCleartextTraffic="true">
+        <activity android:name=".view.SaleChatActivity"></activity>
+        <activity
+            android:name=".view.DetailSaleActivity"
+            android:theme="@style/FullScreenTheme" />
         <activity android:name=".view.MySaleListActivity" />
         <activity android:name=".view.WriteActivity" />
         <activity android:name=".view.SignUpActivity" />

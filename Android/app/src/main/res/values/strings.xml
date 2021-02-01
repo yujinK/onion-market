@@ -87,6 +87,9 @@
     <string name="no_proposal">가격제안불가</string>
     <string name="chat_buy">채팅으로 거래하기</string>
 
+    <!-- Chat -->
+    <string name="receive_info">%1$s · %2$s</string>
+
     <!-- message -->
     <string name="server_connect_message">서버와의 통신에 문제가 있습니다. 관리자에게 문의해주세요.</string>
 </resources>
