@@ -35,5 +35,7 @@ module.exports = class User extends Sequelize.Model {
     static associate(db) {
         db.User.hasMany(db.Sale, { foreignKey: 'writer', sourceKey: 'id' });
         db.User.belongsTo(db.Location, { foreignKey: 'locationId', targetKey: 'id' });
+        db.User.hasOne(db.Chat, { foreignKey: 'buyUserId', sourceKey: 'id' });
+        db.User.hasOne(db.Message, { foreignKey: 'userId', sourceKey: 'id' });
     }
 };
