@@ -2,6 +2,10 @@ package com.yujin.onionmarket.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -22,6 +26,24 @@ class ChatActivity : AppCompatActivity() {
     private fun init() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.title = "사쿠란보"
+
+        val btnSend = findViewById<ImageButton>(R.id.ib_send)
+        val inputMessage = findViewById<EditText>(R.id.et_chat)
+        inputMessage.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isEmpty()) {
+                    btnSend.setColorFilter(getColor(R.color.btn_send_gray))
+                } else {
+                    btnSend.setColorFilter(getColor(R.color.greenery))
+                }
+            }
+        })
 
         initSale()
     }

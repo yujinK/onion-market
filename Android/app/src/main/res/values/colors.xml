@@ -17,7 +17,8 @@
     <color name="bg_greenery">#E0FFA6</color>
 
     <!-- chat -->
-    <color name="send_gray">#F8F9FB</color>
+    <color name="layout_send_gray">#F8F9FB</color>
     <color name="input_gray">#EBEEF1</color>
     <color name="hint_gray">#CED4DA</color>
+    <color name="btn_send_gray">#DEE1E6</color>
 </resources>
