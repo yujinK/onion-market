@@ -2,7 +2,6 @@ package com.yujin.onionmarket.network
 
 import com.yujin.onionmarket.data.*
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -44,14 +43,6 @@ interface RetrofitService {
                   @Field("writer") writer: Int,
                   @Field("categoryId") categoryId: Int)
     : Call<WriteSaleResponse>
-
-//    @Multipart
-//    @POST("sale/write/image")
-//    fun writeSaleImage(@Header("authorization") token: String,
-//                       @Query("saleId") saleId: Int,
-//                       @Part image: List<MultipartBody.Part>,
-//                       @Part("img") name: RequestBody)
-//    : Call<Void>
 
     @Multipart
     @POST("sale/upload/image")
@@ -102,4 +93,31 @@ interface RetrofitService {
                  @Field("priceProposal") priceProposal: Int,
                  @Field("categoryId") categoryId: Int)
     : Call<WriteSaleResponse>
+
+    @GET("chat/existingChat")
+    fun existingChat(@Header("authorization") token: String,
+                     @Query("saleId") saleId: Int,
+                     @Query("userId") userId: Int)
+    : Call<ChatIdResponse>
+
+    @FormUrlEncoded
+    @POST("chat/newChat")
+    fun newChat(@Header("authorization") token: String,
+                @Field("message") message: String,
+                @Field("buyUserId") buyUserId: Int,
+                @Field("saleId") saleId: Int)
+    : Call<ChatIdResponse>
+
+    @GET("chat/load/{chatId}")
+    fun readChat(@Header("authorization") token: String,
+                 @Path("chatId") chatId: Int)
+            : Call<ReadChatResponse>
+
+    @FormUrlEncoded
+    @POST("chat/send/{chatId}")
+    fun sendMessage(@Header("authorization") token: String,
+                    @Path("chatId") chatInt: Int,
+                    @Field("message") message: String,
+                    @Field("userId") userId: Int)
+    : Call<Void>
 }

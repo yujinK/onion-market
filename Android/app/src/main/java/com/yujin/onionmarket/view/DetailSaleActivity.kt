@@ -23,6 +23,7 @@ import com.asksira.loopingviewpager.indicator.CustomShapePagerIndicator
 import com.bumptech.glide.Glide
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.Util
+import com.yujin.onionmarket.data.Chat
 import com.yujin.onionmarket.data.Image
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.data.User

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,28 +15,83 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
-import com.yujin.onionmarket.data.Message
-import com.yujin.onionmarket.data.Sale
+import com.yujin.onionmarket.data.*
+import com.yujin.onionmarket.network.RetrofitClient
+import com.yujin.onionmarket.network.RetrofitService
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 class ChatActivity : AppCompatActivity() {
+    private lateinit var retrofit: Retrofit
+    private lateinit var chatService: RetrofitService
+
     private lateinit var adapter: MessageAdapter
+    private lateinit var socket: Socket
+
+    private lateinit var token: String
+    private lateinit var sale: Sale
+    private var chatId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-
+        token = Util.readToken(this)
         init()
     }
 
     private fun init() {
+        initSocket()
+        initRetrofit()
+        initToolbar()
+        initSendMessage()
+        initSale()
+        initMessages()
+        initChat()
+    }
+
+    private fun initSocket() {
+        socket = IO.socket(getString(R.string.socket_io))
+        socket.connect()
+        socket.on("chat", onMessageReceived)
+    }
+
+    private val onMessageReceived = Emitter.Listener { args ->
+        val receiveData = args[0]
+
+    }
+
+    private fun initRetrofit() {
+        retrofit = RetrofitClient.getInstance()
+        chatService = retrofit.create(RetrofitService::class.java)
+    }
+
+    private fun initToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         toolbar.title = "사쿠란보"
+        toolbar.setNavigationOnClickListener { finishChat() }
+    }
 
+    override fun onBackPressed() {
+        finishChat()
+    }
+
+    private fun finishChat() {
+        socket.close()
+        finish()
+    }
+
+    private fun initSendMessage() {
         val btnSend = findViewById<ImageButton>(R.id.ib_send)
         btnSend.setOnClickListener { sendMessage() }
         val inputMessage = findViewById<EditText>(R.id.et_chat)
@@ -54,13 +110,10 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         })
-
-        initSale()
-        initMessages()
     }
 
     private fun initSale() {
-        val sale = intent.getParcelableExtra<Sale>("sale")!!
+        sale = intent.getParcelableExtra("sale")!!
 
         val thumbnail = findViewById<ImageView>(R.id.iv_thumbnail)
         val url = getString(R.string.img_url) + sale.images[0].path
@@ -75,6 +128,10 @@ class ChatActivity : AppCompatActivity() {
         price.text = getString(R.string.price_won, NumberFormat.getNumberInstance(Locale.KOREA).format(sale.price))
     }
 
+    private fun initChat() {
+        checkChat()
+    }
+
     private fun initMessages() {
         val rvMessage = findViewById<RecyclerView>(R.id.rv_message)
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -84,11 +141,76 @@ class ChatActivity : AppCompatActivity() {
         rvMessage.adapter = adapter
     }
 
+    private fun checkChat() {
+        val user = Util.readUser(this)!!
+        val callChat = chatService.existingChat(token, sale.id, user.id)
+        callChat.enqueue(object: Callback<ChatIdResponse> {
+            override fun onResponse(
+                call: Call<ChatIdResponse>,
+                response: Response<ChatIdResponse>
+            ) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                    chatId = response.body()!!.chatId
+                    if (chatId != -1) {
+                        getMessages(chatId)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ChatIdResponse>, t: Throwable) {
+                Log.e("ChatActivity", "checkChat()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    private fun getMessages(chatId: Int) {
+        val callChat = chatService.readChat(token, chatId)
+        callChat.enqueue(object: Callback<ReadChatResponse> {
+            override fun onResponse(call: Call<ReadChatResponse>, response: Response<ReadChatResponse>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                    setMessages(response.body()!!.messages)
+                }
+            }
+
+            override fun onFailure(call: Call<ReadChatResponse>, t: Throwable) {
+                Log.e("ChatActivity", "getMessages()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    private fun setMessages(messages: ArrayList<Message>) {
+        adapter.setMessages(messages)
+    }
+
     private fun sendMessage() {
+        val user = Util.readUser(this)!!
         val input = findViewById<EditText>(R.id.et_chat)
         val message = input.text.toString()
-        val vMessage = Message(1, message, "5:10 오후", "", "석경", 1)
-        adapter.addMessage(vMessage)
+        if (chatId == -1) {
+            val callChat = chatService.newChat(token, message, user.id, sale.id)
+            callChat.enqueue(object: Callback<ChatIdResponse> {
+                override fun onResponse(call: Call<ChatIdResponse>, response: Response<ChatIdResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                        chatId = response.body()!!.chatId
+                    }
+                }
+
+                override fun onFailure(call: Call<ChatIdResponse>, t: Throwable) {
+                    Log.e("ChatActivity", "sendMessage()-[newChat onFailure] 실패 : $t")
+                }
+            })
+        } else {
+            val callChat = chatService.sendMessage(token, chatId, message, user.id)
+            callChat.enqueue(object: Callback<Void> {
+                override fun onResponse(call: Call<Void>, response: Response<Void>) {
+
+                }
+
+                override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.e("ChatActivity", "sendMessage()-[sendMessage onFailure] 실패 : $t")
+                }
+            })
+        }
         input.text = null
     }
 
@@ -102,6 +224,11 @@ class ChatActivity : AppCompatActivity() {
 
         fun addMessage(message: Message) {
             adapterMessageList.add(message)
+            notifyDataSetChanged()
+        }
+
+        fun setMessages(messages: ArrayList<Message>) {
+            adapterMessageList = messages
             notifyDataSetChanged()
         }
 
@@ -129,12 +256,14 @@ class ChatActivity : AppCompatActivity() {
         }
 
         override fun getItemViewType(position: Int): Int {
-            val nick = adapterMessageList[position].nick
+            val nick = adapterMessageList[position].user.nick
             return if (myNick == nick) {
                 TYPE_SEND
             } else {
                 TYPE_RECEIVE
             }
+
+            return TYPE_SEND
         }
 
         override fun getItemCount(): Int = adapterMessageList.size
@@ -151,11 +280,11 @@ class ChatActivity : AppCompatActivity() {
         inner class ReceiveViewHolder(itemView: View) : BaseViewHolder<Message>(itemView) {
             override fun bind(item: Message) {
                 val profile = itemView.findViewById<ImageView>(R.id.iv_profile)
-                if (item.profileImg.isNullOrEmpty()) {
+                if (item.user.img.isNullOrEmpty()) {
                     profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
                 } else {
                     Glide.with(context)
-                            .load(item.profileImg)
+                            .load(item.user.img)
                             .into(profile)
                 }
 

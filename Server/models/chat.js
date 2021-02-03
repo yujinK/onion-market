@@ -20,6 +20,7 @@ module.exports = class Chat extends Sequelize.Model {
     }
 
     static associate(db) {
+        db.Chat.hasMany(db.Message, { foreignKey: 'chatId', sourceKey: 'id' });
         db.Chat.belongsTo(db.Sale, { foreignKey: 'saleId', targetKey: 'id' });
         db.Chat.belongsTo(db.User, { foreignKey: 'buyUserId', targetKey: 'id' });
     }

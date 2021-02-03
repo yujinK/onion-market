@@ -28,10 +28,6 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         val dividerItemDecoration = DividerItemDecoration(chat?.context, layoutManager.orientation)
         val chatSet = ArrayList<Chat>()
-        chatSet.add(Chat("", "안녕", "논현동", "이거 팔렸나요?", ""))
-        chatSet.add(Chat("", "안녕2", "삼성동", "오늘 시간 되시나요", ""))
-        chatSet.add(Chat("", "안녕3", "갈산동", "어디서 거래하나요?", ""))
-        chatSet.add(Chat("", "안녕4", "잠원동", "제가 살게요", ""))
         chat?.layoutManager = layoutManager
         chat?.addItemDecoration(dividerItemDecoration)
         val adapter = ChatAdapter(requireContext(), chatSet)
@@ -46,24 +42,24 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            // 프로필 사진
-            if (chatSet[position].profile.isNullOrEmpty()) {
-                holder.profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
-            } else {
-                Glide.with(context)
-                        .load(chatSet[position].profile)
-                        .into(holder.profile)
-            }
-            
-            // 닉네임
-            holder.nick.text = chatSet[position].nick
-
-            // info
-            // TODO: Chat 시간 경과 다시 계산 (초, 분, 시간 전, 어제, 이후 날짜)
-            holder.info.text = context.getString(R.string.receive_info, chatSet[position].location, "어제")
-
-            // 최근 메시지
-            holder.lastMessage.text = chatSet[position].message
+//            // 프로필 사진
+//            if (chatSet[position].profile.isNullOrEmpty()) {
+//                holder.profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
+//            } else {
+//                Glide.with(context)
+//                        .load(chatSet[position].profile)
+//                        .into(holder.profile)
+//            }
+//
+//            // 닉네임
+//            holder.nick.text = chatSet[position].nick
+//
+//            // info
+//            // TODO: Chat 시간 경과 다시 계산 (초, 분, 시간 전, 어제, 이후 날짜)
+//            holder.info.text = context.getString(R.string.receive_info, chatSet[position].location, "어제")
+//
+//            // 최근 메시지
+//            holder.lastMessage.text = chatSet[position].message
         }
 
         override fun getItemCount(): Int = chatSet.size

@@ -69,5 +69,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx'
 
     //Socket.IO
-    implementation 'com.github.nkzawa:socket.io-client:0.6.0'
+    implementation 'io.socket:socket.io-client:2.0.0'
 }
