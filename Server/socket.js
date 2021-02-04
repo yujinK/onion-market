@@ -6,17 +6,34 @@ module.exports = (server, app) => {
     const chat = io.of('/chat');
 
     chat.on('connection', (socket) => {
-        console.log('chat 네임스페이스에 접속');
-        const chatId = socket.request.chatId;
-        socket.join(chatId);
-
-        socket.on('chat', (msg) => {
-            console.log("Message: " + msg);
+        socket.on('subscribe', (chatId) => {
+            socket.join(`${chatId}`);
+            console.log(`join chat: chatId - ${chatId}`);
         });
 
-        socket.on('disconnect', () => {
-            console.log('chat 네임스페이스 접속 해제');
-            socket.leave(chatId);
+        socket.on('newMessage', (data) => {
+            const messageData = JSON.parse(data);
+            const chatId = messageData.chatId;
+            const nick = messageData.nick;
+            const profile = messageData.profile;
+            const messageContent = messageData.message;
+            const createdAt = messageData.createdAt;
+
+            console.log(`[ChatId ${chatId}, nick: ${nick}] message: ${messageContent}`);
+
+            const chatData = {
+                chatId: chatId,
+                nick: nick,
+                profile: profile,
+                message: messageContent, 
+                createdAt: createdAt
+            };
+            socket.broadcast.to(`${chatId}`).emit('updateChat', JSON.stringify(chatData));
+        });
+
+        socket.on('disconnect', (chatId) => {
+            console.log(`exit chat`);
+            // socket.leave(chatId);
         });
     });
 

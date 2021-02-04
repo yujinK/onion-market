@@ -45,7 +45,7 @@ router.post('/newChat', passport.authenticate('jwt', { session: false }), async 
         }, { transaction: t });
         await t.commit();
         
-        req.app.get('io').to(newChat.id).emit('chat', message);
+        req.app.get('io').of('/chat').to(newChat.id).emit('chat', message);
         return res.status(201).json({ chatId: newChat.id });
     } catch (error) {
         console.error(error);
@@ -97,7 +97,7 @@ router.get('/load/:chatId', passport.authenticate('jwt', { session: false }), as
                 }
             ],
             where: { 
-                id: req.params.chatId
+                chatId: req.params.chatId
             },
             order: [
                 ['createdAt', 'ASC']
@@ -118,7 +118,8 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
             userId: req.body.userId,
             chatId: req.params.chatId
         });
-        req.app.get('io').of('/chat').to(req.params.chatId).emit('message', message);
+        req.app.get('io').of('/chat').to(req.params.chatId).emit('chat', message);
+        return res.status(201).end();
     } catch (error) {
         console.error(error);
     }
