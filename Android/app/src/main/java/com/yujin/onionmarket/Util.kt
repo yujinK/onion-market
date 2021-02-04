@@ -110,5 +110,33 @@ class Util {
             }
             return ""
         }
+
+        // 날짜만 추출하기 (yyyy년 mm월 dd일)
+        fun getDate(createdAt: String) : String {
+            val listDate = createdAt.split("T")[0].split("-")
+            return listDate[0] + "년 " + listDate[1] + "월 " + listDate[2] + "일"
+        }
+
+        // 시간만 추출하기 (00:00 오전/00:00 오후)
+        fun getTime(createdAt: String) : String {
+            val listTime = createdAt.split("T")[1].split(":")
+            val intHour = listTime[0].toInt()
+            val intMinute = listTime[1].toInt()
+
+            return if (intHour == 12) {
+                "${intHour}:${intMinute} 오후"
+            } else if (intHour < 12) {
+                "${intHour}:${intMinute} 오전"
+            } else {
+                "${intHour-12}:${intMinute} 오후"
+            }
+        }
+
+        // 현재 시각 가져오기
+        fun getCurrentKST() : String {
+            val kstFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.KOREA)
+            kstFormat.timeZone = TimeZone.getTimeZone("KST")
+            return kstFormat.format(Date())
+        }
     }
 }
