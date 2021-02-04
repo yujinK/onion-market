@@ -7,7 +7,18 @@
     android:layout_height="wrap_content"
     android:paddingTop="5dp"
     android:paddingBottom="5dp"
-    android:paddingLeft="10dp">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <include
+        android:id="@+id/v_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/view_chat_date"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_message"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
     <ImageView
         android:id="@+id/iv_profile"
@@ -31,7 +42,7 @@
         android:textSize="16dp"
         android:textColor="@color/black"
         android:background="@drawable/bg_receive_message"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_date"
         app:layout_constraintLeft_toRightOf="@id/iv_profile"
         app:layout_constraintRight_toLeftOf="@id/tv_time"
         tools:text="아직 판매하시나요?"/>
