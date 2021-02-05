@@ -135,7 +135,6 @@ class Util {
         // 현재 시각 가져오기
         fun getCurrentKST() : String {
             val kstFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.KOREA)
-            kstFormat.timeZone = TimeZone.getTimeZone("KST")
             return kstFormat.format(Date())
         }
     }
