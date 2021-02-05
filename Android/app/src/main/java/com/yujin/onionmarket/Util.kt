@@ -113,15 +113,20 @@ class Util {
 
         // 날짜만 추출하기 (yyyy년 mm월 dd일)
         fun getDate(createdAt: String) : String {
-            val listDate = createdAt.split("T")[0].split("-")
-            return listDate[0] + "년 " + listDate[1] + "월 " + listDate[2] + "일"
+            val kst = createdAt.toDate().formatTo("yyyy년 MM월 dd일")
+//            val listDate = kst.split("T")[0].split("-")
+//            return listDate[0] + "년 " + listDate[1] + "월 " + listDate[2] + "일"
+            return kst
         }
 
         // 시간만 추출하기 (00:00 오전/00:00 오후)
         fun getTime(createdAt: String) : String {
-            val listTime = createdAt.split("T")[1].split(":")
-            val intHour = listTime[0].toInt()
-            val intMinute = listTime[1].toInt()
+            val kst = createdAt.toDate().formatTo("HH:mm").split(":")
+            val intHour = kst[0].toInt()
+            val intMinute = kst[1].toInt()
+//            val listTime = kst.split("T")[1].split(":")
+//            val intHour = listTime[0].toInt()
+//            val intMinute = listTime[1].toInt()
 
             return if (intHour == 12) {
                 "${intHour}:${intMinute} 오후"
@@ -133,9 +138,22 @@ class Util {
         }
 
         // 현재 시각 가져오기
-        fun getCurrentKST() : String {
-            val kstFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.KOREA)
-            return kstFormat.format(Date())
+        fun getCurrentTime() : String {
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            return sdf.format(Date())
+        }
+
+        private fun String.toDate(dateFormat: String="yyyy-MM-dd'T'HH:mm:ss.SSS", timeZone: TimeZone = TimeZone.getTimeZone("UTC")) : Date {
+            val parser = SimpleDateFormat(dateFormat, Locale.getDefault())
+            parser.timeZone = timeZone
+            return parser.parse(this)
+        }
+
+        private fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()) : String {
+            val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+            formatter.timeZone = timeZone
+            return formatter.format(this)
         }
     }
 }
