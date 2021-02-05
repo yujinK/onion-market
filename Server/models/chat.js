@@ -5,7 +5,7 @@ module.exports = class Chat extends Sequelize.Model {
         return super.init({
             lastMessage: {
                 type: Sequelize.STRING(500),
-                allowNull: false,
+                allowNull: true,
             }
         }, {
             sequelize,

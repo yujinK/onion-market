@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.RetrofitClient
@@ -24,6 +25,9 @@ import com.yujin.onionmarket.network.RetrofitService
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import java.lang.IllegalArgumentException
 import java.text.NumberFormat
@@ -34,7 +38,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var chatService: RetrofitService
 
-    private val chatList: ArrayList<SendMessage> = arrayListOf()
+    private val chatList: ArrayList<Message> = arrayListOf()
     private lateinit var rvMessage: RecyclerView
     private lateinit var adapter: MessageAdapter
     private lateinit var socket: Socket
@@ -130,6 +134,70 @@ class ChatActivity : AppCompatActivity() {
         val myNick = Util.readUser(this)!!.nick
         adapter = MessageAdapter(this, myNick, chatList)
         rvMessage.adapter = adapter
+
+        checkChat()
+    }
+
+    // 기존 채팅 여부 확인
+    private fun checkChat() {
+        val user = Util.readUser(this)!!
+        val callChat = chatService.existingChat(token, sale.id, user.id)
+        callChat.enqueue(object: Callback<ChatIdResponse> {
+            override fun onResponse(call: Call<ChatIdResponse>, response: Response<ChatIdResponse>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                    chatId = response.body()!!.chatId
+                    if (chatId == -1) {
+                        startNewChat()
+                    } else {
+                        getMessages()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ChatIdResponse>, t: Throwable) {
+                Log.e("ChatActivity", "getMessages()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    // 새로운 채팅 시작
+    private fun startNewChat() {
+        val user = Util.readUser(this)!!
+        val callChat = chatService.newChat(token, user.id, sale.id)
+        callChat.enqueue(object: Callback<ChatIdResponse> {
+            override fun onResponse(call: Call<ChatIdResponse>, response: Response<ChatIdResponse>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                    chatId = response.body()!!.chatId
+                    initSocket()
+                }
+            }
+
+            override fun onFailure(call: Call<ChatIdResponse>, t: Throwable) {
+                Log.e("ChatActivity", "startNewChat()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    // 기존 채팅 가져오기
+    private fun getMessages() {
+        val callChat = chatService.loadChat(token, chatId)
+        callChat.enqueue(object: Callback<LoadChatResponse> {
+            override fun onResponse(call: Call<LoadChatResponse>, response: Response<LoadChatResponse>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                    val messages = response.body()!!.messages
+                    for (message in messages) {
+                        chatList.add(message)
+                    }
+                    adapter.notifyDataSetChanged()
+                    rvMessage.scrollToPosition(chatList.size - 1)
+                    initSocket()
+                }
+            }
+
+            override fun onFailure(call: Call<LoadChatResponse>, t: Throwable) {
+                Log.e("ChatActivity", "getMessages()-[onFailure] 실패 : $t")
+            }
+        })
     }
 
     private fun initSocket() {
@@ -140,30 +208,39 @@ class ChatActivity : AppCompatActivity() {
     }
 
     var onConnect = Emitter.Listener {
-        // chatiId 전달
-        chatId = 1
         val jsonData = gson.toJson(chatId)
         socket.emit("subscribe", jsonData)
     }
 
     var onUpdateChat = Emitter.Listener {
-        val chat: SendMessage = gson.fromJson(it[0].toString(), SendMessage::class.java)
-        //TODO: 여기서 채팅 viewType 지정
+        val chat: Message = gson.fromJson(it[0].toString(), Message::class.java)
         Log.d("", chat.toString())
         addItemToRecyclerView(chat)
     }
 
     private fun sendMessage() {
-        val nick = Util.readUser(this)!!.nick
+        val user = Util.readUser(this)!!
         val message = etChat.text.toString()
-        val sendData = SendMessage(chatId, nick, "", message, Util.getCurrentKST())
+        val createdAt = Util.getCurrentTime()
+        val sendData = Message(-1, message, createdAt, user, chatId)
+//        val sendData = SendMessage(chatId, nick, "", message, Util.getCurrentKST())
         val jsonData = gson.toJson(sendData)
         socket.emit("newMessage", jsonData)
-
         addItemToRecyclerView(sendData)
+
+        val callChat = chatService.sendMessage(token, chatId, message, user.id)
+        callChat.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("ChatActivity", "sendMessage()-[onFailure] 실패 : $t")
+            }
+        })
     }
 
-    private fun addItemToRecyclerView(message: SendMessage) {
+    private fun addItemToRecyclerView(message: Message) {
         runOnUiThread {
             chatList.add(message)
             adapter.notifyItemInserted(chatList.size)
@@ -172,7 +249,7 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    class MessageAdapter(private val context: Context, private val myNick: String, private val chatList: ArrayList<SendMessage>) : RecyclerView.Adapter<MessageAdapter.BaseViewHolder<*>>() {
+    class MessageAdapter(private val context: Context, private val myNick: String, private val chatList: ArrayList<Message>) : RecyclerView.Adapter<MessageAdapter.BaseViewHolder<*>>() {
         companion object {
             private const val TYPE_SEND = 0
             private const val TYPE_RECEIVE = 1
@@ -195,8 +272,10 @@ class ChatActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
             val message = chatList[position]
             // 채팅 첫 시작 || 채팅 날짜 변화 : true
+//            val visibleDate = position == 0 ||
+//                    message.createdAt.split("T")[0] != chatList[position-1].createdAt.split("T")[0]
             val visibleDate = position == 0 ||
-                    message.createdAt.split("T")[0] != chatList[position-1].createdAt.split("T")[0]
+                    Util.getDate(message.createdAt) != Util.getDate(chatList[position-1].createdAt)
 
             when (holder) {
                 is SendViewHolder -> holder.bind(message, visibleDate)
@@ -206,7 +285,7 @@ class ChatActivity : AppCompatActivity() {
         }
 
         override fun getItemViewType(position: Int): Int {
-            val nick = chatList[position].nick
+            val nick = chatList[position].user.nick
             return if (myNick == nick) {
                 TYPE_SEND
             } else {
@@ -218,8 +297,8 @@ class ChatActivity : AppCompatActivity() {
 
         override fun getItemCount(): Int = chatList.size
 
-        inner class SendViewHolder(itemView: View) : BaseViewHolder<SendMessage>(itemView) {
-            override fun bind(item: SendMessage, visibleDate: Boolean) {
+        inner class SendViewHolder(itemView: View) : BaseViewHolder<Message>(itemView) {
+            override fun bind(item: Message, visibleDate: Boolean) {
                 val viewDate = itemView.findViewById<ConstraintLayout>(R.id.v_date)
                 if (visibleDate) {
                     viewDate.visibility = View.VISIBLE
@@ -236,8 +315,8 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-        inner class ReceiveViewHolder(itemView: View) : BaseViewHolder<SendMessage>(itemView) {
-            override fun bind(item: SendMessage, visibleDate: Boolean) {
+        inner class ReceiveViewHolder(itemView: View) : BaseViewHolder<Message>(itemView) {
+            override fun bind(item: Message, visibleDate: Boolean) {
                 val viewDate = itemView.findViewById<ConstraintLayout>(R.id.v_date)
                 if (visibleDate) {
                     viewDate.visibility = View.VISIBLE
@@ -248,11 +327,11 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 val profile = itemView.findViewById<ImageView>(R.id.iv_profile)
-                if (item.profile.isEmpty()) {
+                if (item.user.img.isEmpty()) {
                     profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
                 } else {
                     Glide.with(context)
-                            .load(item.profile)
+                            .load(item.user.img)
                             .into(profile)
                 }
 

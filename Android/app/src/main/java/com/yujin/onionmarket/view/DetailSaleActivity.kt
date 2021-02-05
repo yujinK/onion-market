@@ -56,9 +56,14 @@ class DetailSaleActivity : AppCompatActivity() {
     }
 
     private fun buyChat(sale: Sale) {
-        val intent = Intent(this, ChatActivity::class.java)
-        intent.putExtra("sale", sale)
-        startActivity(intent)
+        val myUser = Util.readUser(this)!!
+        if (sale.user.id != myUser.id) {
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra("sale", sale)
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, getString(R.string.my_sale_chat_message), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setView(sale: Sale) {

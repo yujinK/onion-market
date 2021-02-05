@@ -103,20 +103,19 @@ interface RetrofitService {
     @FormUrlEncoded
     @POST("chat/newChat")
     fun newChat(@Header("authorization") token: String,
-                @Field("message") message: String,
                 @Field("buyUserId") buyUserId: Int,
                 @Field("saleId") saleId: Int)
     : Call<ChatIdResponse>
 
     @GET("chat/load/{chatId}")
-    fun readChat(@Header("authorization") token: String,
+    fun loadChat(@Header("authorization") token: String,
                  @Path("chatId") chatId: Int)
-            : Call<ReadChatResponse>
+            : Call<LoadChatResponse>
 
     @FormUrlEncoded
     @POST("chat/send/{chatId}")
     fun sendMessage(@Header("authorization") token: String,
-                    @Path("chatId") chatInt: Int,
+                    @Path("chatId") chatId: Int,
                     @Field("message") message: String,
                     @Field("userId") userId: Int)
     : Call<Void>

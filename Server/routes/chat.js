@@ -31,21 +31,12 @@ router.get('/existingChat', passport.authenticate('jwt', { session: false }), as
 
 // 새로운 채팅 시작
 router.post('/newChat', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-    const t = await sequelize.transaction();
     try {
         const newChat = await Chat.create({
-            lastMessage: req.body.message,
+            lastMessage: "",
             buyUserId: req.body.buyUserId,
             saleId: req.body.saleId
-        }, { transaction: t });
-        const message = await Message.create({
-            message: req.body.message,
-            chatId: newChat.id,
-            userId: req.body.buyUserId
-        }, { transaction: t });
-        await t.commit();
-        
-        req.app.get('io').of('/chat').to(newChat.id).emit('chat', message);
+        });
         return res.status(201).json({ chatId: newChat.id });
     } catch (error) {
         console.error(error);
@@ -55,7 +46,7 @@ router.post('/newChat', passport.authenticate('jwt', { session: false }), async 
 // 유저 채팅 모두 가져오기
 router.get('/user/:userId', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        const chat = await Chat.findAll({
+        await Chat.findAll({
             include: [
                 {
                     model: Sale,
@@ -89,7 +80,7 @@ router.get('/user/:userId', passport.authenticate('jwt', { session: false }), as
 // 기존 채팅 불러오기
 router.get('/load/:chatId', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        const messages = await Message.findAll({
+        await Message.findAll({
             include: [
                 {
                     model: User,
@@ -113,13 +104,13 @@ router.get('/load/:chatId', passport.authenticate('jwt', { session: false }), as
 // 채팅
 router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        const message = await Message.create({
+        await Message.create({
             message: req.body.message,
             userId: req.body.userId,
             chatId: req.params.chatId
+        }).then(function (result) {
+            return res.status(201).end();
         });
-        req.app.get('io').of('/chat').to(req.params.chatId).emit('chat', message);
-        return res.status(201).end();
     } catch (error) {
         console.error(error);
     }
