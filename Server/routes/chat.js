@@ -103,15 +103,24 @@ router.get('/load/:chatId', passport.authenticate('jwt', { session: false }), as
 
 // 채팅
 router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const t = await sequelize.transaction();
     try {
+        await Chat.update(
+            { lastMessage: req.body.message },
+            { where: { id: req.params.chatId } }
+        , { transaction: t });
+        
         await Message.create({
             message: req.body.message,
             userId: req.body.userId,
             chatId: req.params.chatId
-        }).then(function (result) {
+        }, { transaction: t });
+        
+        await t.commit().then(function (result) {
             return res.status(201).end();
         });
     } catch (error) {
+        await t.rollback();
         console.error(error);
     }
 });

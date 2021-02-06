@@ -155,6 +155,7 @@ router.post('/write/image', passport.authenticate('jwt', { session: false }), as
             return res.status(201).end();
         });
     } catch(error) {
+        await t.rollback();
         console.error(error);
     }
 });

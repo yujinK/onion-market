@@ -1,17 +1,11 @@
 package com.yujin.onionmarket.view
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +20,8 @@ import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.ReadSaleResponse
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.AuthService
+import com.yujin.onionmarket.network.SaleService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -75,7 +70,7 @@ class SaleListAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
 class MySaleFragment(private val position: Int) : Fragment() {
     private lateinit var retrofit: Retrofit
-    private lateinit var saleService: RetrofitService
+    private lateinit var saleService: SaleService
 
     private lateinit var recyclerView: RecyclerView
 
@@ -109,7 +104,7 @@ class MySaleFragment(private val position: Int) : Fragment() {
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        saleService = retrofit.create(RetrofitService::class.java)
+        saleService = retrofit.create(SaleService::class.java)
     }
 
     private fun readSale() {

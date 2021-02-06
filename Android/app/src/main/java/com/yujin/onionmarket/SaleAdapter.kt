@@ -1,6 +1,5 @@
 package com.yujin.onionmarket
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -10,18 +9,14 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.SaleService
 import com.yujin.onionmarket.view.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +29,7 @@ import kotlin.collections.ArrayList
 // state: 0(HomeFragment), 1(MySaleFragment)
 class SaleAdapter(private val context: Context, private val dataSet: ArrayList<Sale>, private val state: Int) : RecyclerView.Adapter<SaleAdapter.ViewHolder>() {
     private lateinit var retrofit: Retrofit
-    private lateinit var manageService: RetrofitService
+    private lateinit var saleService: SaleService
 
     private lateinit var manageSheet: BottomSheetDialog
 
@@ -46,7 +41,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        manageService = retrofit.create(RetrofitService::class.java)
+        saleService = retrofit.create(SaleService::class.java)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -140,7 +135,7 @@ class SaleAdapter(private val context: Context, private val dataSet: ArrayList<S
 
     private fun deleteSale(position: Int) {
         val token = Util.readToken(context)
-        val callDelete = manageService.deleteSale(token, dataSet[position].id)
+        val callDelete = saleService.deleteSale(token, dataSet[position].id)
         callDelete.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {

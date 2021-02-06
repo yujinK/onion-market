@@ -18,11 +18,6 @@ module.exports = (server, app) => {
             const createdAt = messageData.createdAt;
             const user = messageData.User;
             const chatId = messageData.chatId;
-            // const chatId = messageData.chatId;
-            // const nick = messageData.nick;
-            // const profile = messageData.profile;
-            // const messageContent = messageData.message;
-            // const createdAt = messageData.createdAt;
 
             console.log(`[ChatId ${chatId}, nick: ${user.nick}] message: ${messageContent}`);
 
@@ -33,19 +28,12 @@ module.exports = (server, app) => {
                 user: user,
                 chatId: chatId
             };
-            // const chatData = {
-            //     chatId: chatId,
-            //     nick: nick,
-            //     profile: profile,
-            //     message: messageContent, 
-            //     createdAt: createdAt
-            // };
             socket.broadcast.to(`${chatId}`).emit('updateChat', JSON.stringify(chatData));
         });
 
         socket.on('disconnect', (chatId) => {
             console.log(`exit chat`);
-            // socket.leave(chatId);
+            socket.leave(chatId);
         });
     });
 

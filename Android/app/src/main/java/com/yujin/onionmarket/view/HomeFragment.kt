@@ -1,6 +1,5 @@
 package com.yujin.onionmarket.view
 
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -9,12 +8,9 @@ import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +20,8 @@ import com.yujin.onionmarket.*
 import com.yujin.onionmarket.data.ReadSaleResponse
 import com.yujin.onionmarket.data.Sale
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.AuthService
+import com.yujin.onionmarket.network.SaleService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,7 +29,7 @@ import retrofit2.Retrofit
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var retrofit: Retrofit
-    private lateinit var homeService: RetrofitService
+    private lateinit var saleService: SaleService
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var locationView: LocationView
@@ -71,7 +68,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        homeService = retrofit.create(RetrofitService::class.java)
+        saleService = retrofit.create(SaleService::class.java)
     }
 
     private fun initSwipeRefreshLayout(view: View) {
@@ -127,7 +124,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val token = Util.readToken(requireActivity())
         val locationId = Util.readUser(requireActivity())?.location?.id
         if (token != "" && locationId != null) {
-            val callSales = homeService.readSaleWithLocation(token, locationId, 0)
+            val callSales = saleService.readSaleWithLocation(token, locationId, 0)
             callSales.enqueue(object : Callback<ReadSaleResponse> {
                 override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {

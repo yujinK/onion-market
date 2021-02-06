@@ -14,7 +14,7 @@ import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.User
 import com.yujin.onionmarket.data.UserResponse
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.AuthService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,7 +22,7 @@ import retrofit2.Retrofit
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
-    private lateinit var loginService: RetrofitService
+    private lateinit var loginService: AuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        loginService = retrofit.create(RetrofitService::class.java)
+        loginService = retrofit.create(AuthService::class.java)
     }
 
     // 로그인
