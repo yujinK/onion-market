@@ -129,11 +129,14 @@ class Util {
 //            val intMinute = listTime[1].toInt()
 
             return if (intHour == 12) {
-                "${intHour}:${intMinute} 오후"
+                String.format("%02d:%02d 오후", intHour, intMinute)
+//                "${intHour}:${intMinute} 오후"
             } else if (intHour < 12) {
-                "${intHour}:${intMinute} 오전"
+                String.format("%02d:%02d 오전", intHour, intMinute)
+//                "${intHour}:${intMinute} 오전"
             } else {
-                "${intHour-12}:${intMinute} 오후"
+                String.format("%02d:%02d 오후", intHour-12, intMinute)
+//                "${intHour-12}:${intMinute} 오후"
             }
         }
 
