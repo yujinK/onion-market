@@ -114,10 +114,12 @@ class ChatActivity : AppCompatActivity() {
         sale = intent.getParcelableExtra("sale")!!
 
         val thumbnail = findViewById<ImageView>(R.id.iv_thumbnail)
-        val url = getString(R.string.img_url) + sale.images[0].path
-        Glide.with(this)
-                .load(url)
-                .into(thumbnail)
+        if (sale.images.isNotEmpty()) {
+            val url = getString(R.string.img_url) + sale.images[0].path
+            Glide.with(this)
+                    .load(url)
+                    .into(thumbnail)
+        }
 
         val title = findViewById<TextView>(R.id.tv_title)
         title.text = sale.title
