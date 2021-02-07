@@ -45,6 +45,8 @@ class DetailSaleActivity : AppCompatActivity() {
 
     private lateinit var btnChat: Button
 
+    private lateinit var sale: Sale
+
     private var saleChatList: ArrayList<Chat> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +64,7 @@ class DetailSaleActivity : AppCompatActivity() {
         }
         toolbar.setNavigationOnClickListener { finish() }
 
-        val sale = intent.getParcelableExtra<Sale>("sale")!!
+        sale = intent.getParcelableExtra("sale")!!
 
         initRetrofit()
         setView(sale)
@@ -172,7 +174,7 @@ class DetailSaleActivity : AppCompatActivity() {
             showChatSheet()
         } else {
             // 채팅 시작
-            startChat(sale)
+            startBuyChat(sale)
         }
     }
 
@@ -219,9 +221,16 @@ class DetailSaleActivity : AppCompatActivity() {
         }
     }
 
-    private fun startChat(sale: Sale) {
+    private fun startBuyChat(sale: Sale) {
         val intent = Intent(this, ChatActivity::class.java)
         intent.putExtra("sale", sale)
+        startActivity(intent)
+    }
+
+    private fun startSaleChat(sale: Sale, chat: Chat) {
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("sale", sale)
+        intent.putExtra("chat", chat)
         startActivity(intent)
     }
 
@@ -256,7 +265,7 @@ class DetailSaleActivity : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             if (chatList[position].buyUser.img.isEmpty()) {
-                holder.profile.setImageDrawable(getDrawable(R.drawable.ic_profile))
+                holder.profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
             } else {
                 Glide.with(context)
                         .load(chatList[position].buyUser.img)
@@ -270,6 +279,8 @@ class DetailSaleActivity : AppCompatActivity() {
             holder.locationDate.text = getString(R.string.str_dot_str, location, date)
 
             holder.lastMessage.text = chatList[position].lastMessage
+
+            holder.itemView.setOnClickListener { startSaleChat(sale, chatList[position]) }
         }
 
         override fun getItemCount(): Int = chatList.size

@@ -25,7 +25,7 @@ module.exports = (server, app) => {
                 id: id,
                 message: messageContent,
                 createdAt: createdAt,
-                user: user, 
+                User: user, 
                 chatId: chatId
             };
             socket.broadcast.to(`${chatId}`).emit('updateChat', JSON.stringify(chatData));

@@ -38,7 +38,6 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var chatService: ChatService
 
-    private val chatList: ArrayList<Message> = arrayListOf()
     private lateinit var rvMessage: RecyclerView
     private lateinit var adapter: MessageAdapter
     private lateinit var socket: Socket
@@ -55,6 +54,7 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
         token = Util.readToken(this)
+        sale = intent.getParcelableExtra("sale")!!
         init()
     }
 
@@ -74,8 +74,15 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        // TODO: 상대방 닉네임 설정
-        toolbar.title = "사쿠란보"
+        val chat = intent.getParcelableExtra<Chat>("chat")
+        if (chat != null) {
+            // 내가 판매자, 상대방이 구매자
+            toolbar.title = chat.buyUser.nick
+            chatId = chat.id
+        } else {
+            // 내가 구매자, 상대방이 판매자
+            toolbar.title = sale.user.nick
+        }
         toolbar.setNavigationOnClickListener { finishChat() }
     }
 
@@ -84,7 +91,6 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun finishChat() {
-//        val jsonData = gson.toJson(chatId)
         socket.disconnect()
         finish()
     }
@@ -112,8 +118,6 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun initSale() {
-        sale = intent.getParcelableExtra("sale")!!
-
         val thumbnail = findViewById<ImageView>(R.id.iv_thumbnail)
         if (sale.images.isNotEmpty()) {
             val url = getString(R.string.img_url) + sale.images[0].path
@@ -135,10 +139,14 @@ class ChatActivity : AppCompatActivity() {
         rvMessage.layoutManager = layoutManager
 
         val myNick = Util.readUser(this)!!.nick
-        adapter = MessageAdapter(this, myNick, chatList)
+        adapter = MessageAdapter(this, myNick)
         rvMessage.adapter = adapter
 
-        checkChat()
+        if (chatId == -1) {
+            checkChat()
+        } else {
+            getMessages()
+        }
     }
 
     // 기존 채팅 여부 확인
@@ -189,10 +197,10 @@ class ChatActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
                     val messages = response.body()!!.messages
                     for (message in messages) {
-                        chatList.add(message)
+                        adapter.addMessage(message)
                     }
                     adapter.notifyDataSetChanged()
-                    rvMessage.scrollToPosition(chatList.size - 1)
+                    rvMessage.scrollToPosition(adapter.itemCount - 1)
                     initSocket()
                 }
             }
@@ -226,7 +234,6 @@ class ChatActivity : AppCompatActivity() {
         val message = etChat.text.toString()
         val createdAt = Util.getCurrentTime()
         val sendData = Message(-1, message, createdAt, user, chatId)
-//        val sendData = SendMessage(chatId, nick, "", message, Util.getCurrentKST())
         val jsonData = gson.toJson(sendData)
         socket.emit("newMessage", jsonData)
         addItemToRecyclerView(sendData)
@@ -245,17 +252,23 @@ class ChatActivity : AppCompatActivity() {
 
     private fun addItemToRecyclerView(message: Message) {
         runOnUiThread {
-            chatList.add(message)
-            adapter.notifyItemInserted(chatList.size)
+            adapter.addMessage(message)
+            adapter.notifyItemInserted(adapter.itemCount)
             etChat.text = null
-            rvMessage.scrollToPosition(chatList.size - 1)
+            rvMessage.scrollToPosition(adapter.itemCount - 1)
         }
     }
 
-    class MessageAdapter(private val context: Context, private val myNick: String, private val chatList: ArrayList<Message>) : RecyclerView.Adapter<MessageAdapter.BaseViewHolder<*>>() {
+    class MessageAdapter(private val context: Context, private val myNick: String) : RecyclerView.Adapter<MessageAdapter.BaseViewHolder<*>>() {
+        private val chatList: ArrayList<Message> = arrayListOf()
+
         companion object {
             private const val TYPE_SEND = 0
             private const val TYPE_RECEIVE = 1
+        }
+
+        fun addMessage(message: Message) {
+            chatList.add(message)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
@@ -275,8 +288,6 @@ class ChatActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
             val message = chatList[position]
             // 채팅 첫 시작 || 채팅 날짜 변화 : true
-//            val visibleDate = position == 0 ||
-//                    message.createdAt.split("T")[0] != chatList[position-1].createdAt.split("T")[0]
             val visibleDate = position == 0 ||
                     Util.getDate(message.createdAt) != Util.getDate(chatList[position-1].createdAt)
 
