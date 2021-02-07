@@ -15,8 +15,11 @@ data class Chat (
     @SerializedName("createdAt")
     var createdAt: String = "",
 
-    @SerializedName("buyUserId")
-    var buyUserId: Int = -1,
+    @SerializedName("updatedAt")
+    var updatedAt: String = "",
+
+    @SerializedName("User")
+    var buyUser: User,
 
     @SerializedName("saleId")
     var saleInt: Int = -1

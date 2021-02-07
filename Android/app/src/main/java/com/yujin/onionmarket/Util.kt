@@ -111,11 +111,54 @@ class Util {
             return ""
         }
 
+        // 대화중인 채팅방 시간 계산
+        fun getSaleChatDiff(updatedAt: String?) : String {
+            if (!updatedAt.isNullOrEmpty()) {
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                val pos = ParsePosition(0)
+                val then = formatter.parse(updatedAt, pos).time
+                val now = Date().time
+
+                val seconds = (now - then) / 1000
+                val minutes = seconds / 60
+                val hours = minutes / 60
+                val days = hours / 24
+                val weeks = days / 7
+                val months = weeks / 30
+                val years = months / 12
+
+                var lapse = ""
+                var num: Long = 0
+                if (years > 0) {
+                    lapse = updatedAt.toDate().formatTo("yyyy년 MM월 dd일")
+                }
+                else if (months > 0 || weeks > 0) {
+                    lapse = updatedAt.toDate().formatTo("MM월 dd일")
+                }
+                else if (days > 0) {
+                    lapse = "${days}일 전"
+                }
+                else if (hours > 0) {
+                    lapse = "${hours}시간 전"
+                }
+                else if (minutes > 0) {
+                    lapse = "${minutes}분 전"
+                }
+                else if (seconds > 0) {
+                    lapse = "${seconds}초 전"
+                }
+                else {
+                    lapse = "방금 전"
+                }
+
+                return lapse
+            }
+            return ""
+        }
+
         // 날짜만 추출하기 (yyyy년 mm월 dd일)
         fun getDate(createdAt: String) : String {
             val kst = createdAt.toDate().formatTo("yyyy년 MM월 dd일")
-//            val listDate = kst.split("T")[0].split("-")
-//            return listDate[0] + "년 " + listDate[1] + "월 " + listDate[2] + "일"
             return kst
         }
 
@@ -124,19 +167,13 @@ class Util {
             val kst = createdAt.toDate().formatTo("HH:mm").split(":")
             val intHour = kst[0].toInt()
             val intMinute = kst[1].toInt()
-//            val listTime = kst.split("T")[1].split(":")
-//            val intHour = listTime[0].toInt()
-//            val intMinute = listTime[1].toInt()
 
             return if (intHour == 12) {
                 String.format("%02d:%02d 오후", intHour, intMinute)
-//                "${intHour}:${intMinute} 오후"
             } else if (intHour < 12) {
                 String.format("%02d:%02d 오전", intHour, intMinute)
-//                "${intHour}:${intMinute} 오전"
             } else {
                 String.format("%02d:%02d 오후", intHour-12, intMinute)
-//                "${intHour-12}:${intMinute} 오후"
             }
         }
 

@@ -1,15 +1,19 @@
 package com.yujin.onionmarket.network
 
 import com.yujin.onionmarket.data.*
-import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
 interface ChatService {
-    @GET("chat/existingChat")
-    fun existingChat(@Header("authorization") token: String,
-                     @Query("saleId") saleId: Int,
-                     @Query("userId") userId: Int)
+    @GET("chat/existingSaleChat")
+    fun existingSaleChat(@Header("authorization") token: String,
+                         @Query("saleId") saleId: Int)
+    : Call<ChatsResponse>
+
+    @GET("chat/existingBuyChat")
+    fun existingBuyChat(@Header("authorization") token: String,
+                        @Query("saleId") saleId: Int,
+                        @Query("userId") userId: Int)
     : Call<ChatIdResponse>
 
     @FormUrlEncoded

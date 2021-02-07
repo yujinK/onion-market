@@ -21,7 +21,6 @@ import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.AuthService
 import com.yujin.onionmarket.network.ChatService
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -145,7 +144,7 @@ class ChatActivity : AppCompatActivity() {
     // 기존 채팅 여부 확인
     private fun checkChat() {
         val user = Util.readUser(this)!!
-        val callChat = chatService.existingChat(token, sale.id, user.id)
+        val callChat = chatService.existingBuyChat(token, sale.id, user.id)
         callChat.enqueue(object: Callback<ChatIdResponse> {
             override fun onResponse(call: Call<ChatIdResponse>, response: Response<ChatIdResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {

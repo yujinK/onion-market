@@ -58,7 +58,7 @@
     <string name="cancel">취소</string>
 
     <!-- Location -->
-
+    <string name="str_location">%1$s %2$s</string>
 
     <!-- Write -->
     <string name="write_title">중고거래 글쓰기</string>
@@ -72,7 +72,6 @@
 
     <!-- Sale -->
     <string name="img_url">http://172.30.1.43:3000/img/</string>
-    <string name="str_dot_str">%1$s · %2$s</string>
     <string name="price_won">%1$s원</string>
 
     <!-- Manage Sale -->
@@ -86,14 +85,19 @@
     <string name="ok_proposal">가격제안가능</string>
     <string name="no_proposal">가격제안불가</string>
     <string name="chat_buy">채팅으로 거래하기</string>
+    <string name="chat_buy_num">채팅으로 거래하기 (%1$d)</string>
     <string name="my_sale_chat_message">자신이 올린 게시물에는 채팅을 할 수 없습니다.</string>
 
     <!-- Chat -->
-    <string name="receive_info">%1$s · %2$s</string>
     <string name="plan">거래약속 만들기</string>
     <string name="hint_send_chat">메시지를 입력하세요</string>
     <string name="socket_io">http://172.30.1.43:3000/chat</string>
+    <string name="chat_list">대화중인 채팅방</string>
+    <string name="no_sale_chat">대화를 시작한 채팅 상대가 없습니다.</string>
 
     <!-- message -->
     <string name="server_connect_message">서버와의 통신에 문제가 있습니다. 관리자에게 문의해주세요.</string>
+
+    <!-- common -->
+    <string name="str_dot_str">%1$s · %2$s</string>
 </resources>

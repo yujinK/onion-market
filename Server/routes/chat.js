@@ -5,12 +5,37 @@ const Chat = require('../models/chat');
 const Message = require('../models/message');
 const Sale = require('../models/sale');
 const User = require('../models/user');
+const Location = require('../models/location');
 const { sequelize } = require('../models');
 
 const router = express.Router();
 
-// 기존 채팅 있는지 확인
-router.get('/existingChat', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+// 기존 채팅 있는지 확인 (판매자))
+router.get('/existingSaleChat', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    try {
+        const chat = await Chat.findAll({
+            include: [
+                {
+                    model: User,
+                    require: true,
+                    include: [{
+                        model: Location
+                    }]
+                }
+            ],
+            where: {
+                saleId: req.query.saleId
+            }
+        }).then(function (chat) {
+            return res.status(200).json({ chats: chat })
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+// 기존 채팅 있는지 확인 (구매자)
+router.get('/existingBuyChat', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const chat = await Chat.findOne({
             where: {
@@ -55,7 +80,7 @@ router.get('/user/:userId', passport.authenticate('jwt', { session: false }), as
                         id: req.params.userId
                     },
                     include: [{
-                        mode: User
+                        model: User
                     }]
                 }
             ],
