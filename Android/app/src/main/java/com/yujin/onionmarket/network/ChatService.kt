@@ -35,4 +35,9 @@ interface ChatService {
                     @Field("message") message: String,
                     @Field("userId") userId: Int)
     : Call<Void>
+
+    @DELETE("chat/delete/{chatId}")
+    fun deleteChat(@Header("authorization") token: String,
+                   @Path("chatId") chatId: Int)
+    : Call<Void>
 }

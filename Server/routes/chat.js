@@ -150,5 +150,18 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
     }
 });
 
+// 빈 채팅방 삭제
+router.delete('/delete/:chatId', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    try {
+        await Chat.destroy({
+            where: { id: req.params.chatId }
+        }).then(function (result) {
+            return res.status(200).end();
+        })
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 module.exports = router;
 
