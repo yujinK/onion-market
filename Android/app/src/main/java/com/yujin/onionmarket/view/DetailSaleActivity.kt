@@ -44,6 +44,7 @@ class DetailSaleActivity : AppCompatActivity() {
     private lateinit var chatService: ChatService
 
     private lateinit var btnChat: Button
+    private lateinit var chatSheet: BottomSheetDialog
 
     private lateinit var sale: Sale
 
@@ -181,7 +182,6 @@ class DetailSaleActivity : AppCompatActivity() {
     private fun findSaleChatList(sale: Sale) {
         // 채팅 1개 이상이면 showChatSheet()
         val token = Util.readToken(this)
-        val user = Util.readUser(this)!!
         val callChat = chatService.existingSaleChat(token, sale.id)
         callChat.enqueue(object: Callback<ChatsResponse> {
             override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
@@ -201,7 +201,7 @@ class DetailSaleActivity : AppCompatActivity() {
 
     private fun showChatSheet() {
         if (saleChatList.size > 0) {
-            val chatSheet = BottomSheetDialog(this)
+            chatSheet = BottomSheetDialog(this)
             val view = LayoutInflater.from(this).inflate(R.layout.item_dialog_chat, null, false)
             chatSheet.setContentView(view)
 
@@ -228,6 +228,7 @@ class DetailSaleActivity : AppCompatActivity() {
     }
 
     private fun startSaleChat(sale: Sale, chat: Chat) {
+        chatSheet.dismiss()
         val intent = Intent(this, ChatActivity::class.java)
         intent.putExtra("sale", sale)
         intent.putExtra("chat", chat)
