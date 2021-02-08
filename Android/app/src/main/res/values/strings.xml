@@ -94,6 +94,7 @@
     <string name="socket_io">http://172.30.1.43:3000/chat</string>
     <string name="chat_list">대화중인 채팅방</string>
     <string name="no_sale_chat">대화를 시작한 채팅 상대가 없습니다.</string>
+    <string name="no_chat">채팅방이 없습니다.</string>
 
     <!-- message -->
     <string name="server_connect_message">서버와의 통신에 문제가 있습니다. 관리자에게 문의해주세요.</string>

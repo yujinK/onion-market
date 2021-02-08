@@ -2,6 +2,7 @@ package com.yujin.onionmarket.view
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,30 +13,93 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.yujin.onionmarket.R
+import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.Chat
+import com.yujin.onionmarket.data.ChatsResponse
+import com.yujin.onionmarket.network.ChatService
+import com.yujin.onionmarket.network.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
+    private val TAG = "ChatListFragment"
+
+    private lateinit var retrofit: Retrofit
+    private lateinit var chatService: ChatService
+
+    private lateinit var rvChat: RecyclerView
+    private lateinit var adapter: ChatAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
     }
 
     private fun init() {
-        val chat = view?.findViewById<RecyclerView>(R.id.rv_chat)
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        val dividerItemDecoration = DividerItemDecoration(chat?.context, layoutManager.orientation)
-        val chatSet = ArrayList<Chat>()
-        chat?.layoutManager = layoutManager
-        chat?.addItemDecoration(dividerItemDecoration)
-        val adapter = ChatAdapter(requireContext(), chatSet)
-        chat?.adapter = adapter
-        adapter.notifyDataSetChanged()
+        initRetrofit()
+        initRecyclerView()
+        initChat()
     }
 
-    class ChatAdapter(private val context: Context, private val chatSet: ArrayList<Chat>) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+    private fun initRetrofit() {
+        retrofit = RetrofitClient.getInstance()
+        chatService = retrofit.create(ChatService::class.java)
+    }
+
+    private fun initRecyclerView() {
+        rvChat = requireView().findViewById(R.id.rv_chat)
+        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        val dividerItemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
+        rvChat.layoutManager = layoutManager
+        rvChat.addItemDecoration(dividerItemDecoration)
+
+        adapter = ChatAdapter(requireContext())
+        rvChat.adapter = adapter
+    }
+
+    private fun initChat() {
+        val token = Util.readToken(requireContext())
+        val user = Util.readUser(requireContext())!!
+        val callChat = chatService.loadUserChat(token, user.id)
+        callChat.enqueue(object: Callback<ChatsResponse> {
+            override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                    val chats = response.body()!!.chats
+                    setChat(chats)
+                }
+            }
+
+            override fun onFailure(call: Call<ChatsResponse>, t: Throwable) {
+                Log.e(TAG, "setChat()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    private fun setChat(chats: ArrayList<Chat>) {
+        val noChat = requireView().findViewById<LinearLayout>(R.id.ll_no_chat)
+        if (chats.size == 0) {
+            noChat.visibility = View.VISIBLE
+        } else {
+            noChat.visibility = View.GONE
+
+            for (chat in chats) {
+                adapter.addChat(chat)
+            }
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    class ChatAdapter(private val context: Context) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+        private val chatList: ArrayList<Chat> = arrayListOf()
+
+        fun addChat(chat: Chat) {
+            chatList.add(chat)
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(context).inflate(R.layout.item_chat, parent, false)
             return ViewHolder(view)
@@ -62,7 +126,7 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
 //            holder.lastMessage.text = chatSet[position].message
         }
 
-        override fun getItemCount(): Int = chatSet.size
+        override fun getItemCount(): Int = chatList.size
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val profile: ImageView = view.findViewById(R.id.iv_profile)

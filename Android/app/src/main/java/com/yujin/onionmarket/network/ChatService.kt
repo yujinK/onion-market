@@ -16,6 +16,11 @@ interface ChatService {
                         @Query("userId") userId: Int)
     : Call<ChatIdResponse>
 
+    @GET("chat/user/{userId}")
+    fun loadUserChat(@Header("authorization") token: String,
+                     @Path("userId") userId: Int)
+    : Call<ChatsResponse>
+
     @FormUrlEncoded
     @POST("chat/newChat")
     fun newChat(@Header("authorization") token: String,
@@ -26,7 +31,7 @@ interface ChatService {
     @GET("chat/load/{chatId}")
     fun loadChat(@Header("authorization") token: String,
                  @Path("chatId") chatId: Int)
-            : Call<LoadChatResponse>
+    : Call<LoadChatResponse>
 
     @FormUrlEncoded
     @POST("chat/send/{chatId}")

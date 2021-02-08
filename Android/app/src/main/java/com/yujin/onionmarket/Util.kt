@@ -25,6 +25,16 @@ class Util {
             }
         }
 
+        fun readUser(context: Context) : User? {
+            val sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            val strUser = sharedPref.getString("strUser", "")
+            return if (strUser == "") {
+                null
+            } else {
+                gson.fromJson(strUser, User::class.java)
+            }
+        }
+
         // 토큰 정보 가져오기
         fun readToken(activity: Activity) : String {
             val sharedPref = activity.getSharedPreferences(activity.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
