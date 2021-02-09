@@ -5,12 +5,12 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface ChatService {
-    @GET("chat/existingSaleChat")
+    @GET("chat/existing-sale-chat")
     fun existingSaleChat(@Header("authorization") token: String,
                          @Query("saleId") saleId: Int)
     : Call<ChatsResponse>
 
-    @GET("chat/existingBuyChat")
+    @GET("chat/existing-buy-chat")
     fun existingBuyChat(@Header("authorization") token: String,
                         @Query("saleId") saleId: Int,
                         @Query("userId") userId: Int)
@@ -19,10 +19,10 @@ interface ChatService {
     @GET("chat/user/{userId}")
     fun loadUserChat(@Header("authorization") token: String,
                      @Path("userId") userId: Int)
-    : Call<ChatsResponse>
+    : Call<UserChatsResponse>
 
     @FormUrlEncoded
-    @POST("chat/newChat")
+    @POST("chat/new-chat")
     fun newChat(@Header("authorization") token: String,
                 @Field("buyUserId") buyUserId: Int,
                 @Field("saleId") saleId: Int)

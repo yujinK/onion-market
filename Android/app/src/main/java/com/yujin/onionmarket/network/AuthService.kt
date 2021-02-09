@@ -6,13 +6,13 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface AuthService {
-    @GET("auth/isSignUp")
+    @GET("auth/is-sign-up")
     fun isSignUp(
         @Query("email") email: String
     ) : Call<Void>
 
     @FormUrlEncoded
-    @POST("auth/signup")
+    @POST("auth/sign-up")
     fun signUp(
         @Field("email") email: String,
         @Field("nick") nick: String,
