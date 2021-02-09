@@ -1,6 +1,7 @@
 package com.yujin.onionmarket.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,11 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
-import com.yujin.onionmarket.data.Chat
-import com.yujin.onionmarket.data.ChatsResponse
+import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.ChatService
 import com.yujin.onionmarket.network.RetrofitClient
 import retrofit2.Call
@@ -34,12 +35,15 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
     private lateinit var rvChat: RecyclerView
     private lateinit var adapter: ChatAdapter
 
+    private lateinit var user: User
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
     }
 
     private fun init() {
+        user = Util.readUser(requireContext())!!
         initRetrofit()
         initRecyclerView()
         initChat()
@@ -57,29 +61,28 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
         rvChat.layoutManager = layoutManager
         rvChat.addItemDecoration(dividerItemDecoration)
 
-        adapter = ChatAdapter(requireContext())
+        adapter = ChatAdapter(requireContext(), user.id)
         rvChat.adapter = adapter
     }
 
     private fun initChat() {
         val token = Util.readToken(requireContext())
-        val user = Util.readUser(requireContext())!!
         val callChat = chatService.loadUserChat(token, user.id)
-        callChat.enqueue(object: Callback<ChatsResponse> {
-            override fun onResponse(call: Call<ChatsResponse>, response: Response<ChatsResponse>) {
+        callChat.enqueue(object: Callback<UserChatsResponse> {
+            override fun onResponse(call: Call<UserChatsResponse>, response: Response<UserChatsResponse>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
                     val chats = response.body()!!.chats
                     setChat(chats)
                 }
             }
 
-            override fun onFailure(call: Call<ChatsResponse>, t: Throwable) {
+            override fun onFailure(call: Call<UserChatsResponse>, t: Throwable) {
                 Log.e(TAG, "setChat()-[onFailure] 실패 : $t")
             }
         })
     }
 
-    private fun setChat(chats: ArrayList<Chat>) {
+    private fun setChat(chats: ArrayList<UserChat>) {
         val noChat = requireView().findViewById<LinearLayout>(R.id.ll_no_chat)
         if (chats.size == 0) {
             noChat.visibility = View.VISIBLE
@@ -93,10 +96,10 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
         }
     }
 
-    class ChatAdapter(private val context: Context) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
-        private val chatList: ArrayList<Chat> = arrayListOf()
+    inner class ChatAdapter(private val context: Context, private val myId: Int) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+        private val chatList: ArrayList<UserChat> = arrayListOf()
 
-        fun addChat(chat: Chat) {
+        fun addChat(chat: UserChat) {
             chatList.add(chat)
         }
 
@@ -106,33 +109,66 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//            // 프로필 사진
-//            if (chatSet[position].profile.isNullOrEmpty()) {
-//                holder.profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
-//            } else {
-//                Glide.with(context)
-//                        .load(chatSet[position].profile)
-//                        .into(holder.profile)
-//            }
-//
-//            // 닉네임
-//            holder.nick.text = chatSet[position].nick
-//
-//            // info
-//            // TODO: Chat 시간 경과 다시 계산 (초, 분, 시간 전, 어제, 이후 날짜)
-//            holder.info.text = context.getString(R.string.receive_info, chatSet[position].location, "어제")
-//
-//            // 최근 메시지
-//            holder.lastMessage.text = chatSet[position].message
+            var location: String
+            if (myId == chatList[position].buyUser.id) { // 내가 구매자
+                if (chatList[position].sale.user.img.isNullOrEmpty()) {
+                    holder.profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
+                } else {
+                    Glide.with(context)
+                            .load(chatList[position].sale.user.img)
+                            .into(holder.profile)
+                }
+
+                holder.nick.text = chatList[position].sale.user.nick
+                location = context.getString(R.string.str_location, chatList[position].sale.user.location.dongmyeon, chatList[position].sale.user.location.li)
+            } else {    // 내가 판매자
+                if (chatList[position].buyUser.img.isNullOrEmpty()) {
+                    holder.profile.setImageDrawable(context.getDrawable(R.drawable.ic_profile))
+                } else {
+                    Glide.with(context)
+                            .load(chatList[position].buyUser.img)
+                            .into(holder.profile)
+                }
+
+                holder.nick.text = chatList[position].buyUser.nick
+                location = context.getString(R.string.str_location, chatList[position].buyUser.location.dongmyeon, chatList[position].buyUser.location.li)
+            }
+
+            holder.lastMessage.text = chatList[position].lastMessage
+
+            val date = Util.getSaleChatDiff(chatList[position].updatedAt)
+            holder.locationDate.text = context.getString(R.string.str_dot_str, location, date)
+
+            if (chatList[position].sale.images.size == 0) {
+                holder.saleImage.visibility = View.GONE
+            } else {
+                Glide.with(context)
+                        .load(context.getString(R.string.img_url) + chatList[position].sale.images[0].path)
+                        .into(holder.saleImage)
+            }
+
+            holder.itemView.setOnClickListener {
+                val sale = chatList[position].sale
+                val chat = Chat(chatList[position].id, chatList[position].lastMessage, chatList[position].createdAt, chatList[position].updatedAt, chatList[position].buyUser, chatList[position].sale.id)
+                startChat(sale, chat)
+            }
         }
 
         override fun getItemCount(): Int = chatList.size
 
-        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private fun startChat(sale: Sale, chat: Chat) {
+            val intent = Intent(context, ChatActivity::class.java)
+            intent.putExtra("sale", sale)
+            intent.putExtra("chat", chat)
+            startActivity(intent)
+        }
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val profile: ImageView = view.findViewById(R.id.iv_profile)
             val nick: TextView = view.findViewById(R.id.tv_nick)
-            val info: TextView = view.findViewById(R.id.tv_info)
+            val locationDate: TextView = view.findViewById(R.id.tv_location_date)
             val lastMessage: TextView = view.findViewById(R.id.tv_last_message)
+            val saleImage: ImageView = view.findViewById(R.id.iv_image)
         }
     }
 }
