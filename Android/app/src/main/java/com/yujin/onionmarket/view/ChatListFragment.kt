@@ -148,7 +148,8 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
             }
 
             holder.itemView.setOnClickListener {
-                val sale = chatList[position].sale
+                val cSale = chatList[position].sale
+                val sale = Sale(cSale.id, cSale.title, cSale.content, cSale.price, cSale.priceProposal, cSale.chatCount, cSale.favoriteCount, cSale.viewCount, cSale.createdAt, Category(-1, ""), cSale.user, cSale.images)
                 val chat = Chat(chatList[position].id, chatList[position].lastMessage, chatList[position].createdAt, chatList[position].updatedAt, chatList[position].buyUser, chatList[position].sale.id)
                 startChat(sale, chat)
             }
