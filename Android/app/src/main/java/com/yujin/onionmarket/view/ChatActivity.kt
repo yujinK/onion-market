@@ -98,7 +98,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun checkNullChat() {
         if (adapter.itemCount == 0) {
-            val callChat = chatService.deleteChat(token, chatId)
+            val callChat = chatService.deleteChat(token, chatId, sale.id)
             callChat.enqueue(object: Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
 
