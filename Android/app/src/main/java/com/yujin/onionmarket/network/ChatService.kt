@@ -41,8 +41,10 @@ interface ChatService {
                     @Field("userId") userId: Int)
     : Call<Void>
 
-    @DELETE("chat/delete/{chatId}")
+    @FormUrlEncoded
+    @HTTP(method = "DELETE", hasBody = true, path = "chat/delete/{chatId}")
     fun deleteChat(@Header("authorization") token: String,
-                   @Path("chatId") chatId: Int)
+                   @Path("chatId") chatId: Int,
+                   @Field("saleId") saleId: Int)
     : Call<Void>
 }

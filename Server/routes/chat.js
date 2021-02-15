@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const admin = require('firebase-admin');
 
 const Chat = require('../models/chat');
 const Message = require('../models/message');
@@ -7,10 +8,15 @@ const Sale = require('../models/sale');
 const Image = require('../models/image');
 const User = require('../models/user');
 const Location = require('../models/location');
+const Fcm = require('../models/fcm');
 const { sequelize } = require('../models');
 const { Op, Sequelize } = require('sequelize');
 
 const router = express.Router();
+
+admin.initializeApp({
+    credential: admin.credential.applicationDefault()
+});
 
 // 기존 채팅 있는지 확인 (판매자))
 router.get('/existing-sale-chat', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
@@ -168,8 +174,18 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
             userId: req.body.userId,
             chatId: req.params.chatId
         }, { transaction: t });
+
+        // const otherFcm = await sequelize.query(`SELECT * FROM fcm WHERE userId = (SELECT IF(chats.buyUserId = ${req.body.userId}, sales.writer, chats.buyUserId) AS userId FROM chats INNER JOIN sales ON chats.saleId = sales.id)`, 
+        //                     { type: Sequelize.QueryTypes.SELECT },
+        //                     { transaction: t });
         
         await t.commit().then(function (result) {
+            sequelize.query(`SELECT token FROM fcm WHERE userId = (SELECT IF(chats.buyUserId = ${req.body.userId}, sales.writer, chats.buyUserId) AS userId FROM chats INNER JOIN sales ON chats.saleId = sales.id)`, 
+                            { type: Sequelize.QueryTypes.SELECT })
+                            .then(function(result) {
+                                notification(result[0].token, req.params.chatId, req.body.message);
+                            });
+            
             return res.status(201).end();
         });
     } catch (error) {
@@ -177,6 +193,27 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
         console.error(error);
     }
 });
+
+// 채팅 알림
+function notification(token, chatId, message) {
+    console.log(`FCM: ${token}`);
+    var noti = {
+        data: {
+            'chatId': chatId,
+            'message': message,
+            'createdAt': Date.now().toString()
+        },
+        token: token
+    };
+
+    admin.messaging().send(noti)
+        .then((response) => {
+            console.log('Successfully sent message: ', response);
+        })
+        .catch((error) => {
+            console.log('Error sending message: ', error);
+        });
+}
 
 // 빈 채팅방 삭제
 router.delete('/delete/:chatId', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
