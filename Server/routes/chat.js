@@ -174,16 +174,16 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
             userId: req.body.userId,
             chatId: req.params.chatId
         }, { transaction: t });
-
-        // const otherFcm = await sequelize.query(`SELECT * FROM fcm WHERE userId = (SELECT IF(chats.buyUserId = ${req.body.userId}, sales.writer, chats.buyUserId) AS userId FROM chats INNER JOIN sales ON chats.saleId = sales.id)`, 
-        //                     { type: Sequelize.QueryTypes.SELECT },
-        //                     { transaction: t });
         
         await t.commit().then(function (result) {
-            sequelize.query(`SELECT token FROM fcm WHERE userId = (SELECT IF(chats.buyUserId = ${req.body.userId}, sales.writer, chats.buyUserId) AS userId FROM chats INNER JOIN sales ON chats.saleId = sales.id)`, 
+            sequelize.query(`SELECT fcm.token, users.nick FROM fcm
+                             INNER JOIN users ON fcm.userId = users.id
+                             WHERE userId = (SELECT IF(chats.buyUserId = ${req.body.userId}, sales.writer, chats.buyUserId) AS userId 
+                             FROM chats 
+                             INNER JOIN sales ON chats.saleId = sales.id)`, 
                             { type: Sequelize.QueryTypes.SELECT })
                             .then(function(result) {
-                                notification(result[0].token, req.params.chatId, req.body.message);
+                                notification(result[0].token, result[0].nick, req.params.chatId, req.body.message);
                             });
             
             return res.status(201).end();
@@ -195,13 +195,14 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
 });
 
 // 채팅 알림
-function notification(token, chatId, message) {
+function notification(token, nick, chatId, message) {
     console.log(`FCM: ${token}`);
     var noti = {
         data: {
             'chatId': chatId,
+            'nick': nick,
             'message': message,
-            'createdAt': Date.now().toString()
+            'createdAt': new Date().toISOString()
         },
         token: token
     };

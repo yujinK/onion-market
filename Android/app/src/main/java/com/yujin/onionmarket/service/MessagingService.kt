@@ -1,29 +1,50 @@
 package com.yujin.onionmarket.service
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.util.Log
-import android.widget.Toast
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
+import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.yujin.onionmarket.Util
-import com.yujin.onionmarket.network.FcmService
-import com.yujin.onionmarket.network.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.yujin.onionmarket.R
+import com.yujin.onionmarket.view.ChatActivity
 
 class MessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "From: ${remoteMessage.from}")
 
         if (remoteMessage.data.isNotEmpty()) {
+            showNotification(remoteMessage)
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
         }
 
         if (remoteMessage.notification != null) {
             Log.d(TAG, "Message Notification Body: ${remoteMessage.notification!!.body}")
         }
+    }
+
+    private fun showNotification(remoteMessage: RemoteMessage) {
+        val channelId = getString(R.string.default_notification_channel_name)
+        var notificationBuilder = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_onion)
+                .setWhen(System.currentTimeMillis())
+                .setContentTitle(getString(R.string.chat_notification_title))
+                .setContentText("${remoteMessage.data["nick"]} : ${remoteMessage.data["message"]}")
+                .setColor(getColor(R.color.greenery))
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId,
+                        getString(R.string.app_name),
+                        NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0, notificationBuilder.build())
     }
 
     override fun onNewToken(token: String) {

@@ -96,6 +96,10 @@
     <string name="no_sale_chat">대화를 시작한 채팅 상대가 없습니다.</string>
     <string name="no_chat">채팅방이 없습니다.</string>
 
+    <!-- notification -->
+    <string name="default_notification_channel_name">onion_market_channel</string>
+    <string name="chat_notification_title">채팅 알림</string>
+
     <!-- message -->
     <string name="server_connect_message">서버와의 통신에 문제가 있습니다. 관리자에게 문의해주세요.</string>
 
