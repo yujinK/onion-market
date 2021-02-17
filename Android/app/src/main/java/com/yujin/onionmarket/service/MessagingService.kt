@@ -44,6 +44,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setContentText("${remoteMessage.data["nick"]} : ${remoteMessage.data["message"]}")
                 .setColor(getColor(R.color.greenery))
                 .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
