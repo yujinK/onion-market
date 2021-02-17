@@ -14,7 +14,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.AuthService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,7 +22,7 @@ import retrofit2.Retrofit
 
 class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
     private lateinit var retrofit: Retrofit
-    private lateinit var signUpService: RetrofitService
+    private lateinit var signUpService: AuthService
     private lateinit var emailLayout: TextInputLayout
     private lateinit var emailView: TextInputEditText
     private lateinit var nickLayout: TextInputLayout
@@ -49,7 +49,7 @@ class SignUpInfoFragment : Fragment(R.layout.fragment_sign_up_info) {
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        signUpService = retrofit.create(RetrofitService::class.java)
+        signUpService = retrofit.create(AuthService::class.java)
     }
 
     private fun initEmail() {

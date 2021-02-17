@@ -18,7 +18,8 @@ import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.data.Location
 import com.yujin.onionmarket.data.UserResponse
 import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.AuthService
+import com.yujin.onionmarket.network.LocationService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,7 +27,8 @@ import retrofit2.Retrofit
 
 class LocationFragment : Fragment(R.layout.fragment_location), OnItemClick {
     private lateinit var retrofit: Retrofit
-    private lateinit var locationService: RetrofitService
+    private lateinit var locationService: LocationService
+    private lateinit var authService: AuthService
 
     private lateinit var locationList: List<Location>
     private lateinit var locationAdapter: LocationAdapter
@@ -45,7 +47,8 @@ class LocationFragment : Fragment(R.layout.fragment_location), OnItemClick {
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        locationService = retrofit.create(RetrofitService::class.java)
+        locationService = retrofit.create(LocationService::class.java)
+        authService = retrofit.create(AuthService::class.java)
     }
 
     private fun initSearch() {
@@ -99,7 +102,7 @@ class LocationFragment : Fragment(R.layout.fragment_location), OnItemClick {
     // 회원가입 진행
     private fun signUp(email: String?, nick: String?, password: String?, locationId: Int) {
         if (!email.isNullOrEmpty() && !nick.isNullOrEmpty() && !password.isNullOrEmpty()) {
-            val callSignUp = locationService.signUp(email, nick, password, locationId)
+            val callSignUp = authService.signUp(email, nick, password, locationId)
             callSignUp.enqueue(object: Callback<UserResponse> {
                 override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {

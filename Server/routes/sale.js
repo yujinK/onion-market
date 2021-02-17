@@ -103,6 +103,24 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
+// 해당 id 게시글 가져오기
+router.get('/id/:saleId', async (req, res) => {
+    try {
+        await Sale.findAll({
+            include: [
+                {
+                    model: Image
+                }
+            ],
+            where: { id: req.params.saleId }
+        }).then(function (result) {
+            return res.status(200).json({ sales: result });
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 // 게시글 쓰기
 router.post('/write', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { title, content, price, priceProposal, writer, categoryId } = req.body;
@@ -121,29 +139,6 @@ router.post('/write', passport.authenticate('jwt', { session: false }), async (r
         console.error(error);
     }
 });
-
-// // 게시글 이미지 저장
-// router.post('/upload/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), (req, res) => {
-//     try {
-//         // for (var i=0; i<req.files.length; i++) {
-//         //     await Image.create({
-//         //         path: req.files[i].filename,
-//         //         priority: i,
-//         //         saleId: req.query.saleId
-//         //     });
-//         //     //TODO: query error 해결!!!!!
-//         //     // await sequelize.query(
-//         //     //     `INSERT INTO images (path, priority, saleId) VALUES (
-//         //     //         "${req.files[i].filename}",
-//         //     //         (SELECT max FROM (SELECT MAX(priority)+1 AS max FROM images WHERE saleID = ${req.query.saleId}) AS temp),
-//         //     //         ${req.query.saleId})`
-//         //     // )
-//         // }
-//         return res.status(201).json(req.files);
-//     } catch(error) {
-//         console.error(error);
-//     }
-// });
 
 // 게시글 이미지 서버 저장
 router.post('/upload/image', passport.authenticate('jwt', { session: false }), upload.array('img', 10), (req, res) => {
@@ -178,6 +173,7 @@ router.post('/write/image', passport.authenticate('jwt', { session: false }), as
             return res.status(201).end();
         });
     } catch(error) {
+        await t.rollback();
         console.error(error);
     }
 });

@@ -7,7 +7,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-router.get('/isSignUp', isNotLoggedIn, async (req, res) => {
+router.get('/is-sign-up', isNotLoggedIn, async (req, res) => {
     try {
         const exUser = await User.findOne({ where: { email: req.query.email } });
         if (exUser) {
@@ -20,7 +20,7 @@ router.get('/isSignUp', isNotLoggedIn, async (req, res) => {
     }
 });
 
-router.post('/signup', isNotLoggedIn, async (req, res, next) => {
+router.post('/sign-up', isNotLoggedIn, async (req, res, next) => {
     const { email, nick, password, locationId } = req.body;
     try {
         const exUser = await User.findOne({ where: { email: email } });

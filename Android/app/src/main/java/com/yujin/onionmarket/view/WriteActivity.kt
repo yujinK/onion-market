@@ -22,8 +22,7 @@ import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.*
-import com.yujin.onionmarket.network.RetrofitClient
-import com.yujin.onionmarket.network.RetrofitService
+import com.yujin.onionmarket.network.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -38,7 +37,8 @@ import kotlin.collections.ArrayList
 
 class WriteActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
-    private lateinit var writeService: RetrofitService
+    private lateinit var saleService: SaleService
+    private lateinit var categoryService: CategoryService
 
     private lateinit var token: String
 
@@ -84,7 +84,8 @@ class WriteActivity : AppCompatActivity() {
 
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
-        writeService = retrofit.create(RetrofitService::class.java)
+        saleService = retrofit.create(SaleService::class.java)
+        categoryService = retrofit.create(CategoryService::class.java)
     }
 
     private fun initToolbar() {
@@ -106,7 +107,7 @@ class WriteActivity : AppCompatActivity() {
     }
 
     private fun getCategory(categoryId: Int?) {
-        val callCategory = writeService.getCategory(token)
+        val callCategory = categoryService.getCategory(token)
         callCategory.enqueue(object: Callback<CategoryResponse> {
             override fun onResponse(call: Call<CategoryResponse>, response: Response<CategoryResponse>) {
                 val categories = response.body()!!.category
@@ -268,7 +269,7 @@ class WriteActivity : AppCompatActivity() {
 
         // 게시글 등록
         if (editSale == null) {
-            val callPost = writeService.writeSale(token, title, content, price, proposal, writer, categoryId)
+            val callPost = saleService.writeSale(token, title, content, price, proposal, writer, categoryId)
             callPost.enqueue(object : Callback<WriteSaleResponse> {
                 override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
@@ -288,7 +289,7 @@ class WriteActivity : AppCompatActivity() {
             })
         } else {
             // 게시글 수정
-            val callEdit = writeService.editSale(token, editSale!!.id, title, content, price, proposal, categoryId)
+            val callEdit = saleService.editSale(token, editSale!!.id, title, content, price, proposal, categoryId)
             callEdit.enqueue(object: Callback<WriteSaleResponse> {
                 override fun onResponse(call: Call<WriteSaleResponse>, response: Response<WriteSaleResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
@@ -323,7 +324,7 @@ class WriteActivity : AppCompatActivity() {
 
         // 새로 추가된 사진이 있는 경우
         if (part.size > 0) {
-            val callImage = writeService.uploadImage(token, part)
+            val callImage = saleService.uploadImage(token, part)
             callImage.enqueue(object : Callback<ImageUploadResponse> {
                 override fun onResponse(call: Call<ImageUploadResponse>, response: Response<ImageUploadResponse>) {
                     if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
@@ -358,7 +359,7 @@ class WriteActivity : AppCompatActivity() {
 
     // 첨부 이미지 DB 업로드
     private fun postImage(saleId: Int, pImages: ArrayList<String>) {
-        val callImage = writeService.writeImage(token, saleId, pImages.size, pImages)
+        val callImage = saleService.writeImage(token, saleId, pImages.size, pImages)
         callImage.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
@@ -400,12 +401,12 @@ class WriteActivity : AppCompatActivity() {
 
     class ImageAdapter(private val context: Context, private val dataSet: ArrayList<Image>) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
         private lateinit var retrofit: Retrofit
-        private lateinit var deleteService: RetrofitService
+        private lateinit var deleteService: AuthService
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image, parent, false)
             retrofit = RetrofitClient.getInstance()
-            deleteService = retrofit.create(RetrofitService::class.java)
+            deleteService = retrofit.create(AuthService::class.java)
             return ViewHolder(view).listen { position, _ ->
                 removeImage(position)
             }

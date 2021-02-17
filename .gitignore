@@ -329,3 +329,6 @@ dist
 
 # server image uploads
 Server/uploads
+
+# MySQL config
+Server/config/config.json

@@ -2,38 +2,10 @@ package com.yujin.onionmarket.network
 
 import com.yujin.onionmarket.data.*
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
-interface RetrofitService {
-    @GET("auth/isSignUp")
-    fun isSignUp(
-        @Query("email") email: String
-    ) : Call<Void>
-
-    @FormUrlEncoded
-    @POST("auth/signup")
-    fun signUp(
-        @Field("email") email: String,
-        @Field("nick") nick: String,
-        @Field("password") password: String,
-        @Field("locationId") locationId: Int
-    ) : Call<UserResponse>
-
-    @FormUrlEncoded
-    @POST("auth/login")
-    fun login(
-        @Field("email") email: String,
-        @Field("password") password: String
-    ) : Call<UserResponse>
-
-    @GET("location")
-    fun getLocation() : Call<List<Location>>
-
-    @GET("category")
-    fun getCategory(@Header("authorization") token: String) : Call<CategoryResponse>
-
+interface SaleService {
     @FormUrlEncoded
     @POST("sale/write")
     fun writeSale(@Header("authorization") token: String,
@@ -44,14 +16,6 @@ interface RetrofitService {
                   @Field("writer") writer: Int,
                   @Field("categoryId") categoryId: Int)
     : Call<WriteSaleResponse>
-
-//    @Multipart
-//    @POST("sale/write/image")
-//    fun writeSaleImage(@Header("authorization") token: String,
-//                       @Query("saleId") saleId: Int,
-//                       @Part image: List<MultipartBody.Part>,
-//                       @Part("img") name: RequestBody)
-//    : Call<Void>
 
     @Multipart
     @POST("sale/upload/image")
@@ -78,6 +42,11 @@ interface RetrofitService {
     fun readSaleWithUser(@Header("authorization") token: String,
                          @Path("userId") userId: Int,
                          @Query("state") state: Int)
+    : Call<ReadSaleResponse>
+
+    @GET("sale/id/{saleId}")
+    fun readSaleWithId(@Header("authorization") token: String,
+                       @Path("saleId") saleId: Int)
     : Call<ReadSaleResponse>
 
     @FormUrlEncoded
