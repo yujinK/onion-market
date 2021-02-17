@@ -183,7 +183,7 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
                              INNER JOIN sales ON chats.saleId = sales.id)`, 
                             { type: Sequelize.QueryTypes.SELECT })
                             .then(function(result) {
-                                notification(result[0].token, result[0].nick, req.params.chatId, req.body.message);
+                                notification(result[0].token, result[0].nick, req.params.chatId, req.body.message, req.body.saleId);
                             });
             
             return res.status(201).end();
@@ -195,14 +195,14 @@ router.post('/send/:chatId', passport.authenticate('jwt', { session: false }), a
 });
 
 // 채팅 알림
-function notification(token, nick, chatId, message) {
+function notification(token, nick, chatId, message, saleId) {
     console.log(`FCM: ${token}`);
     var noti = {
         data: {
             'chatId': chatId,
             'nick': nick,
             'message': message,
-            'createdAt': new Date().toISOString()
+            'saleId': saleId
         },
         token: token
     };

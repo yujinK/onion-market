@@ -44,6 +44,11 @@ interface SaleService {
                          @Query("state") state: Int)
     : Call<ReadSaleResponse>
 
+    @GET("sale/id/{saleId}")
+    fun readSaleWithId(@Header("authorization") token: String,
+                       @Path("saleId") saleId: Int)
+    : Call<ReadSaleResponse>
+
     @FormUrlEncoded
     @POST("sale/delete")
     fun deleteSale(@Header("authorization") token: String,

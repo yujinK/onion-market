@@ -2,6 +2,7 @@ package com.yujin.onionmarket.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -27,6 +28,14 @@ class MessagingService : FirebaseMessagingService() {
     }
 
     private fun showNotification(remoteMessage: RemoteMessage) {
+        val intent = Intent(this, ChatActivity::class.java).apply {
+            this.putExtra("saleId", remoteMessage.data["saleId"]!!.toInt())
+            this.putExtra("chatId", remoteMessage.data["chatId"]!!.toInt())
+            this.putExtra("otherNick", remoteMessage.data["nick"])
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+
         val channelId = getString(R.string.default_notification_channel_name)
         var notificationBuilder = NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_onion)
@@ -34,6 +43,7 @@ class MessagingService : FirebaseMessagingService() {
                 .setContentTitle(getString(R.string.chat_notification_title))
                 .setContentText("${remoteMessage.data["nick"]} : ${remoteMessage.data["message"]}")
                 .setColor(getColor(R.color.greenery))
+                .setContentIntent(pendingIntent)
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

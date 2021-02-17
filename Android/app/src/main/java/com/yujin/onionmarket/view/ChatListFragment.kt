@@ -159,8 +159,11 @@ class ChatListFragment : Fragment(R.layout.fragment_chat_list) {
 
         private fun startChat(sale: Sale, chat: Chat) {
             val intent = Intent(context, ChatActivity::class.java)
+//            intent.putExtra("sale", sale)
+//            intent.putExtra("chat", chat)
             intent.putExtra("sale", sale)
-            intent.putExtra("chat", chat)
+            intent.putExtra("chatId", chat.id)
+            intent.putExtra("otherNick", chat.buyUser.nick)
             startActivity(intent)
         }
 

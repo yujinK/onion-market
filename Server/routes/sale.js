@@ -103,6 +103,24 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
+// 해당 id 게시글 가져오기
+router.get('/id/:saleId', async (req, res) => {
+    try {
+        await Sale.findAll({
+            include: [
+                {
+                    model: Image
+                }
+            ],
+            where: { id: req.params.saleId }
+        }).then(function (result) {
+            return res.status(200).json({ sales: result });
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
 // 게시글 쓰기
 router.post('/write', passport.authenticate('jwt', { session: false }), async (req, res) => {
     const { title, content, price, priceProposal, writer, categoryId } = req.body;

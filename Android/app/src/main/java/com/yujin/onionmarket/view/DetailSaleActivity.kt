@@ -231,8 +231,11 @@ class DetailSaleActivity : AppCompatActivity() {
     private fun startSaleChat(sale: Sale, chat: Chat) {
         chatSheet.dismiss()
         val intent = Intent(this, ChatActivity::class.java)
+//        intent.putExtra("sale", sale)
+//        intent.putExtra("chat", chat)
         intent.putExtra("sale", sale)
-        intent.putExtra("chat", chat)
+        intent.putExtra("chatId", chat.id)
+        intent.putExtra("otherNick", chat.buyUser.nick)
         startActivity(intent)
     }
 

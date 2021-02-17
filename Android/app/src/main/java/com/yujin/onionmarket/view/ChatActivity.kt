@@ -25,6 +25,7 @@ import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.RetrofitClient
 import com.yujin.onionmarket.network.ChatService
+import com.yujin.onionmarket.network.SaleService
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -40,6 +41,7 @@ import kotlin.collections.ArrayList
 class ChatActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var chatService: ChatService
+    private lateinit var saleService: SaleService
 
     private lateinit var rvMessage: RecyclerView
     private lateinit var adapter: MessageAdapter
@@ -56,13 +58,46 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
+        initRetrofit()
+
         token = Util.readToken(this)
-        sale = intent.getParcelableExtra("sale")!!
-        init()
+        setSale()
+    }
+
+    private fun setSale() {
+        if (intent.hasExtra("sale")) {
+            if (intent.hasExtra("chatId")) {
+                chatId = intent.getIntExtra("chatId", -1)
+            }
+            sale = intent.getParcelableExtra("sale")!!
+            init()
+        } else {
+            // 알림에서 넘어온 경우
+            chatId = intent.getIntExtra("chatId", -1)
+            val saleId = intent.getIntExtra("saleId", -1)
+            getSale(saleId)
+        }
+    }
+
+    private fun getSale(saleId: Int) {
+        if (saleId != -1) {
+            val callSale = saleService.readSaleWithId(token, saleId)
+            callSale.enqueue(object: Callback<ReadSaleResponse> {
+                override fun onResponse(call: Call<ReadSaleResponse>, response: Response<ReadSaleResponse>) {
+                    if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                        sale = response.body()!!.sales[0]
+                        init()
+                    }
+                }
+
+                override fun onFailure(call: Call<ReadSaleResponse>, t: Throwable) {
+                    Log.e(TAG, "getSale()-[onFailure] 실패 : $t")
+                }
+            })
+        }
     }
 
     private fun init() {
-        initRetrofit()
         initToolbar()
         initSendMessage()
         initSale()
@@ -73,19 +108,25 @@ class ChatActivity : AppCompatActivity() {
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
         chatService = retrofit.create(ChatService::class.java)
+        saleService = retrofit.create(SaleService::class.java)
     }
 
     private fun initToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        val chat = intent.getParcelableExtra<Chat>("chat")
-        if (chat != null) {
-            // 내가 판매자, 상대방이 구매자
-            toolbar.title = chat.buyUser.nick
-            chatId = chat.id
+        if (intent.hasExtra("otherNick")) {
+            val otherNick = intent.getStringExtra("otherNick")
+            toolbar.title = otherNick
         } else {
-            // 내가 구매자, 상대방이 판매자
             toolbar.title = sale.user.nick
         }
+//        if (chat != null) {
+//            // 내가 판매자, 상대방이 구매자
+//            toolbar.title = chat.buyUser.nick
+//            chatId = chat.id
+//        } else {
+//            // 내가 구매자, 상대방이 판매자
+//            toolbar.title = sale.user.nick
+//        }
         toolbar.setNavigationOnClickListener { finishChat() }
     }
 
@@ -108,7 +149,7 @@ class ChatActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Log.e("ChatActivity", "checkNullChat()-[onFailure] 실패 : $t")
+                    Log.e(TAG, "checkNullChat()-[onFailure] 실패 : $t")
                 }
             })
         }
@@ -203,7 +244,7 @@ class ChatActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ChatIdResponse>, t: Throwable) {
-                Log.e("ChatActivity", "startNewChat()-[onFailure] 실패 : $t")
+                Log.e(TAG, "startNewChat()-[onFailure] 실패 : $t")
             }
         })
     }
@@ -225,7 +266,7 @@ class ChatActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<LoadChatResponse>, t: Throwable) {
-                Log.e("ChatActivity", "getMessages()-[onFailure] 실패 : $t")
+                Log.e(TAG, "getMessages()-[onFailure] 실패 : $t")
             }
         })
     }
@@ -257,14 +298,14 @@ class ChatActivity : AppCompatActivity() {
         socket.emit("newMessage", jsonData)
         addItemToRecyclerView(sendData)
 
-        val callChat = chatService.sendMessage(token, chatId, message, user.id)
+        val callChat = chatService.sendMessage(token, chatId, message, user.id, sale.id)
         callChat.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
 
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e("ChatActivity", "sendMessage()-[onFailure] 실패 : $t")
+                Log.e(TAG, "sendMessage()-[onFailure] 실패 : $t")
             }
         })
     }
@@ -379,5 +420,9 @@ class ChatActivity : AppCompatActivity() {
         abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
             abstract fun bind(item: T, visibleDate: Boolean)
         }
+    }
+
+    companion object {
+        private const val TAG = "ChatActivity"
     }
 }

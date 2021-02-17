@@ -38,7 +38,8 @@ interface ChatService {
     fun sendMessage(@Header("authorization") token: String,
                     @Path("chatId") chatId: Int,
                     @Field("message") message: String,
-                    @Field("userId") userId: Int)
+                    @Field("userId") userId: Int,
+                    @Field("saleId") saleId: Int)
     : Call<Void>
 
     @FormUrlEncoded
