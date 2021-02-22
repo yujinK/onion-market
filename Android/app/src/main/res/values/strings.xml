@@ -102,6 +102,7 @@
 
     <!-- message -->
     <string name="server_connect_message">서버와의 통신에 문제가 있습니다. 관리자에게 문의해주세요.</string>
+    <string name="add_favorite">관심 상품의 가격이 하락하거나 구매자가 생겼을때 알림을 받을 수 있습니다.</string>
 
     <!-- common -->
     <string name="str_dot_str">%1$s · %2$s</string>

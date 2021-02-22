@@ -14,6 +14,7 @@ const categoryRouter = require('./routes/category');
 const locationRouter = require('./routes/location');
 const chatRouter = require('./routes/chat');
 const fcmRouter = require('./routes/fcm');
+const favoriteRouter = require('./routes/favorite');
 const { sequelize } = require('./models');
 const webSocket = require('./socket');
 
@@ -43,6 +44,7 @@ app.use('/category', categoryRouter);
 app.use('/location', locationRouter);
 app.use('/chat', chatRouter);
 app.use('/fcm', fcmRouter);
+app.use('/favorite', favoriteRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다.`);

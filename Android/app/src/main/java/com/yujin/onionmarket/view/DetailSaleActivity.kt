@@ -9,10 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -24,11 +21,14 @@ import com.asksira.loopingviewpager.LoopingViewPager
 import com.asksira.loopingviewpager.indicator.CustomShapePagerIndicator
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
 import com.yujin.onionmarket.data.*
 import com.yujin.onionmarket.network.ChatService
+import com.yujin.onionmarket.network.FavoriteService
 import com.yujin.onionmarket.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,13 +39,13 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DetailSaleActivity : AppCompatActivity() {
-    private val TAG: String = "DetailSaleActivity"
-
     private lateinit var retrofit: Retrofit
     private lateinit var chatService: ChatService
+    private lateinit var favoriteService: FavoriteService
 
     private lateinit var btnChat: Button
     private lateinit var chatSheet: BottomSheetDialog
+    private lateinit var btnFavorite: ImageButton
 
     private lateinit var sale: Sale
 
@@ -75,6 +75,7 @@ class DetailSaleActivity : AppCompatActivity() {
     private fun initRetrofit() {
         retrofit = RetrofitClient.getInstance()
         chatService = retrofit.create(ChatService::class.java)
+        favoriteService = retrofit.create(FavoriteService::class.java)
     }
 
     private fun setView(sale: Sale) {
@@ -82,6 +83,7 @@ class DetailSaleActivity : AppCompatActivity() {
         setImages(sale.images)
         setGoods(sale)
         setChat(sale)
+        setFavorite(sale)
 
         // 내가 올린 상품일 경우 채팅 개수 설정
         val myUser = Util.readUser(this)!!
@@ -140,7 +142,7 @@ class DetailSaleActivity : AppCompatActivity() {
         title.text = sale?.title
 
         val categoryAndDate = findViewById<TextView>(R.id.tv_category_and_date)
-        val calDate = Util.timeDifferentiation(sale?.createdAt)   // TODO: 시간 계산 함수 개발
+        val calDate = Util.timeDifferentiation(sale?.createdAt)
         categoryAndDate.text = getString(R.string.str_dot_str, sale?.category?.name, calDate)
 
         val content = findViewById<TextView>(R.id.tv_content)
@@ -167,6 +169,75 @@ class DetailSaleActivity : AppCompatActivity() {
             findSaleChatList(sale)
         }
         btnChat.setOnClickListener { buyChat(sale) }
+    }
+
+    private fun setFavorite(sale: Sale) {
+        val token = Util.readToken(this)
+        val user = Util.readUser(this)!!
+        val callFavorite = favoriteService.getFavorite(token, sale.id, user.id)
+        callFavorite.enqueue(object: Callback<FavoriteResponse> {
+            override fun onResponse(call: Call<FavoriteResponse>, response: Response<FavoriteResponse>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_GET) {
+                    btnFavorite = findViewById(R.id.ib_favorite)
+                    btnFavorite.isSelected = !(response.body()!!.favorites.isNullOrEmpty())
+                    btnFavorite.setOnClickListener { clickFavorite() }
+                }
+            }
+
+            override fun onFailure(call: Call<FavoriteResponse>, t: Throwable) {
+                Log.e(TAG, "setFavorite()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    private fun clickFavorite() {
+        if (btnFavorite.isSelected) {
+            deleteFavorite()
+        } else {
+            addFavorite()
+        }
+    }
+
+    private fun addFavorite() {
+        val token = Util.readToken(this)
+        val user = Util.readUser(this)!!
+        val callFavorite = favoriteService.addFavorite(token, sale.id, user.id)
+        callFavorite.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                    btnFavorite.isSelected = true
+                    showDialog()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "addFavorite()-[onFailure] 실패 : $t")
+            }
+        })
+    }
+
+    private fun showDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage(getString(R.string.add_favorite))
+            .setPositiveButton(getString(R.string.ok)) { _, _ -> }
+            .show()
+    }
+
+    private fun deleteFavorite() {
+        val token = Util.readToken(this)
+        val user = Util.readUser(this)!!
+        val callFavorite = favoriteService.deleteFavorite(token, sale.id, user.id)
+        callFavorite.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
+                    btnFavorite.isSelected = false
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "addFavorite()-[onFailure] 실패 : $t")
+            }
+        })
     }
 
     private fun buyChat(sale: Sale) {
@@ -296,5 +367,9 @@ class DetailSaleActivity : AppCompatActivity() {
             val locationDate: TextView = view.findViewById(R.id.tv_location_date)
             val lastMessage: TextView = view.findViewById(R.id.tv_last_message)
         }
+    }
+
+    companion object {
+        private const val TAG = "DetailSaleActivity"
     }
 }
