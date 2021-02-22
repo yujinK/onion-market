@@ -30,7 +30,10 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="FullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="FullScreenTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/greenery</item>
+        <item name="textAppearanceButton">@style/TextAppearance.AppCompat.Button</item>
+    </style>
 
     <style name="WhiteToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
         <item name="colorControlNormal">@color/white</item>

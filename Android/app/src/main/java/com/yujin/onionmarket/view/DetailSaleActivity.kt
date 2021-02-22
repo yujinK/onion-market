@@ -206,7 +206,10 @@ class DetailSaleActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     btnFavorite.isSelected = true
-                    showDialog()
+                    MaterialAlertDialogBuilder(this@DetailSaleActivity)
+                        .setMessage(getString(R.string.add_favorite))
+                        .setPositiveButton(getString(R.string.ok)) { _, _ -> }
+                        .show()
                 }
             }
 
@@ -214,13 +217,6 @@ class DetailSaleActivity : AppCompatActivity() {
                 Log.e(TAG, "addFavorite()-[onFailure] 실패 : $t")
             }
         })
-    }
-
-    private fun showDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setMessage(getString(R.string.add_favorite))
-            .setPositiveButton(getString(R.string.ok)) { _, _ -> }
-            .show()
     }
 
     private fun deleteFavorite() {

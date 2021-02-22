@@ -225,19 +225,21 @@
             app:layout_constraintLeft_toRightOf="@id/divider2"
             tools:text="@string/no_proposal" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_chat_buy"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="0dp"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
+            android:insetTop="4dp"
+            android:insetBottom="4dp"
             android:text="@string/chat_buy"
             android:textSize="15dp"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:background="@drawable/bg_chat_start"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_price"
+            app:layout_constraintBottom_toBottomOf="@id/tv_proposal"
             app:layout_constraintRight_toRightOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
