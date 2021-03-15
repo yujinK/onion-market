@@ -22,7 +22,9 @@
             android:name=".view.DetailSaleActivity"
             android:theme="@style/FullScreenTheme" />
         <activity android:name=".view.MySaleListActivity" />
-        <activity android:name=".view.WriteActivity" />
+        <activity
+            android:windowSoftInputMode="adjustPan"
+            android:name=".view.WriteActivity" />
         <activity android:name=".view.SignUpActivity" />
         <activity android:name=".view.LoginActivity" />
         <activity android:name=".view.MainActivity">
