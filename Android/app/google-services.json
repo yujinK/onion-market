@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "9708261769",
+    "firebase_url": "https://onion-market-1a950.firebaseio.com",
+    "project_id": "onion-market-1a950",
+    "storage_bucket": "onion-market-1a950.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9708261769:android:c19576077e9dcaa2505158",
+        "android_client_info": {
+          "package_name": "com.yujin.onionmarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9708261769-0rne4c9mhtrn8danjorkktfh1uptripb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqy-p7HjE6sYMktLbErcFDhwk7osnjG3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9708261769-0rne4c9mhtrn8danjorkktfh1uptripb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

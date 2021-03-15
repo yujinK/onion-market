@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="@string/home"
+        android:icon="@drawable/ic_home"
+        android:enabled="true" />
+    <item
+        android:id="@+id/city_life"
+        android:title="@string/city_life"
+        android:icon="@drawable/ic_city_life"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/near_me"
+        android:title="@string/near_me"
+        android:icon="@drawable/ic_near_me"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/chat"
+        android:title="@string/chat"
+        android:icon="@drawable/ic_chat"
+        android:enabled="true"/>
+    <item
+        android:id="@+id/account"
+        android:title="@string/account"
+        android:icon="@drawable/ic_account"
+        android:enabled="true"/>
+</menu>

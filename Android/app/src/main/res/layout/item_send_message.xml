@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <include
+        android:id="@+id/v_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/view_chat_date"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_message"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:textSize="12dp"
+        android:textColor="@color/gray"
+        app:layout_constraintBottom_toBottomOf="@id/tv_message"
+        app:layout_constraintRight_toLeftOf="@id/tv_message"
+        tools:text="5:01 오후"/>
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="250dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:textSize="16dp"
+        android:textColor="@color/white"
+        android:background="@drawable/bg_send_message"
+        app:layout_constraintTop_toBottomOf="@id/v_date"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="거래가능합니다"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
