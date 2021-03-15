@@ -46,7 +46,7 @@ module.exports = class Sale extends Sequelize.Model {
             underscored: false,
             modelName: 'Sale',
             tableName: 'sales',
-            paranoid: true,
+            paranoid: false,
             charset: 'utf8mb4',
             collate: 'utf8mb4_unicode_ci'
         });
