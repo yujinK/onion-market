@@ -10,9 +10,13 @@
 
 #### 1. 회원가입 / 로그인
 
+<<<<<<< HEAD
 <p align="center">
 <img src="https://user-images.githubusercontent.com/42233535/114555025-47501e00-9ca2-11eb-99b6-f669b22030e8.gif" height=500>      <img src="https://user-images.githubusercontent.com/42233535/114552695-d4de3e80-9c9f-11eb-98b8-928c5afd3eb7.gif" height=500>
 </p>  
+=======
+<img src="https://user-images.githubusercontent.com/42233535/114555025-47501e00-9ca2-11eb-99b6-f669b22030e8.gif" height=500>      <img src="https://user-images.githubusercontent.com/42233535/114552695-d4de3e80-9c9f-11eb-98b8-928c5afd3eb7.gif" height=500>  
+>>>>>>> 8bc9d36d28d4926b22b1b420166331fcb35bdb14
 
 
 
@@ -29,3 +33,4 @@
   - Passport를 이용하여 기능 구현
   - 로그인을 시도하면 Local 인증을 통해 유효한 사용자인지 검증하고 유효한 사용자라면 JWT token을 발급
     - 애플리케이션 내에서 사용자 로그인 여부가 필요할 경우 이 token을 사용
+
