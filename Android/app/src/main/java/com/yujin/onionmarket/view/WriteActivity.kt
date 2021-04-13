@@ -297,6 +297,7 @@ class WriteActivity : AppCompatActivity() {
                             uploadImage(editSale!!.id)
                         } else {
                             showToast()
+                            setResult(RESULT_OK)
                             finish()
                         }
                     }
@@ -364,6 +365,7 @@ class WriteActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful && response.code() == ResponseCode.SUCCESS_POST) {
                     showToast()
+                    setResult(RESULT_OK)
                     finish()
                 }
             }
