@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder
 import com.yujin.onionmarket.data.User
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 class Util {
@@ -81,9 +82,9 @@ class Util {
         fun timeDifferentiation(createdAt: String?) : String {
             if (!createdAt.isNullOrEmpty()) {
                 val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                val pos = ParsePosition(0)
-                val then = formatter.parse(createdAt, pos).time
-                val now = Date().time
+                formatter.timeZone = TimeZone.getTimeZone("UTC")
+                val then = formatter.parse(createdAt).toInstant().toEpochMilli()
+                val now = Instant.now().toEpochMilli()
 
                 val seconds = (now - then) / 1000
                 val minutes = seconds / 60
