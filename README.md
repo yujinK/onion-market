@@ -10,18 +10,10 @@
 
 ### 1. 회원가입 / 로그인
 
-<<<<<<< HEAD
-#### 1. 회원가입 / 로그인
-
 <p align="center">
 <img src="https://user-images.githubusercontent.com/42233535/114555025-47501e00-9ca2-11eb-99b6-f669b22030e8.gif" height=500>      <img src="https://user-images.githubusercontent.com/42233535/114552695-d4de3e80-9c9f-11eb-98b8-928c5afd3eb7.gif" height=500>
 </p>  
 
-=======
-<p align="center">
-<img src="https://user-images.githubusercontent.com/42233535/114555025-47501e00-9ca2-11eb-99b6-f669b22030e8.gif" height=500>      <img src="https://user-images.githubusercontent.com/42233535/114552695-d4de3e80-9c9f-11eb-98b8-928c5afd3eb7.gif" height=500>
-</p> 
->>>>>>> 70a854d1f45113fd3d484153589b8e31b549685c
 
 - Email / Password를 이용한 회원가입 지원
 
