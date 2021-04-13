@@ -6,8 +6,7 @@
 >
 > <u>Kotlin</u>을 사용한 Android 개발 / <u>Node.js</u>를 이용한 서버 개발  
 
-\
-\
+<br><br>
 
 ### 1. 회원가입 / 로그인
 
@@ -21,7 +20,8 @@
 
   - MySQL에 Email / Password를 저장하며 이 때, 암호화 모듈인 Bcrypt의 암호 해싱 기능을 이용하여 암호화된 Password를 저장  
 
-\
+
+<br>
 
 - Email / Password를 이용한 Login 지원
 
