@@ -5,9 +5,8 @@
 > 이미 나와 있는 서비스를 직접 구현해보는 <u><B>클론 코딩</B></u> 프로젝트를 진행
 >
 > <u>Kotlin</u>을 사용한 Android 개발 / <u>Node.js</u>를 이용한 서버 개발  
-
-
-
+\
+\
 ### 1. 회원가입 / 로그인
 
 <p align="center">
@@ -19,9 +18,7 @@
   - 회원가입시 이미 존재하는 사용자인지 확인 후 존재하지 않는 사용자라면 가입 진행
 
   - MySQL에 Email / Password를 저장하며 이 때, 암호화 모듈인 Bcrypt의 암호 해싱 기능을 이용하여 암호화된 Password를 저장  
-
-    
-
+\
 - Email / Password를 이용한 Login 지원
 
   - Passport를 이용하여 기능 구현
