@@ -19,7 +19,7 @@
 
   - 회원가입시 이미 존재하는 사용자인지 확인 후 존재하지 않는 사용자라면 가입 진행
 
-  - MySQL에 Email / Password를 저장하며 이 때, 암호화 모듈인 Bcrypt의 암호 해싱 기능을 이용하여 암호화된 Password를 저장  
+  - MySQL에 Email / Password를 저장하며 이 때, 암호화 모듈인 `Bcrypt의 암호 해싱 기능`을 이용하여 암호화된 Password를 저장  
 
 
 <br>
@@ -27,6 +27,6 @@
 - Email / Password를 이용한 Login 지원
 
   - Passport를 이용하여 기능 구현
-  - 로그인을 시도하면 Local 인증을 통해 유효한 사용자인지 검증하고 유효한 사용자라면 JWT token을 발급
+  - 로그인을 시도하면 `Local 인증`을 통해 유효한 사용자인지 검증하고 유효한 사용자라면 `JWT token을 발급`
     - 애플리케이션 내에서 사용자 로그인 여부가 필요할 경우 이 token을 사용
 
