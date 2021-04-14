@@ -19,8 +19,7 @@
 
   - 회원가입시 이미 존재하는 사용자인지 확인 후 존재하지 않는 사용자라면 가입 진행
 
-  - MySQL에 Email / Password를 저장하며 이 때, 암호화 모듈인 `Bcrypt의 암호 해싱 기능`을 이용하여 암호화된 Password를 저장  
-
+  - 데이터베이스에 Email / Password를 저장하며 이 때, 암호화 모듈인 `Bcrypt의 암호 해싱 기능`을 이용하여 암호화된 Password를 저장  
 
 <br>
 
@@ -29,4 +28,23 @@
   - Passport를 이용하여 기능 구현
   - 로그인을 시도하면 `Local 인증`을 통해 유효한 사용자인지 검증하고 유효한 사용자라면 `JWT token을 발급`
     - 애플리케이션 내에서 사용자 로그인 여부가 필요할 경우 이 token을 사용
+
+<br>
+
+<br>
+
+### 2. 게시글 등록 / 수정 / 삭제
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/42233535/114670714-466cca00-9d3e-11eb-9890-94b404d71f25.gif" height=500>      <img src="https://user-images.githubusercontent.com/42233535/114675092-d745a480-9d42-11eb-9f74-cf81dfd4b251.gif" height=500>
+</p>  
+
+
+
+- 게시글 등록 & 수정
+  - 동일 Activity에서 이루어지며 판매글 수정의 경우 intent를 통해 전달받은 `Parcelable` 데이터로 View의 내용을 채움
+  - 사진을 첨부할 경우 사진과 등록된 순서를 데이터베이스에 같이 저장하여 판매글에서 첨부한 순서대로 사진이 보일 수 있도록 함
+
+- 게시글 삭제
+  - `BottomSheetDialog`의 메뉴 중 선택할 수 있으며 삭제 전 확인을 거친 후 동작하도록 개발
 
