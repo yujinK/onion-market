@@ -126,9 +126,9 @@ class Util {
         fun getSaleChatDiff(updatedAt: String?) : String {
             if (!updatedAt.isNullOrEmpty()) {
                 val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                val pos = ParsePosition(0)
-                val then = formatter.parse(updatedAt, pos).time
-                val now = Date().time
+                formatter.timeZone = TimeZone.getTimeZone("UTC")
+                val then = formatter.parse(updatedAt).toInstant().toEpochMilli()
+                val now = Instant.now().toEpochMilli()
 
                 val seconds = (now - then) / 1000
                 val minutes = seconds / 60
