@@ -127,7 +127,10 @@ router.get('/user/:userId', passport.authenticate('jwt', { session: false }), as
                     { '$Sale.writer$': req.params.userId },
                     { buyUserId: req.params.userId }
                 ]
-            }
+            },
+            order: [
+                [ 'updatedAt', 'DESC' ]
+            ]
         }).then(function (result) {
             return res.status(200).json({ chats: result });
         });
