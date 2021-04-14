@@ -66,7 +66,7 @@
     <string name="title">제목</string>
     <string name="won">₩</string>
     <string name="price_hint">가격 (선택사항)</string>
-    <string name="content_hint">%1$s에 올린 게시글 내용을 작성해주세요. 가품 및 판매금지품목은 게시가 제한될 수 있어요.</string>
+    <string name="content_hint">%1$s에 올릴 게시글 내용을 작성해주세요. 가품 및 판매금지품목은 게시가 제한될 수 있어요.</string>
     <string name="price_proposal">가격제안 받기</string>
     <string name="category">카테고리</string>
 
