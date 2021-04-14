@@ -54,7 +54,7 @@
 
 ### 3. 채팅
 
-<img src="https://user-images.githubusercontent.com/42233535/114682359-fa278700-9d49-11eb-9607-2595e6276dc9.gif" height=500>
+<p align="center"><img src="https://user-images.githubusercontent.com/42233535/114682359-fa278700-9d49-11eb-9607-2595e6276dc9.gif" height=500></p>
 
 - `Socket.IO`를 이용한 채팅 구현
   - 이벤트
@@ -69,7 +69,7 @@
 
 ### 4. 알림
 
-<img src="https://user-images.githubusercontent.com/42233535/114682456-11ff0b00-9d4a-11eb-9d6c-588b1301b106.gif" height=500>
+<p align="center"><img src="https://user-images.githubusercontent.com/42233535/114682456-11ff0b00-9d4a-11eb-9d6c-588b1301b106.gif" height=500></p>
 
 - `Firebase Cloud Messaging (FCM)`을 이용한 채팅 알림 구현
   - Firebase에서 제공하는 `Firebase Admin SDK`를 사용
