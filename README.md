@@ -48,3 +48,30 @@
 - 게시글 삭제
   - `BottomSheetDialog`의 메뉴 중 선택할 수 있으며 삭제 전 확인을 거친 후 동작하도록 개발
 
+<br>
+
+<br>
+
+### 3. 채팅
+
+<img src="https://user-images.githubusercontent.com/42233535/114682359-fa278700-9d49-11eb-9607-2595e6276dc9.gif" height=500>
+
+- `Socket.IO`를 이용한 채팅 구현
+  - 이벤트
+    - subscribe : 채팅을 시작하면 채팅방 id로 room을 만듦
+    - newMessage : 새로운 메시지 전송
+    - updateChat : 해당 채팅방 id를 가진 room에만 이벤트가 전달됨
+- 채팅 메시지들은 데이터베이스에 별도로 저장
+
+<br>
+
+<br>
+
+### 4. 알림
+
+<img src="https://user-images.githubusercontent.com/42233535/114682456-11ff0b00-9d4a-11eb-9d6c-588b1301b106.gif" height=500>
+
+- `Firebase Cloud Messaging (FCM)`을 이용한 채팅 알림 구현
+  - Firebase에서 제공하는 `Firebase Admin SDK`를 사용
+  - 로그인하게되면 해당 User의 Firebase Token을 데이터베이스에 저장하고 이 Token을 알림에서 사용함
+  - 메세지 수신시 `FirebaseMessagingService`를 확장하여 `onMessageReceived()` 콜백을 재정의
