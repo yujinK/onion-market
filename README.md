@@ -25,7 +25,7 @@
 
 - Email / Password를 이용한 Login 지원
 
-  - Passport를 이용하여 기능 구현
+  - `Passport`를 이용하여 기능 구현
 
   - 로그인을 시도하면 `Local 인증`을 통해 유효한 사용자인지 검증하고 유효한 사용자라면 `JWT token을 발급`
 
