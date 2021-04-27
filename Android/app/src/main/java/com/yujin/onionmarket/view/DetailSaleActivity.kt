@@ -106,7 +106,7 @@ class DetailSaleActivity : AppCompatActivity() {
         nick.text = user.nick
 
         val location = findViewById<TextView>(R.id.tv_location)
-        location.text = "${user.location.sigun} ${user.location.dongmyeon} ${user.location.li}"
+        location.text = getString(R.string.str_full_location, user.location.sigun, user.location.dongmyeon, user.location.li)
     }
 
     private fun setImages(images: ArrayList<Image>?) {

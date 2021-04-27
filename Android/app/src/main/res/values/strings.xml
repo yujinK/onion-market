@@ -59,6 +59,7 @@
 
     <!-- Location -->
     <string name="str_location">%1$s %2$s</string>
+    <string name="str_full_location">%1$s %2$s %3$s</string>
 
     <!-- Write -->
     <string name="write_title">중고거래 글쓰기</string>
