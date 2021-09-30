@@ -72,7 +72,7 @@
     <string name="category">카테고리</string>
 
     <!-- Sale -->
-    <string name="img_url">http://172.30.1.13:3000/img/</string>
+    <string name="img_url">http://172.30.1.43:3000/img/</string>
     <string name="price_won">%1$s원</string>
 
     <!-- Manage Sale -->
@@ -92,7 +92,7 @@
     <!-- Chat -->
     <string name="plan">거래약속 만들기</string>
     <string name="hint_send_chat">메시지를 입력하세요</string>
-    <string name="socket_io">http://172.30.1.13:3000/chat</string>
+    <string name="socket_io">http://172.30.1.43:3000/chat</string>
     <string name="chat_list">대화중인 채팅방</string>
     <string name="no_sale_chat">대화를 시작한 채팅 상대가 없습니다.</string>
     <string name="no_chat">채팅방이 없습니다.</string>

@@ -14,7 +14,6 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.asksira.loopingviewpager.LoopingViewPager
@@ -22,7 +21,6 @@ import com.asksira.loopingviewpager.indicator.CustomShapePagerIndicator
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.yujin.onionmarket.R
 import com.yujin.onionmarket.ResponseCode
 import com.yujin.onionmarket.Util
@@ -36,7 +34,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class DetailSaleActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
@@ -116,7 +113,7 @@ class DetailSaleActivity : AppCompatActivity() {
             loopingViewPager.visibility = View.VISIBLE
             indicator.visibility = View.VISIBLE
 
-            val adapter = ImageAdapter(this, images, false)
+            val adapter = ImageAdapter(images, false)
             loopingViewPager.adapter = adapter
 
             indicator.highlighterViewDelegate = {
